@@ -1,0 +1,66 @@
+name: "build-test"
+on: # rebuild any PRs and main branch changes
+  pull_request:
+  push:
+    branches:
+      - master
+      - 'releases/*'
+
+env:
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+jobs:
+  build: # make sure build/ci work properly
+    runs-on: ubuntu-latest
+    steps:
+    - uses: ./
+      with: 
+        status: starting
+        channel: '#workflows'
+    - id: checkout
+      uses: actions/checkout@v2
+    - id: build
+      run: |
+        npm install
+        npm run build
+    - uses: ./
+      with: 
+        status: ${{ job.status }}
+        steps: ${{ toJson(steps) }}
+        channel: '#workflows'
+      if: always()
+  test: # make sure the action works on a clean machine without building
+    runs-on: ubuntu-latest
+    steps:
+    - uses: ./
+      with: 
+        status: starting
+        channel: '#workflows'
+    - id: checkout
+      uses: actions/checkout@v2
+    - id: dump_github
+      name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+    - id: dump_job
+      name: Dump job context
+      env:
+        JOB_CONTEXT: ${{ toJson(job) }}
+      run: echo "$JOB_CONTEXT"
+    - uses: ./
+      with: 
+        status: in progress
+        channel: '#workflows'
+    - id: dump_steps
+      name: Dump steps context
+      env:
+        STEPS_CONTEXT: ${{ toJson(steps) }}
+      run: echo "$STEPS_CONTEXT"
+    - uses: ./
+      with: 
+        status: ${{ job.status }}
+        steps: ${{ toJson(steps) }}
+        channel: '#workflows'
+        # channel: '@nick'
+      if: always()
