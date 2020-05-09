@@ -4293,29 +4293,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
-const github = __importStar(__webpack_require__(469));
-const webhook_1 = __webpack_require__(736);
-function jobColor(status) {
-    if (status === 'SUCCESS')
-        return 'good';
-    if (status === 'FAILURE')
-        return 'danger';
-    if (status === 'CANCELLED')
-        return 'warning';
-}
-function stepIcon(status) {
-    if (status === 'Success')
-        return ':heavy_check_mark:';
-    if (status === 'Failure')
-        return ':x:';
-    if (status === 'Cancelled')
-        return ':exclamation:';
-    if (status === 'Skipped')
-        return ':no_entry_sign:';
-    return `:grey_question: ${status}`;
-}
+const slack_1 = __importDefault(__webpack_require__(570));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -4324,58 +4307,7 @@ function run() {
             const jobStatus = core.getInput('status', { required: true }).toUpperCase();
             const jobSteps = JSON.parse(core.getInput('steps', { required: false }) || '{}');
             const channel = core.getInput('channel', { required: false });
-            // const runId: string = process.env.GITHUB_RUN_ID!
-            // const runNumber: string = process.env.GITHUB_RUN_NUMBER!
-            const context = github.context;
-            core.debug(JSON.stringify(context, null, 2));
-            const sender = context.payload.sender;
-            const repository = context.payload.repository;
-            const headCommit = context.payload.head_commit;
-            const branch = context.ref.replace('refs/heads/', '');
-            const text = `*<${headCommit.url}/checks|Workflow _${context.workflow}_ ` +
-                `job _${jobName}_ triggered by _${context.eventName}_ is _${jobStatus}_> ` +
-                `for <${context.payload.compare}|\`${branch}\`>*\n` +
-                `<${headCommit.url}|\`${headCommit.id.slice(0, 8)}\`> - ${headCommit.message}`;
-            let checks = [];
-            Object.keys(jobSteps).forEach(step => {
-                checks.push(`${stepIcon(jobSteps[step].outcome)} ${step}`);
-            });
-            let fields = [];
-            if (checks.length) {
-                fields.push({
-                    title: 'Job Steps',
-                    value: checks.join('\n'),
-                    short: false
-                });
-            }
-            const message = {
-                username: 'GitHub Action',
-                icon_url: 'https://octodex.github.com/images/original.png',
-                channel: channel,
-                attachments: [
-                    {
-                        fallback: `[GitHub]: [${repository.full_name}] ${context.workflow} ${context.eventName} ${jobStatus}`,
-                        // color: '#2eb886',
-                        color: jobColor(jobStatus),
-                        // pretext: `${context.workflow} ${jobStatus} ${statusIcon}`,
-                        author_name: sender.login,
-                        author_link: sender.html_url,
-                        author_icon: sender.avatar_url,
-                        // title: `${context.eventName} to ${context.ref}`,
-                        mrkdwn_in: ['text'],
-                        text,
-                        fields,
-                        // image_url: 'https://octodex.github.com/images/welcometocat.png',
-                        // thumb_url: 'https://octodex.github.com/images/original.png',
-                        // thumb_url: 'https://octodex.github.com/images/codercat.jpg',
-                        footer: `<${repository.html_url}|${repository.full_name}>`,
-                        footer_icon: 'https://github.githubassets.com/favicon.ico',
-                        ts: repository.pushed_at
-                    }
-                ]
-            };
-            const webhook = new webhook_1.IncomingWebhook(url);
-            yield webhook.send(message);
+            yield slack_1.default(url, jobName, jobStatus, jobSteps, channel);
         }
         catch (error) {
             core.setFailed(error.message);
@@ -10758,6 +10690,105 @@ function parse(command, args, options) {
 }
 
 module.exports = parse;
+
+
+/***/ }),
+
+/***/ 570:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const github_1 = __webpack_require__(469);
+const core = __importStar(__webpack_require__(470));
+const webhook_1 = __webpack_require__(736);
+function jobColor(status) {
+    if (status === 'SUCCESS')
+        return 'good';
+    if (status === 'FAILURE')
+        return 'danger';
+    if (status === 'CANCELLED')
+        return 'warning';
+}
+function stepIcon(status) {
+    if (status === 'Success')
+        return ':heavy_check_mark:';
+    if (status === 'Failure')
+        return ':x:';
+    if (status === 'Cancelled')
+        return ':exclamation:';
+    if (status === 'Skipped')
+        return ':no_entry_sign:';
+    return `:grey_question: ${status}`;
+}
+function send(url, jobName, jobStatus, jobSteps, channel) {
+    var _a, _b, _c, _d, _e, _f, _g, _h;
+    return __awaiter(this, void 0, void 0, function* () {
+        core.debug(JSON.stringify(github_1.context.payload, null, 2));
+        const sender = github_1.context.payload.sender;
+        const repository = github_1.context.payload.repository;
+        const headCommit = github_1.context.payload.head_commit;
+        const branch = (_a = github_1.context.ref) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', '');
+        const text = `*<${headCommit.url}/checks|Workflow _${github_1.context.workflow}_ ` +
+            `job _${jobName}_ triggered by _${github_1.context.eventName}_ is _${jobStatus}_> ` +
+            `for <${github_1.context.payload.compare}|\`${branch}\`>*\n` +
+            `<${headCommit.url}|\`${headCommit.id.slice(0, 8)}\`> - ${headCommit.message}`;
+        const checks = [];
+        // eslint-disable-next-line github/array-foreach
+        Object.entries(jobSteps).forEach(([step, status]) => {
+            checks.push(`${stepIcon(status.outcome)} ${step}`);
+        });
+        const fields = [];
+        if (checks.length) {
+            fields.push({
+                title: 'Job Steps',
+                value: checks.join('\n'),
+                short: false
+            });
+        }
+        const message = {
+            username: 'GitHub Action',
+            icon_url: 'https://octodex.github.com/images/original.png',
+            channel,
+            attachments: [
+                {
+                    fallback: `[GitHub]: [${(_b = repository) === null || _b === void 0 ? void 0 : _b.full_name}] ${github_1.context.workflow} ${github_1.context.eventName} ${jobStatus}`,
+                    color: jobColor(jobStatus),
+                    author_name: (_c = sender) === null || _c === void 0 ? void 0 : _c.login,
+                    author_link: (_d = sender) === null || _d === void 0 ? void 0 : _d.html_url,
+                    author_icon: (_e = sender) === null || _e === void 0 ? void 0 : _e.avatar_url,
+                    mrkdwn_in: ['text'],
+                    text,
+                    fields,
+                    footer: `<${(_f = repository) === null || _f === void 0 ? void 0 : _f.html_url}|${(_g = repository) === null || _g === void 0 ? void 0 : _g.full_name}>`,
+                    footer_icon: 'https://github.githubassets.com/favicon.ico',
+                    ts: (_h = repository) === null || _h === void 0 ? void 0 : _h.pushed_at
+                }
+            ]
+        };
+        core.debug(JSON.stringify(message, null, 2));
+        const webhook = new webhook_1.IncomingWebhook(url);
+        return yield webhook.send(message);
+    });
+}
+exports.default = send;
 
 
 /***/ }),

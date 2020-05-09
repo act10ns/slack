@@ -1,8 +1,8 @@
 {
   "name": "slacky",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "Notify Slack of GitHub Actions job status.",
+  "description": "Notify Slack of GitHub Actions job and step status.",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -15,14 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alerta/actions.git"
+    "url": "git+https://github.com/act10ns/slacky.git"
   },
   "keywords": [
     "actions",
     "slack",
     "notify"
   ],
-  "author": "alerta",
+  "author": "satterly",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.0",
@@ -34,11 +34,13 @@
     "@types/node": "^12.7.12",
     "@typescript-eslint/parser": "^2.8.0",
     "@zeit/ncc": "^0.20.5",
+    "axios-mock-adapter": "^1.18.1",
     "eslint": "^5.16.0",
     "eslint-plugin-github": "^2.0.0",
     "eslint-plugin-jest": "^22.21.0",
     "jest": "^24.9.0",
     "jest-circus": "^24.9.0",
+    "jest-mock-axios": "^4.0.0",
     "js-yaml": "^3.13.1",
     "prettier": "^1.19.1",
     "ts-jest": "^24.2.0",

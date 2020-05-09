@@ -13,16 +13,12 @@ jobs:
   build: # make sure build/ci work properly
     runs-on: ubuntu-latest
     steps:
-    - uses: ./
-      with: 
-        status: starting
-        channel: '#workflows'
     - id: checkout
       uses: actions/checkout@v2
     - id: build
       run: |
         npm install
-        npm run build
+        npm run all
     - uses: ./
       with: 
         status: ${{ job.status }}
@@ -32,10 +28,6 @@ jobs:
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     steps:
-    - uses: ./
-      with: 
-        status: starting
-        channel: '#workflows'
     - id: checkout
       uses: actions/checkout@v2
     - id: dump_github
@@ -48,7 +40,7 @@ jobs:
       env:
         JOB_CONTEXT: ${{ toJson(job) }}
       run: echo "$JOB_CONTEXT"
-    - uses: ./
+    - uses: act10ns/slacky@master
       with: 
         status: in progress
         channel: '#workflows'
@@ -57,7 +49,7 @@ jobs:
       env:
         STEPS_CONTEXT: ${{ toJson(steps) }}
       run: echo "$STEPS_CONTEXT"
-    - uses: ./
+    - uses: act10ns/slacky@v1
       with: 
         status: ${{ job.status }}
         steps: ${{ toJson(steps) }}
