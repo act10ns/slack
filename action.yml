@@ -1,0 +1,19 @@
+name: slacky
+description: Notify Slack of GitHub Actions job and step status.
+author: satterly
+inputs:
+  status:
+    description: Specify success or failure or cancelled or custom.
+    required: true
+  steps:
+    description: Report on the status of individual steps
+    required: false
+  channel:
+    description: Override default channel with different channel or username
+    required: false
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+branding:
+  icon: alert-circle
+  color: red
