@@ -20,7 +20,7 @@ jobs:
         npm install
         npm run all
     - uses: ./
-      with: 
+      with:
         status: ${{ job.status }}
         steps: ${{ toJson(steps) }}
         channel: '#workflows'
@@ -41,7 +41,7 @@ jobs:
         JOB_CONTEXT: ${{ toJson(job) }}
       run: echo "$JOB_CONTEXT"
     - uses: act10ns/sl8ck@master
-      with: 
+      with:
         status: in progress
         channel: '#workflows'
     - id: dump_steps
@@ -50,7 +50,7 @@ jobs:
         STEPS_CONTEXT: ${{ toJson(steps) }}
       run: echo "$STEPS_CONTEXT"
     - uses: act10ns/sl8ck@v1
-      with: 
+      with:
         status: ${{ job.status }}
         steps: ${{ toJson(steps) }}
         channel: '#workflows'

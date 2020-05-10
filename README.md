@@ -1,10 +1,10 @@
 ![build-test](https://github.com/act10ns/sl8ck/workflows/build-test/badge.svg)
 
-# Slacky
+# Sl8ck - Slack messages for GitHub Action workflows, jobs and steps
 
 A simple Slack integration with GitHub Actions.
 
-![Example Slack notification](./docs/images/example1.png)
+<img src="./docs/images/example1.png" width="540" title="Slack Example #1">
 
 ## Configuration
 
@@ -164,7 +164,7 @@ or
 
 The above "Docker Build and Push" workflow will appear in Slack as:
 
-![Example Slack notification](./docs/images/example2.png)
+<img src="./docs/images/example2.png" width="700" title="Slack Example #2">
 
 ## Troubleshooting
 
