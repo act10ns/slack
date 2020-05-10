@@ -414,13 +414,6 @@ module.exports = function createError(message, config, code, request, response) 
 
 /***/ }),
 
-/***/ 34:
-/***/ (function(module) {
-
-module.exports = require("https");
-
-/***/ }),
-
 /***/ 35:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -3727,7 +3720,7 @@ function coerce(val) {
 var net = __webpack_require__(631);
 var tls = __webpack_require__(16);
 var http = __webpack_require__(605);
-var https = __webpack_require__(34);
+var https = __webpack_require__(211);
 var events = __webpack_require__(614);
 var assert = __webpack_require__(357);
 var util = __webpack_require__(669);
@@ -4320,32 +4313,9 @@ run();
 /***/ }),
 
 /***/ 211:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
-
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var osName = _interopDefault(__webpack_require__(2));
-
-function getUserAgent() {
-  try {
-    return `Node.js/${process.version.substr(1)} (${osName()}; ${process.arch})`;
-  } catch (error) {
-    if (/wmic os get Caption/.test(error.message)) {
-      return "Windows <version undetectable>";
-    }
-
-    return "<environment undetectable>";
-  }
-}
-
-exports.getUserAgent = getUserAgent;
-//# sourceMappingURL=index.js.map
-
+module.exports = require("https");
 
 /***/ }),
 
@@ -5316,7 +5286,7 @@ function authenticationRequestError(state, error, options) {
 module.exports = parseOptions;
 
 const { Deprecation } = __webpack_require__(692);
-const { getUserAgent } = __webpack_require__(796);
+const { getUserAgent } = __webpack_require__(619);
 const once = __webpack_require__(969);
 
 const pkg = __webpack_require__(215);
@@ -6337,7 +6307,7 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 var Stream = _interopDefault(__webpack_require__(413));
 var http = _interopDefault(__webpack_require__(605));
 var Url = _interopDefault(__webpack_require__(835));
-var https = _interopDefault(__webpack_require__(34));
+var https = _interopDefault(__webpack_require__(211));
 var zlib = _interopDefault(__webpack_require__(761));
 
 // Based on https://github.com/tmpvar/jsdom/blob/aa85b2abf07766ff7bf5c1f6daafb3726f2f2db5/lib/jsdom/living/blob.js
@@ -8004,7 +7974,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var isPlainObject = _interopDefault(__webpack_require__(626));
-var universalUserAgent = __webpack_require__(562);
+var universalUserAgent = __webpack_require__(796);
 
 function lowercaseKeys(object) {
   if (!object) {
@@ -8599,17 +8569,24 @@ function octokitValidate(octokit) {
 
 "use strict";
 
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const os = __webpack_require__(87);
+const os = __importStar(__webpack_require__(87));
 /**
  * Commands
  *
  * Command Format:
- *   ##[name key=value;key=value]message
+ *   ::name key=value,key=value::message
  *
  * Examples:
- *   ##[warning]This is the user warning message
- *   ##[set-secret name=mypassword]definitelyNotAPassword!
+ *   ::warning::This is the message
+ *   ::set-env name=MY_VAR::some value
  */
 function issueCommand(command, properties, message) {
     const cmd = new Command(command, properties, message);
@@ -8634,34 +8611,53 @@ class Command {
         let cmdStr = CMD_STRING + this.command;
         if (this.properties && Object.keys(this.properties).length > 0) {
             cmdStr += ' ';
+            let first = true;
             for (const key in this.properties) {
                 if (this.properties.hasOwnProperty(key)) {
                     const val = this.properties[key];
                     if (val) {
-                        // safely append the val - avoid blowing up when attempting to
-                        // call .replace() if message is not a string for some reason
-                        cmdStr += `${key}=${escape(`${val || ''}`)},`;
+                        if (first) {
+                            first = false;
+                        }
+                        else {
+                            cmdStr += ',';
+                        }
+                        cmdStr += `${key}=${escapeProperty(val)}`;
                     }
                 }
             }
         }
-        cmdStr += CMD_STRING;
-        // safely append the message - avoid blowing up when attempting to
-        // call .replace() if message is not a string for some reason
-        const message = `${this.message || ''}`;
-        cmdStr += escapeData(message);
+        cmdStr += `${CMD_STRING}${escapeData(this.message)}`;
         return cmdStr;
     }
 }
-function escapeData(s) {
-    return s.replace(/\r/g, '%0D').replace(/\n/g, '%0A');
+/**
+ * Sanitizes an input into a string so it can be passed into issueCommand safely
+ * @param input input to sanitize into a string
+ */
+function toCommandValue(input) {
+    if (input === null || input === undefined) {
+        return '';
+    }
+    else if (typeof input === 'string' || input instanceof String) {
+        return input;
+    }
+    return JSON.stringify(input);
 }
-function escape(s) {
-    return s
+exports.toCommandValue = toCommandValue;
+function escapeData(s) {
+    return toCommandValue(s)
+        .replace(/%/g, '%25')
+        .replace(/\r/g, '%0D')
+        .replace(/\n/g, '%0A');
+}
+function escapeProperty(s) {
+    return toCommandValue(s)
+        .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A')
-        .replace(/]/g, '%5D')
-        .replace(/;/g, '%3B');
+        .replace(/:/g, '%3A')
+        .replace(/,/g, '%2C');
 }
 //# sourceMappingURL=command.js.map
 
@@ -8957,13 +8953,15 @@ class GitHub extends rest_1.Octokit {
     static getOctokitOptions(args) {
         const token = args[0];
         const options = Object.assign({}, args[1]); // Shallow clone - don't mutate the object provided by the caller
+        // Base URL - GHES or Dotcom
+        options.baseUrl = options.baseUrl || this.getApiBaseUrl();
         // Auth
         const auth = GitHub.getAuthString(token, options);
         if (auth) {
             options.auth = auth;
         }
         // Proxy
-        const agent = GitHub.getProxyAgent(options);
+        const agent = GitHub.getProxyAgent(options.baseUrl, options);
         if (agent) {
             // Shallow clone - don't mutate the object provided by the caller
             options.request = options.request ? Object.assign({}, options.request) : {};
@@ -8974,6 +8972,7 @@ class GitHub extends rest_1.Octokit {
     }
     static getGraphQL(args) {
         const defaults = {};
+        defaults.baseUrl = this.getGraphQLBaseUrl();
         const token = args[0];
         const options = args[1];
         // Authorization
@@ -8984,7 +8983,7 @@ class GitHub extends rest_1.Octokit {
             };
         }
         // Proxy
-        const agent = GitHub.getProxyAgent(options);
+        const agent = GitHub.getProxyAgent(defaults.baseUrl, options);
         if (agent) {
             defaults.request = { agent };
         }
@@ -9000,16 +8999,30 @@ class GitHub extends rest_1.Octokit {
         }
         return typeof options.auth === 'string' ? options.auth : `token ${token}`;
     }
-    static getProxyAgent(options) {
+    static getProxyAgent(destinationUrl, options) {
         var _a;
         if (!((_a = options.request) === null || _a === void 0 ? void 0 : _a.agent)) {
-            const serverUrl = 'https://api.github.com';
-            if (httpClient.getProxyUrl(serverUrl)) {
+            if (httpClient.getProxyUrl(destinationUrl)) {
                 const hc = new httpClient.HttpClient();
-                return hc.getAgent(serverUrl);
+                return hc.getAgent(destinationUrl);
             }
         }
         return undefined;
+    }
+    static getApiBaseUrl() {
+        return process.env['GITHUB_API_URL'] || 'https://api.github.com';
+    }
+    static getGraphQLBaseUrl() {
+        let url = process.env['GITHUB_GRAPHQL_URL'] || 'https://api.github.com/graphql';
+        // Shouldn't be a trailing slash, but remove if so
+        if (url.endsWith('/')) {
+            url = url.substr(0, url.length - 1);
+        }
+        // Remove trailing "/graphql"
+        if (url.toUpperCase().endsWith('/GRAPHQL')) {
+            url = url.substr(0, url.length - '/graphql'.length);
+        }
+        return url;
     }
 }
 exports.GitHub = GitHub;
@@ -9031,10 +9044,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const command_1 = __webpack_require__(431);
-const os = __webpack_require__(87);
-const path = __webpack_require__(622);
+const os = __importStar(__webpack_require__(87));
+const path = __importStar(__webpack_require__(622));
 /**
  * The code to exit an action
  */
@@ -9055,11 +9075,13 @@ var ExitCode;
 /**
  * Sets env variable for this action and future actions in the job
  * @param name the name of the variable to set
- * @param val the value of the variable
+ * @param val the value of the variable. Non-string values will be converted to a string via JSON.stringify
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function exportVariable(name, val) {
-    process.env[name] = val;
-    command_1.issueCommand('set-env', { name }, val);
+    const convertedVal = command_1.toCommandValue(val);
+    process.env[name] = convertedVal;
+    command_1.issueCommand('set-env', { name }, convertedVal);
 }
 exports.exportVariable = exportVariable;
 /**
@@ -9098,12 +9120,22 @@ exports.getInput = getInput;
  * Sets the value of an output.
  *
  * @param     name     name of the output to set
- * @param     value    value to store
+ * @param     value    value to store. Non-string values will be converted to a string via JSON.stringify
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function setOutput(name, value) {
     command_1.issueCommand('set-output', { name }, value);
 }
 exports.setOutput = setOutput;
+/**
+ * Enables or disables the echoing of commands into stdout for the rest of the step.
+ * Echoing is disabled by default if ACTIONS_STEP_DEBUG is not set.
+ *
+ */
+function setCommandEcho(enabled) {
+    command_1.issue('echo', enabled ? 'on' : 'off');
+}
+exports.setCommandEcho = setCommandEcho;
 //-----------------------------------------------------------------------
 // Results
 //-----------------------------------------------------------------------
@@ -9121,6 +9153,13 @@ exports.setFailed = setFailed;
 // Logging Commands
 //-----------------------------------------------------------------------
 /**
+ * Gets whether Actions Step Debug is on or not
+ */
+function isDebug() {
+    return process.env['RUNNER_DEBUG'] === '1';
+}
+exports.isDebug = isDebug;
+/**
  * Writes debug message to user log
  * @param message debug message
  */
@@ -9130,18 +9169,18 @@ function debug(message) {
 exports.debug = debug;
 /**
  * Adds an error issue
- * @param message error issue message
+ * @param message error issue message. Errors will be converted to string via toString()
  */
 function error(message) {
-    command_1.issue('error', message);
+    command_1.issue('error', message instanceof Error ? message.toString() : message);
 }
 exports.error = error;
 /**
  * Adds an warning issue
- * @param message warning issue message
+ * @param message warning issue message. Errors will be converted to string via toString()
  */
 function warning(message) {
-    command_1.issue('warning', message);
+    command_1.issue('warning', message instanceof Error ? message.toString() : message);
 }
 exports.warning = warning;
 /**
@@ -9199,8 +9238,9 @@ exports.group = group;
  * Saves state for current action, the state can only be retrieved by this action's post job execution.
  *
  * @param     name     name of the state to store
- * @param     value    value to store
+ * @param     value    value to store. Non-string values will be converted to a string via JSON.stringify
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function saveState(name, value) {
     command_1.issueCommand('save-state', { name }, value);
 }
@@ -9538,7 +9578,7 @@ function hasFirstPage (link) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const url = __webpack_require__(835);
 const http = __webpack_require__(605);
-const https = __webpack_require__(34);
+const https = __webpack_require__(211);
 const pm = __webpack_require__(950);
 let tunnel;
 var HttpCodes;
@@ -10130,7 +10170,7 @@ module.exports = isPlainObject;
 
 var url = __webpack_require__(835);
 var http = __webpack_require__(605);
-var https = __webpack_require__(34);
+var https = __webpack_require__(211);
 var assert = __webpack_require__(357);
 var Writable = __webpack_require__(413).Writable;
 var debug = __webpack_require__(72)("follow-redirects");
@@ -10484,36 +10524,6 @@ function hasPreviousPage (link) {
 
 /***/ }),
 
-/***/ 562:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var osName = _interopDefault(__webpack_require__(2));
-
-function getUserAgent() {
-  try {
-    return `Node.js/${process.version.substr(1)} (${osName()}; ${process.arch})`;
-  } catch (error) {
-    if (/wmic os get Caption/.test(error.message)) {
-      return "Windows <version undetectable>";
-    }
-
-    return "<environment undetectable>";
-  }
-}
-
-exports.getUserAgent = getUserAgent;
-//# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
 /***/ 563:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -10739,7 +10749,7 @@ function stepIcon(status) {
     return `:grey_question: ${status}`;
 }
 function send(url, jobName, jobStatus, jobSteps, channel) {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(JSON.stringify(github_1.context.payload, null, 2));
         const sender = github_1.context.payload.sender;
@@ -10769,17 +10779,17 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             channel,
             attachments: [
                 {
-                    fallback: `[GitHub]: [${(_b = repository) === null || _b === void 0 ? void 0 : _b.full_name}] ${github_1.context.workflow} ${github_1.context.eventName} ${jobStatus}`,
+                    fallback: `[GitHub]: [${repository === null || repository === void 0 ? void 0 : repository.full_name}] ${github_1.context.workflow} ${github_1.context.eventName} ${jobStatus}`,
                     color: jobColor(jobStatus),
-                    author_name: (_c = sender) === null || _c === void 0 ? void 0 : _c.login,
-                    author_link: (_d = sender) === null || _d === void 0 ? void 0 : _d.html_url,
-                    author_icon: (_e = sender) === null || _e === void 0 ? void 0 : _e.avatar_url,
+                    author_name: sender === null || sender === void 0 ? void 0 : sender.login,
+                    author_link: sender === null || sender === void 0 ? void 0 : sender.html_url,
+                    author_icon: sender === null || sender === void 0 ? void 0 : sender.avatar_url,
                     mrkdwn_in: ['text'],
                     text,
                     fields,
-                    footer: `<${(_f = repository) === null || _f === void 0 ? void 0 : _f.html_url}|${(_g = repository) === null || _g === void 0 ? void 0 : _g.full_name}>`,
+                    footer: `<${repository === null || repository === void 0 ? void 0 : repository.html_url}|${repository === null || repository === void 0 ? void 0 : repository.full_name}>`,
                     footer_icon: 'https://github.githubassets.com/favicon.ico',
-                    ts: (_h = repository) === null || _h === void 0 ? void 0 : _h.pushed_at
+                    ts: repository === null || repository === void 0 ? void 0 : repository.pushed_at
                 }
             ]
         };
@@ -10876,6 +10886,36 @@ module.exports = require("http");
 /***/ (function(module) {
 
 module.exports = require("events");
+
+/***/ }),
+
+/***/ 619:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var osName = _interopDefault(__webpack_require__(2));
+
+function getUserAgent() {
+  try {
+    return `Node.js/${process.version.substr(1)} (${osName()}; ${process.arch})`;
+  } catch (error) {
+    if (/wmic os get Caption/.test(error.message)) {
+      return "Windows <version undetectable>";
+    }
+
+    throw error;
+  }
+}
+
+exports.getUserAgent = getUserAgent;
+//# sourceMappingURL=index.js.map
+
 
 /***/ }),
 
@@ -11247,7 +11287,7 @@ var settle = __webpack_require__(564);
 var buildFullPath = __webpack_require__(960);
 var buildURL = __webpack_require__(133);
 var http = __webpack_require__(605);
-var https = __webpack_require__(34);
+var https = __webpack_require__(211);
 var httpFollow = __webpack_require__(549).http;
 var httpsFollow = __webpack_require__(549).https;
 var url = __webpack_require__(835);
@@ -11855,7 +11895,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var endpoint = __webpack_require__(385);
-var universalUserAgent = __webpack_require__(211);
+var universalUserAgent = __webpack_require__(796);
 var isPlainObject = _interopDefault(__webpack_require__(548));
 var nodeFetch = _interopDefault(__webpack_require__(369));
 var requestError = __webpack_require__(463);
@@ -12295,7 +12335,7 @@ function getUserAgent() {
       return "Windows <version undetectable>";
     }
 
-    throw error;
+    return "<environment undetectable>";
   }
 }
 
@@ -28150,7 +28190,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var request = __webpack_require__(753);
 var universalUserAgent = __webpack_require__(796);
 
-const VERSION = "4.3.1";
+const VERSION = "4.4.0";
 
 class GraphqlError extends Error {
   constructor(request, response) {
@@ -28169,7 +28209,7 @@ class GraphqlError extends Error {
 
 }
 
-const NON_VARIABLE_OPTIONS = ["method", "baseUrl", "url", "headers", "request", "query"];
+const NON_VARIABLE_OPTIONS = ["method", "baseUrl", "url", "headers", "request", "query", "mediaType"];
 function graphql(request, query, options) {
   options = typeof query === "string" ? options = Object.assign({
     query
