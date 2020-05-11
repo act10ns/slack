@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@types/jest": "^24.9.1",
-    "@types/node": "^12.12.38",
+    "@types/node": "^13.13.5",
     "@typescript-eslint/parser": "^2.31.0",
     "@zeit/ncc": "^0.20.5",
     "axios-mock-adapter": "^1.18.1",
