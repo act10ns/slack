@@ -24,16 +24,31 @@ async function send(
   channel?: string
 ): Promise<IncomingWebhookResult> {
   core.debug(JSON.stringify(context.payload, null, 2))
-  const sender = context.payload.sender
+  let commit, branch, compare
+
+  if (context.eventName === 'push') {
+    commit = context.payload.head_commit
+    branch = context.ref?.replace('refs/heads/', '')
+    compare = context.payload.compare
+  }
+  if (context.eventName === 'pull_request') {
+    commit = {
+      id: context.payload.pull_request?.head.sha,
+      url: context.payload.pull_request?.html_url,
+      message: context.payload.pull_request?.title
+    }
+    branch = context.payload.pull_request?.head.ref
+    compare = `${commit.url}/files`
+  }
+
   const repository = context.payload.repository
-  const headCommit = context.payload.head_commit
-  const branch = context.ref?.replace('refs/heads/', '')
+  const sender = context.payload.sender
 
   const text =
-    `*<${headCommit.url}/checks|Workflow _${context.workflow}_ ` +
+    `*<${commit.url}/checks|Workflow _${context.workflow}_ ` +
     `job _${jobName}_ triggered by _${context.eventName}_ is _${jobStatus}_> ` +
-    `for <${context.payload.compare}|\`${branch}\`>*\n` +
-    `<${headCommit.url}|\`${headCommit.id.slice(0, 8)}\`> - ${headCommit.message}`
+    `for <${compare}|\`${branch}\`>*\n` +
+    `<${commit.url}|\`${commit.id.slice(0, 8)}\`> - ${commit.message}`
 
   const checks: string[] = []
   // eslint-disable-next-line github/array-foreach

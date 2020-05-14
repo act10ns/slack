@@ -40,7 +40,7 @@ jobs:
       env:
         JOB_CONTEXT: ${{ toJson(job) }}
       run: echo "$JOB_CONTEXT"
-    - uses: act10ns/sl8ck@master
+    - uses: act10ns/slack@master
       with:
         status: in progress
         channel: '#workflows'
@@ -49,7 +49,7 @@ jobs:
       env:
         STEPS_CONTEXT: ${{ toJson(steps) }}
       run: echo "$STEPS_CONTEXT"
-    - uses: act10ns/sl8ck@v1
+    - uses: act10ns/slack@v1
       with:
         status: ${{ job.status }}
         steps: ${{ toJson(steps) }}

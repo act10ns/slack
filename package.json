@@ -1,5 +1,5 @@
 {
-  "name": "sl8ck",
+  "name": "slack",
   "version": "1.0.3",
   "private": true,
   "description": "Notify Slack of GitHub Actions job and step status.",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/act10ns/sl8ck.git"
+    "url": "git+https://github.com/act10ns/slack.git"
   },
   "keywords": [
     "actions",
