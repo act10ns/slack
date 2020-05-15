@@ -30,8 +30,7 @@ async function send(
     commit = context.payload.head_commit
     branch = context.ref?.replace('refs/heads/', '')
     compare = context.payload.compare
-  }
-  if (context.eventName === 'pull_request') {
+  } else if (context.eventName === 'pull_request') {
     commit = {
       id: context.payload.pull_request?.head.sha,
       url: context.payload.pull_request?.html_url,
@@ -39,6 +38,8 @@ async function send(
     }
     branch = context.payload.pull_request?.head.ref
     compare = `${commit.url}/files`
+  } else {
+    core.setFailed(`Unsupported event type "${context.eventName}"`)
   }
 
   const repository = context.payload.repository
