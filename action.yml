@@ -3,7 +3,7 @@ description: Notify Slack of GitHub Actions workflows, jobs and step status.
 author: satterly
 inputs:
   status:
-    description: Specify success or failure or cancelled or custom.
+    description: Specify success, failure, cancelled or a custom status.
     required: true
   steps:
     description: Report on the status of individual steps
