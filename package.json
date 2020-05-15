@@ -31,8 +31,8 @@
   },
   "devDependencies": {
     "@types/jest": "^24.9.1",
-    "@types/node": "^12.12.38",
-    "@typescript-eslint/parser": "^2.31.0",
+    "@types/node": "^12.12.39",
+    "@typescript-eslint/parser": "^2.33.0",
     "@zeit/ncc": "^0.22.1",
     "axios-mock-adapter": "^1.18.1",
     "eslint": "^5.16.0",
@@ -43,6 +43,6 @@
     "js-yaml": "^3.13.1",
     "prettier": "^2.0.5",
     "ts-jest": "^24.3.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.2"
   }
 }
