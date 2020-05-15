@@ -33,7 +33,7 @@
     "@types/jest": "^24.9.1",
     "@types/node": "^12.12.38",
     "@typescript-eslint/parser": "^2.31.0",
-    "@zeit/ncc": "^0.20.5",
+    "@zeit/ncc": "^0.22.1",
     "axios-mock-adapter": "^1.18.1",
     "eslint": "^5.16.0",
     "eslint-plugin-github": "^2.0.0",
