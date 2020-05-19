@@ -40,6 +40,7 @@ test('pull request event to slack', async () => {
       attachments: [
         {
           fallback: '[GitHub]: [act10ns/slack] build-test pull_request Success',
+          color: 'good',
           author_name: 'satterly',
           author_link: 'https://github.com/satterly',
           author_icon: 'https://avatars0.githubusercontent.com/u/615057?v=4',
