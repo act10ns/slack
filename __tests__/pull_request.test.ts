@@ -12,10 +12,14 @@ const channel = '@override'
 
 // mock github context
 const dump = JSON.parse(readFileSync('./__tests__/fixtures/pull_request.json', 'utf-8'))
-github.context.workflow = dump.workflow
-github.context.eventName = dump.event_name
-github.context.ref = dump.ref
+
 github.context.payload = dump.event
+github.context.eventName = dump.event_name
+github.context.sha = dump.sha
+github.context.ref = dump.ref
+github.context.workflow = dump.workflow
+github.context.action = dump.action
+github.context.actor = dump.actor
 
 test('pull request event to slack', async () => {
   const mockAxios = new MockAdapter(axios, {delayResponse: 200})
@@ -46,11 +50,11 @@ test('pull request event to slack', async () => {
           author_icon: 'https://avatars0.githubusercontent.com/u/615057?v=4',
           mrkdwn_in: ['text'],
           text:
-            '*<https://github.com/act10ns/slack/pull/17/checks|Workflow _build-test_ job _Build and Test_ triggered by _pull_request_ is _Success_> for <https://github.com/act10ns/slack/pull/17/files|`rename-to-slack`>*\n<https://github.com/act10ns/slack/pull/17|`37b5e3e7`> - Rename to slack',
+            '*<https://github.com/act10ns/slack/pull/17/checks|Workflow _build-test_ job _Build and Test_ triggered by _pull_request_ is _Success_>* for <https://github.com/act10ns/slack/pull/17/files|`rename-to-slack`>\n<https://github.com/act10ns/slack/pull/17|`37b5e3e7`> - Rename to slack',
           fields: [],
           footer: '<https://github.com/act10ns/slack|act10ns/slack>',
           footer_icon: 'https://github.githubassets.com/favicon.ico',
-          ts: '2020-05-14T08:59:31Z'
+          ts: '1589446771000'
         }
       ]
     })

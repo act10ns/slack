@@ -13,6 +13,7 @@ async function run(): Promise<void> {
     await send(url, jobName, jobStatus, jobSteps, channel)
   } catch (error) {
     core.setFailed(error.message)
+    core.debug(error.stack)
   }
 }
 

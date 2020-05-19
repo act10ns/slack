@@ -4316,6 +4316,7 @@ function run() {
         }
         catch (error) {
             core.setFailed(error.message);
+            core.debug(error.stack);
         }
     });
 }
@@ -10773,9 +10774,16 @@ function stepIcon(status) {
     return `:grey_question: ${status}`;
 }
 function send(url, jobName, jobStatus, jobSteps, channel) {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d, _e, _f;
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(JSON.stringify(github_1.context.payload, null, 2));
+        // const ref = context.ref.replace('refs/heads/', '')
+        const workflow = github_1.context.workflow;
+        const eventName = github_1.context.eventName;
+        const repository = github_1.context.payload.repository;
+        const repositoryName = repository === null || repository === void 0 ? void 0 : repository.full_name;
+        const repositoryUrl = repository === null || repository === void 0 ? void 0 : repository.html_url;
+        const sender = github_1.context.payload.sender;
         let commit, branch, compare;
         if (github_1.context.eventName === 'push') {
             commit = github_1.context.payload.head_commit;
@@ -10794,11 +10802,9 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
         else {
             core.setFailed(`Unsupported event type "${github_1.context.eventName}"`);
         }
-        const repository = github_1.context.payload.repository;
-        const sender = github_1.context.payload.sender;
-        const text = `*<${commit.url}/checks|Workflow _${github_1.context.workflow}_ ` +
-            `job _${jobName}_ triggered by _${github_1.context.eventName}_ is _${jobStatus}_> ` +
-            `for <${compare}|\`${branch}\`>*\n` +
+        const text = `*<${commit.url}/checks|Workflow _${workflow}_ ` +
+            `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
+            `for <${compare}|\`${branch}\`>\n` +
             `<${commit.url}|\`${commit.id.slice(0, 8)}\`> - ${commit.message}`;
         const checks = [];
         // eslint-disable-next-line github/array-foreach
@@ -10813,13 +10819,73 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 short: false
             });
         }
+        if (github_1.context.payload.action) {
+            core.debug('******** ACTION ********');
+            core.debug(github_1.context.payload.action);
+            // fields.push({
+            //   title: 'Action',
+            //   value: context.payload.action,
+            //   short: false
+            // })
+        }
+        if (github_1.context.payload.installation) {
+            core.debug('******** INSTALLATION ********');
+            core.debug(JSON.stringify(github_1.context.payload.installation, null, 2));
+            // fields.push({
+            //   title: 'Installation',
+            //   value: JSON.stringify(context.payload.installation, null, 2),
+            //   short: false
+            // })
+        }
+        if (github_1.context.payload.issue) {
+            core.debug('******** ISSUE ********');
+            core.debug(JSON.stringify(github_1.context.payload.issue, null, 2));
+            // fields.push({
+            //   title: 'Issue',
+            //   value: JSON.stringify(context.payload.issue, null, 2),
+            //   short: false
+            // })
+        }
+        if (github_1.context.payload.pull_request) {
+            core.debug('******** PULL_REQUEST ********');
+            core.debug(JSON.stringify(github_1.context.payload.pull_request, null, 2));
+            core.debug(github_1.context.payload.pull_request.base.repo.pushed_at);
+            core.debug(github_1.context.payload.pull_request.head.pushed_at);
+            core.debug(github_1.context.payload.pull_request.updated_at);
+            // fields.push({
+            //   title: 'Pull Request',
+            //   value: JSON.stringify(context.payload.pull_request, null, 2),
+            //   short: false
+            // })
+        }
+        if (github_1.context.payload.repository) {
+            core.debug('******** REPO ********');
+            core.debug(JSON.stringify(github_1.context.payload.repository, null, 2));
+            core.debug(github_1.context.payload.repository.pushed_at);
+            core.debug(github_1.context.payload.repository.updated_at);
+            // fields.push({
+            //   title: 'Repo',
+            //   value: JSON.stringify(context.payload.repository, null, 2),
+            //   short: false
+            // })
+        }
+        if (github_1.context.payload.sender) {
+            core.debug('******** SENDER ********');
+            core.debug(JSON.stringify(github_1.context.payload.sender, null, 2));
+            // fields.push({
+            //   title: 'Sender',
+            //   value: JSON.stringify(context.payload.sender, null, 2),
+            //   short: false
+            // })
+        }
+        const ts = new Date((_f = github_1.context.payload.repository) === null || _f === void 0 ? void 0 : _f.pushed_at);
         const message = {
             username: 'GitHub Action',
             icon_url: 'https://octodex.github.com/images/original.png',
             channel,
             attachments: [
                 {
-                    fallback: `[GitHub]: [${repository === null || repository === void 0 ? void 0 : repository.full_name}] ${github_1.context.workflow} ${github_1.context.eventName} ${jobStatus}`,
+                    fallback: `[GitHub]: [${repositoryName}] ${workflow} ${eventName} ${jobStatus}`,
                     color: jobColor(jobStatus),
                     author_name: sender === null || sender === void 0 ? void 0 : sender.login,
                     author_link: sender === null || sender === void 0 ? void 0 : sender.html_url,
@@ -10827,9 +10893,9 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                     mrkdwn_in: ['text'],
                     text,
                     fields,
-                    footer: `<${repository === null || repository === void 0 ? void 0 : repository.html_url}|${repository === null || repository === void 0 ? void 0 : repository.full_name}>`,
+                    footer: `<${repositoryUrl}|${repositoryName}>`,
                     footer_icon: 'https://github.githubassets.com/favicon.ico',
-                    ts: repository === null || repository === void 0 ? void 0 : repository.pushed_at
+                    ts: ts.getTime().toString()
                 }
             ]
         };

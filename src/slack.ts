@@ -24,6 +24,17 @@ async function send(
   channel?: string
 ): Promise<IncomingWebhookResult> {
   core.debug(JSON.stringify(context.payload, null, 2))
+
+  // const ref = context.ref.replace('refs/heads/', '')
+  const workflow = context.workflow
+  const eventName = context.eventName
+
+  const repository = context.payload.repository
+  const repositoryName = repository?.full_name
+  const repositoryUrl = repository?.html_url
+
+  const sender = context.payload.sender
+
   let commit, branch, compare
 
   if (context.eventName === 'push') {
@@ -42,13 +53,10 @@ async function send(
     core.setFailed(`Unsupported event type "${context.eventName}"`)
   }
 
-  const repository = context.payload.repository
-  const sender = context.payload.sender
-
   const text =
-    `*<${commit.url}/checks|Workflow _${context.workflow}_ ` +
-    `job _${jobName}_ triggered by _${context.eventName}_ is _${jobStatus}_> ` +
-    `for <${compare}|\`${branch}\`>*\n` +
+    `*<${commit.url}/checks|Workflow _${workflow}_ ` +
+    `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
+    `for <${compare}|\`${branch}\`>\n` +
     `<${commit.url}|\`${commit.id.slice(0, 8)}\`> - ${commit.message}`
 
   const checks: string[] = []
@@ -66,13 +74,81 @@ async function send(
     })
   }
 
+  if (context.payload.action) {
+    core.debug('******** ACTION ********')
+    core.debug(context.payload.action)
+    // fields.push({
+    //   title: 'Action',
+    //   value: context.payload.action,
+    //   short: false
+    // })
+  }
+
+  if (context.payload.installation) {
+    core.debug('******** INSTALLATION ********')
+
+    core.debug(JSON.stringify(context.payload.installation, null, 2))
+    // fields.push({
+    //   title: 'Installation',
+    //   value: JSON.stringify(context.payload.installation, null, 2),
+    //   short: false
+    // })
+  }
+
+  if (context.payload.issue) {
+    core.debug('******** ISSUE ********')
+    core.debug(JSON.stringify(context.payload.issue, null, 2))
+    // fields.push({
+    //   title: 'Issue',
+    //   value: JSON.stringify(context.payload.issue, null, 2),
+    //   short: false
+    // })
+  }
+
+  if (context.payload.pull_request) {
+    core.debug('******** PULL_REQUEST ********')
+    core.debug(JSON.stringify(context.payload.pull_request, null, 2))
+    core.debug(context.payload.pull_request.base.repo.pushed_at)
+    core.debug(context.payload.pull_request.head.pushed_at)
+    core.debug(context.payload.pull_request.updated_at)
+    // fields.push({
+    //   title: 'Pull Request',
+    //   value: JSON.stringify(context.payload.pull_request, null, 2),
+    //   short: false
+    // })
+  }
+
+  if (context.payload.repository) {
+    core.debug('******** REPO ********')
+    core.debug(JSON.stringify(context.payload.repository, null, 2))
+    core.debug(context.payload.repository.pushed_at)
+    core.debug(context.payload.repository.updated_at)
+    // fields.push({
+    //   title: 'Repo',
+    //   value: JSON.stringify(context.payload.repository, null, 2),
+    //   short: false
+    // })
+  }
+
+  if (context.payload.sender) {
+    core.debug('******** SENDER ********')
+    core.debug(JSON.stringify(context.payload.sender, null, 2))
+    // fields.push({
+    //   title: 'Sender',
+    //   value: JSON.stringify(context.payload.sender, null, 2),
+    //   short: false
+    // })
+  }
+
+  const ts = new Date(context.payload.repository?.pushed_at)
+
   const message = {
     username: 'GitHub Action',
     icon_url: 'https://octodex.github.com/images/original.png',
     channel,
     attachments: [
       {
-        fallback: `[GitHub]: [${repository?.full_name}] ${context.workflow} ${context.eventName} ${jobStatus}`,
+        fallback: `[GitHub]: [${repositoryName}] ${workflow} ${eventName} ${jobStatus}`,
         color: jobColor(jobStatus),
         author_name: sender?.login,
         author_link: sender?.html_url,
@@ -80,9 +156,9 @@ async function send(
         mrkdwn_in: ['text' as const],
         text,
         fields,
-        footer: `<${repository?.html_url}|${repository?.full_name}>`,
+        footer: `<${repositoryUrl}|${repositoryName}>`,
         footer_icon: 'https://github.githubassets.com/favicon.ico',
-        ts: repository?.pushed_at
+        ts: ts.getTime().toString()
       }
     ]
   }
