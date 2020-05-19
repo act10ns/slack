@@ -3,16 +3,16 @@ import * as core from '@actions/core'
 import {IncomingWebhook, IncomingWebhookResult} from '@slack/webhook'
 
 function jobColor(status: string): string | undefined {
-  if (status === 'SUCCESS') return 'good'
-  if (status === 'FAILURE') return 'danger'
-  if (status === 'CANCELLED') return 'warning'
+  if (status.toLowerCase() === 'success') return 'good'
+  if (status.toLowerCase() === 'failure') return 'danger'
+  if (status.toLowerCase() === 'cancelled') return 'warning'
 }
 
 function stepIcon(status: string): string {
-  if (status === 'Success') return ':heavy_check_mark:'
-  if (status === 'Failure') return ':x:'
-  if (status === 'Cancelled') return ':exclamation:'
-  if (status === 'Skipped') return ':no_entry_sign:'
+  if (status.toLowerCase() === 'success') return ':heavy_check_mark:'
+  if (status.toLowerCase() === 'failure') return ':x:'
+  if (status.toLowerCase() === 'cancelled') return ':exclamation:'
+  if (status.toLowerCase() === 'skipped') return ':no_entry_sign:'
   return `:grey_question: ${status}`
 }
 

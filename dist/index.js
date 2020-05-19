@@ -10754,21 +10754,21 @@ const github_1 = __webpack_require__(469);
 const core = __importStar(__webpack_require__(470));
 const webhook_1 = __webpack_require__(736);
 function jobColor(status) {
-    if (status === 'SUCCESS')
+    if (status.toLowerCase() === 'success')
         return 'good';
-    if (status === 'FAILURE')
+    if (status.toLowerCase() === 'failure')
         return 'danger';
-    if (status === 'CANCELLED')
+    if (status.toLowerCase() === 'cancelled')
         return 'warning';
 }
 function stepIcon(status) {
-    if (status === 'Success')
+    if (status.toLowerCase() === 'success')
         return ':heavy_check_mark:';
-    if (status === 'Failure')
+    if (status.toLowerCase() === 'failure')
         return ':x:';
-    if (status === 'Cancelled')
+    if (status.toLowerCase() === 'cancelled')
         return ':exclamation:';
-    if (status === 'Skipped')
+    if (status.toLowerCase() === 'skipped')
         return ':no_entry_sign:';
     return `:grey_question: ${status}`;
 }
