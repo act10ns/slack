@@ -53,6 +53,10 @@ jobs:
     steps:
     - id: checkout
       uses: actions/checkout@v2
+    - uses: ./
+      with:
+        status: starting
+        channel: '#workflows'
     - id: dump_github
       name: Dump GitHub context
       env:
