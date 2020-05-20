@@ -98,36 +98,26 @@ async function send(
     // })
   }
 
-  let commit, branch, compare
+  let commit = {
+    id: context.sha,
+    url: `${repositoryUrl}/commit/${context.sha}`,
+    message: 'new branch or tag'
+  },
+  branch = context.ref?.replace('refs/tags/', '').replace('refs/heads/', ''),
+  compare = `${commit.url}` // FIXME - not sure this makes sense
 
-  if (context.eventName === 'create') {
-    commit = {
-      id: context.sha,
-      url: `${repositoryUrl}/commit/${context.sha}`,
-      message: 'new branch or tag'
-    }
-    branch = context.ref?.replace('refs/heads/', '')
-    compare = `${commit.url}` // FIXME - not sure this makes sense
-  } else if (context.eventName === 'push') {
+if (context.eventName === 'push') {
     commit = context.payload.head_commit
     branch = context.ref?.replace('refs/heads/', '')
     compare = context.payload.compare
   } else if (context.eventName === 'pull_request') {
     commit = {
       id: context.payload.pull_request?.head.sha,
-      url: context.payload.pull_request?.html_url,
+      url: context.payload.pull_request?.html_url || '',
       message: context.payload.pull_request?.title
     }
     branch = context.payload.pull_request?.head.ref
     compare = `${commit.url}/files`
-  } else if (context.eventName === 'release') {
-    commit = {
-      id: context.sha,
-      url: `${repositoryUrl}/commit/${context.sha}`,
-      message: 'new branch or tag'
-    }
-    branch = context.ref?.replace('refs/tags/', '')
-    compare = `${commit.url}` // FIXME - not sure this makes sense
   } else {
     core.setFailed(`Unsupported event type "${context.eventName}"`)
   }
