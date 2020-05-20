@@ -10774,7 +10774,7 @@ function stepIcon(status) {
     return `:grey_question: ${status}`;
 }
 function send(url, jobName, jobStatus, jobSteps, channel) {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _a, _b, _c, _d, _e, _f, _g;
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(JSON.stringify(github_1.context.payload, null, 2));
         const workflow = github_1.context.workflow;
@@ -10843,40 +10843,29 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             // })
         }
         let commit, branch, compare;
-        if (github_1.context.eventName === 'create') {
-            commit = {
-                id: github_1.context.sha,
-                url: `${repositoryUrl}/commit/${github_1.context.sha}`,
-                message: 'new branch or tag'
-            };
-            branch = (_a = github_1.context.ref) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', '');
-            compare = `${commit.url}`; // FIXME - not sure this makes sense
-        }
-        else if (github_1.context.eventName === 'push') {
+        if (github_1.context.eventName === 'push') {
             commit = github_1.context.payload.head_commit;
-            branch = (_b = github_1.context.ref) === null || _b === void 0 ? void 0 : _b.replace('refs/heads/', '');
+            branch = (_a = github_1.context.ref) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', '');
             compare = github_1.context.payload.compare;
         }
         else if (github_1.context.eventName === 'pull_request') {
             commit = {
-                id: (_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.head.sha,
-                url: (_d = github_1.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.html_url,
-                message: (_e = github_1.context.payload.pull_request) === null || _e === void 0 ? void 0 : _e.title
+                id: (_b = github_1.context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.head.sha,
+                url: (_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.html_url,
+                message: (_d = github_1.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.title
             };
-            branch = (_f = github_1.context.payload.pull_request) === null || _f === void 0 ? void 0 : _f.head.ref;
+            branch = (_e = github_1.context.payload.pull_request) === null || _e === void 0 ? void 0 : _e.head.ref;
             compare = `${commit.url}/files`;
         }
-        else if (github_1.context.eventName === 'release') {
-            commit = {
+        else {
+            ;
+            (commit = {
                 id: github_1.context.sha,
                 url: `${repositoryUrl}/commit/${github_1.context.sha}`,
                 message: 'new branch or tag'
-            };
-            branch = (_g = github_1.context.ref) === null || _g === void 0 ? void 0 : _g.replace('refs/tags/', '');
-            compare = `${commit.url}`; // FIXME - not sure this makes sense
-        }
-        else {
-            core.setFailed(`Unsupported event type "${github_1.context.eventName}"`);
+            }),
+                (branch = (_f = github_1.context.ref) === null || _f === void 0 ? void 0 : _f.replace('refs/tags/', '').replace('refs/heads/', '')),
+                (compare = `${commit.url}`); // FIXME - not sure this makes sense
         }
         const text = `*<${commit.url}/checks|Workflow _${workflow}_ ` +
             `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
@@ -10895,7 +10884,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 short: false
             });
         }
-        const ts = new Date((_h = github_1.context.payload.repository) === null || _h === void 0 ? void 0 : _h.pushed_at);
+        const ts = new Date((_g = github_1.context.payload.repository) === null || _g === void 0 ? void 0 : _g.pushed_at);
         const message = {
             username: 'GitHub Action',
             icon_url: 'https://octodex.github.com/images/original.png',
