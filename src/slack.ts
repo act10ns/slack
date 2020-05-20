@@ -113,13 +113,13 @@ async function send(
     branch = context.payload.pull_request?.head.ref
     compare = `${commit.url}/files`
   } else {
-    ;(commit = {
+    commit = {
       id: context.sha,
       url: `${repositoryUrl}/commit/${context.sha}`,
       message: 'new branch or tag'
-    }),
-      (branch = context.ref?.replace('refs/tags/', '').replace('refs/heads/', '')),
-      (compare = `${commit.url}`) // FIXME - not sure this makes sense
+    }
+    branch = context.ref?.replace('refs/tags/', '').replace('refs/heads/', '')
+    compare = `${commit.url}` // FIXME - not sure this makes sense
   }
 
   const text =

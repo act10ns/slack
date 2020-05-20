@@ -10858,14 +10858,13 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             compare = `${commit.url}/files`;
         }
         else {
-            ;
-            (commit = {
+            commit = {
                 id: github_1.context.sha,
                 url: `${repositoryUrl}/commit/${github_1.context.sha}`,
                 message: 'new branch or tag'
-            }),
-                (branch = (_f = github_1.context.ref) === null || _f === void 0 ? void 0 : _f.replace('refs/tags/', '').replace('refs/heads/', '')),
-                (compare = `${commit.url}`); // FIXME - not sure this makes sense
+            };
+            branch = (_f = github_1.context.ref) === null || _f === void 0 ? void 0 : _f.replace('refs/tags/', '').replace('refs/heads/', '');
+            compare = `${commit.url}`; // FIXME - not sure this makes sense
         }
         const text = `*<${commit.url}/checks|Workflow _${workflow}_ ` +
             `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
