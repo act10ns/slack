@@ -25,54 +25,12 @@ async function send(
 ): Promise<IncomingWebhookResult> {
   core.debug(JSON.stringify(context.payload, null, 2))
 
-  // const ref = context.ref.replace('refs/heads/', '')
   const workflow = context.workflow
   const eventName = context.eventName
-
   const repository = context.payload.repository
   const repositoryName = repository?.full_name
   const repositoryUrl = repository?.html_url
-
   const sender = context.payload.sender
-
-  let commit, branch, compare
-
-  if (context.eventName === 'push') {
-    commit = context.payload.head_commit
-    branch = context.ref?.replace('refs/heads/', '')
-    compare = context.payload.compare
-  } else if (context.eventName === 'pull_request') {
-    commit = {
-      id: context.payload.pull_request?.head.sha,
-      url: context.payload.pull_request?.html_url,
-      message: context.payload.pull_request?.title
-    }
-    branch = context.payload.pull_request?.head.ref
-    compare = `${commit.url}/files`
-  } else {
-    core.setFailed(`Unsupported event type "${context.eventName}"`)
-  }
-
-  const text =
-    `*<${commit.url}/checks|Workflow _${workflow}_ ` +
-    `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-    `for <${compare}|\`${branch}\`>\n` +
-    `<${commit.url}|\`${commit.id.slice(0, 8)}\`> - ${commit.message}`
-
-  const checks: string[] = []
-  // eslint-disable-next-line github/array-foreach
-  Object.entries(jobSteps).forEach(([step, status]) => {
-    checks.push(`${stepIcon(status.outcome)} ${step}`)
-  })
-
-  const fields = []
-  if (checks.length) {
-    fields.push({
-      title: 'Job Steps',
-      value: checks.join('\n'),
-      short: false
-    })
-  }
 
   if (context.payload.action) {
     core.debug('******** ACTION ********')
@@ -138,6 +96,61 @@ async function send(
     //   value: JSON.stringify(context.payload.sender, null, 2),
     //   short: false
     // })
+  }
+
+  let commit, branch, compare
+
+  if (context.eventName === 'create') {
+    commit = {
+      id: context.sha,
+      url: `${repositoryUrl}/commit/${context.sha}`,
+      message: 'new branch or tag'
+    }
+    branch = context.ref?.replace('refs/heads/', '')
+    compare = `${commit.url}` // FIXME - not sure this makes sense
+  } else if (context.eventName === 'push') {
+    commit = context.payload.head_commit
+    branch = context.ref?.replace('refs/heads/', '')
+    compare = context.payload.compare
+  } else if (context.eventName === 'pull_request') {
+    commit = {
+      id: context.payload.pull_request?.head.sha,
+      url: context.payload.pull_request?.html_url,
+      message: context.payload.pull_request?.title
+    }
+    branch = context.payload.pull_request?.head.ref
+    compare = `${commit.url}/files`
+  } else if (context.eventName === 'release') {
+    commit = {
+      id: context.sha,
+      url: `${repositoryUrl}/commit/${context.sha}`,
+      message: 'new branch or tag'
+    }
+    branch = context.ref?.replace('refs/tags/', '')
+    compare = `${commit.url}` // FIXME - not sure this makes sense
+  } else {
+    core.setFailed(`Unsupported event type "${context.eventName}"`)
+  }
+
+  const text =
+    `*<${commit.url}/checks|Workflow _${workflow}_ ` +
+    `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
+    `for <${compare}|\`${branch}\`>\n` +
+    `<${commit.url}|\`${commit.id.slice(0, 8)}\`> - ${commit.message}`
+
+  const checks: string[] = []
+  // eslint-disable-next-line github/array-foreach
+  Object.entries(jobSteps).forEach(([step, status]) => {
+    checks.push(`${stepIcon(status.outcome)} ${step}`)
+  })
+
+  const fields = []
+  if (checks.length) {
+    fields.push({
+      title: 'Job Steps',
+      value: checks.join('\n'),
+      short: false
+    })
   }
 
   const ts = new Date(context.payload.repository?.pushed_at)

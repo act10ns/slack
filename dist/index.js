@@ -10774,51 +10774,15 @@ function stepIcon(status) {
     return `:grey_question: ${status}`;
 }
 function send(url, jobName, jobStatus, jobSteps, channel) {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(JSON.stringify(github_1.context.payload, null, 2));
-        // const ref = context.ref.replace('refs/heads/', '')
         const workflow = github_1.context.workflow;
         const eventName = github_1.context.eventName;
         const repository = github_1.context.payload.repository;
         const repositoryName = repository === null || repository === void 0 ? void 0 : repository.full_name;
         const repositoryUrl = repository === null || repository === void 0 ? void 0 : repository.html_url;
         const sender = github_1.context.payload.sender;
-        let commit, branch, compare;
-        if (github_1.context.eventName === 'push') {
-            commit = github_1.context.payload.head_commit;
-            branch = (_a = github_1.context.ref) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', '');
-            compare = github_1.context.payload.compare;
-        }
-        else if (github_1.context.eventName === 'pull_request') {
-            commit = {
-                id: (_b = github_1.context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.head.sha,
-                url: (_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.html_url,
-                message: (_d = github_1.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.title
-            };
-            branch = (_e = github_1.context.payload.pull_request) === null || _e === void 0 ? void 0 : _e.head.ref;
-            compare = `${commit.url}/files`;
-        }
-        else {
-            core.setFailed(`Unsupported event type "${github_1.context.eventName}"`);
-        }
-        const text = `*<${commit.url}/checks|Workflow _${workflow}_ ` +
-            `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-            `for <${compare}|\`${branch}\`>\n` +
-            `<${commit.url}|\`${commit.id.slice(0, 8)}\`> - ${commit.message}`;
-        const checks = [];
-        // eslint-disable-next-line github/array-foreach
-        Object.entries(jobSteps).forEach(([step, status]) => {
-            checks.push(`${stepIcon(status.outcome)} ${step}`);
-        });
-        const fields = [];
-        if (checks.length) {
-            fields.push({
-                title: 'Job Steps',
-                value: checks.join('\n'),
-                short: false
-            });
-        }
         if (github_1.context.payload.action) {
             core.debug('******** ACTION ********');
             core.debug(github_1.context.payload.action);
@@ -10878,7 +10842,60 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             //   short: false
             // })
         }
-        const ts = new Date((_f = github_1.context.payload.repository) === null || _f === void 0 ? void 0 : _f.pushed_at);
+        let commit, branch, compare;
+        if (github_1.context.eventName === 'create') {
+            commit = {
+                id: github_1.context.sha,
+                url: `${repositoryUrl}/commit/${github_1.context.sha}`,
+                message: 'new branch or tag'
+            };
+            branch = (_a = github_1.context.ref) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', '');
+            compare = `${commit.url}`; // FIXME - not sure this makes sense
+        }
+        else if (github_1.context.eventName === 'push') {
+            commit = github_1.context.payload.head_commit;
+            branch = (_b = github_1.context.ref) === null || _b === void 0 ? void 0 : _b.replace('refs/heads/', '');
+            compare = github_1.context.payload.compare;
+        }
+        else if (github_1.context.eventName === 'pull_request') {
+            commit = {
+                id: (_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.head.sha,
+                url: (_d = github_1.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.html_url,
+                message: (_e = github_1.context.payload.pull_request) === null || _e === void 0 ? void 0 : _e.title
+            };
+            branch = (_f = github_1.context.payload.pull_request) === null || _f === void 0 ? void 0 : _f.head.ref;
+            compare = `${commit.url}/files`;
+        }
+        else if (github_1.context.eventName === 'release') {
+            commit = {
+                id: github_1.context.sha,
+                url: `${repositoryUrl}/commit/${github_1.context.sha}`,
+                message: 'new branch or tag'
+            };
+            branch = (_g = github_1.context.ref) === null || _g === void 0 ? void 0 : _g.replace('refs/tags/', '');
+            compare = `${commit.url}`; // FIXME - not sure this makes sense
+        }
+        else {
+            core.setFailed(`Unsupported event type "${github_1.context.eventName}"`);
+        }
+        const text = `*<${commit.url}/checks|Workflow _${workflow}_ ` +
+            `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
+            `for <${compare}|\`${branch}\`>\n` +
+            `<${commit.url}|\`${commit.id.slice(0, 8)}\`> - ${commit.message}`;
+        const checks = [];
+        // eslint-disable-next-line github/array-foreach
+        Object.entries(jobSteps).forEach(([step, status]) => {
+            checks.push(`${stepIcon(status.outcome)} ${step}`);
+        });
+        const fields = [];
+        if (checks.length) {
+            fields.push({
+                title: 'Job Steps',
+                value: checks.join('\n'),
+                short: false
+            });
+        }
+        const ts = new Date((_h = github_1.context.payload.repository) === null || _h === void 0 ? void 0 : _h.pushed_at);
         const message = {
             username: 'GitHub Action',
             icon_url: 'https://octodex.github.com/images/original.png',
