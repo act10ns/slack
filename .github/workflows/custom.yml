@@ -1,0 +1,20 @@
+on:
+  repository_dispatch:
+    types: [custom]
+
+jobs:
+  custom:
+    runs-on: ubuntu-latest
+    steps:
+    - id: checkout
+      uses: actions/checkout@v2
+    - id: build
+      run: |
+        npm install
+        npm run all
+    - uses: ./
+      with:
+        status: ${{ job.status }}
+        steps: ${{ toJson(steps) }}
+        channel: '#actions'
+      if: always()
