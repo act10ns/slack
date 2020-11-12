@@ -23,6 +23,13 @@ async function send(
   jobSteps: object,
   channel?: string
 ): Promise<IncomingWebhookResult> {
+
+  core.debug('******** ENVVAR ********')
+  for (var k of Object.keys(process.env).sort()) {
+    core.debug(`${k} = ${process.env[k]}`)
+  }
+
+  core.debug('******** PAYLOAD ********')
   core.debug(JSON.stringify(context.payload, null, 2))
 
   const workflow = context.workflow
