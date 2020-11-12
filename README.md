@@ -171,7 +171,11 @@ The above "Docker Build and Push" workflow will appear in Slack as:
 
 ## Troubleshooting
 
-Set the `ACTIONS_STEP_DEBUG` secret to `true`.
+To enable runner diagnostic logging set the `ACTIONS_RUNNER_DEBUG` secret to `true`.
+
+To enable step debug logging set the `ACTIONS_STEP_DEBUG` secret to `true`.
+
+See https://docs.github.com/en/free-pro-team@latest/actions/managing-workflow-runs/enabling-debug-logging
 
 ## References
 
