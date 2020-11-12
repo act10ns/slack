@@ -1,3 +1,4 @@
+name: "custom-test"
 on:
   repository_dispatch:
     types: [custom]

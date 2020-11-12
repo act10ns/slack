@@ -1,3 +1,4 @@
+name: "manual-test"
 on: workflow_dispatch
 
 env:

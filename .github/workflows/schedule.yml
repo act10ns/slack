@@ -1,3 +1,4 @@
+name: "schedule-test"
 on:
   schedule:
     - cron:  '*/15 * * * *'
