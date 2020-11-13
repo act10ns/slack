@@ -4,10 +4,6 @@ import send from './slack'
 
 async function run(): Promise<void> {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
-    const {version, name} = require(`${process.env.GITHUB_WORKSPACE}/package.json`)
-    core.debug(`Running action ${name}, ${version}`)
-
     const event = process.env.GITHUB_EVENT_PATH as string
     const readEvent = (): object => JSON.parse(readFileSync(event, 'utf8'))
     core.debug(JSON.stringify(readEvent()))
