@@ -23,127 +23,48 @@ async function send(
   jobSteps: object,
   channel?: string
 ): Promise<IncomingWebhookResult> {
-  core.debug('******** ENVVAR ********')
-  for (const k of Object.keys(process.env).sort((a, b) => a.localeCompare(b))) {
-    core.debug(`${k} = ${process.env[k]}`)
-  }
+  const workflow = process.env.GITHUB_WORKFLOW
+  const eventName = process.env.GITHUB_EVENT_NAME
+  const repositoryName = process.env.GITHUB_REPOSITORY
+  const repositoryUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`
 
-  core.debug('******** PAYLOAD ********')
-  core.debug(JSON.stringify(context.payload, null, 2))
+  const runId = process.env.GITHUB_RUN_ID
+  const runNumber = process.env.GITHUB_RUN_NUMBER
 
-  const workflow = context.workflow
-  const eventName = context.eventName
-  const repository = context.payload.repository
-  const sender = context.payload.sender
+  const commit = process.env.GITHUB_SHA as string
+  const branch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF?.replace('refs/heads/', '')
+  const issue = context.issue
+  const compare = context.payload?.compare
 
-  if (context.payload.action) {
-    core.debug('******** ACTION ********')
-    core.debug(context.payload.action)
-    // fields.push({
-    //   title: 'Action',
-    //   value: context.payload.action,
-    //   short: false
-    // })
-  }
+  // different Slack message based on context
+  let text,
+    ts = new Date()
 
-  if (context.payload.installation) {
-    core.debug('******** INSTALLATION ********')
-    core.debug(JSON.stringify(context.payload.installation, null, 2))
-    // fields.push({
-    //   title: 'Installation',
-    //   value: JSON.stringify(context.payload.installation, null, 2),
-    //   short: false
-    // })
-  }
-
-  if (context.payload.issue) {
-    core.debug('******** ISSUE ********')
-    core.debug(JSON.stringify(context.payload.issue, null, 2))
-    // fields.push({
-    //   title: 'Issue',
-    //   value: JSON.stringify(context.payload.issue, null, 2),
-    //   short: false
-    // })
-  }
-
-  if (context.payload.pull_request) {
-    core.debug('******** PULL_REQUEST ********')
-    core.debug(JSON.stringify(context.payload.pull_request, null, 2))
-    core.debug(context.payload.pull_request.base.repo.pushed_at)
-    core.debug(context.payload.pull_request.head.pushed_at)
-    core.debug(context.payload.pull_request.updated_at)
-    // fields.push({
-    //   title: 'Pull Request',
-    //   value: JSON.stringify(context.payload.pull_request, null, 2),
-    //   short: false
-    // })
-  }
-
-  if (context.payload.repository) {
-    core.debug('******** REPO ********')
-    core.debug(JSON.stringify(context.payload.repository, null, 2))
-    core.debug(context.payload.repository.pushed_at)
-    core.debug(context.payload.repository.updated_at)
-    // fields.push({
-    //   title: 'Repo',
-    //   value: JSON.stringify(context.payload.repository, null, 2),
-    //   short: false
-    // })
-  }
-
-  if (context.payload.sender) {
-    core.debug('******** SENDER ********')
-    core.debug(JSON.stringify(context.payload.sender, null, 2))
-    // fields.push({
-    //   title: 'Sender',
-    //   value: JSON.stringify(context.payload.sender, null, 2),
-    //   short: false
-    // })
-  }
-
-  let commit, branch, compare, repositoryName, repositoryUrl
-
-  if (context.eventName === 'push') {
-    commit = context.payload.head_commit
-    branch = context.ref?.replace('refs/heads/', '')
-    compare = context.payload.compare
-    repositoryName = repository?.full_name
-    repositoryUrl = repository?.html_url
-  } else if (context.eventName === 'pull_request') {
-    commit = {
-      id: context.payload.pull_request?.head.sha,
-      url: context.payload.pull_request?.html_url,
-      message: context.payload.pull_request?.title
-    }
-    branch = context.payload.pull_request?.head.ref
-    compare = `${commit.url}/files`
-    repositoryName = repository?.full_name
-    repositoryUrl = repository?.html_url
+  if (issue) {
+    text =
+      `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
+      `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
+      `for <${repositoryUrl}/pull/${issue.number}|\`#${issue.number}\`>\n` +
+      `<${repositoryUrl}/pull/${issue.number}/commits|${branch}> - ${context.payload.pull_request?.title || ''}`
+    ts = new Date(context.payload.pull_request?.updated_at)
+  } else if (compare) {
+    core.debug(JSON.stringify(context.payload))
+    text =
+      `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
+      `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
+      `for <${compare}|\`${branch}\`>\n` +
+      `<${repositoryUrl}/commit/${commit}|\`${commit.slice(0, 8)}\`> - commit message?`
   } else {
-    // fallback to environment variables
-    commit = {
-      id: process.env.GITHUB_SHA,
-      url: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/commit/${process.env.GITHUB_SHA}`,
-      message: ''
-    }
-    branch = process.env.GITHUB_REF?.replace('refs/tags/', '').replace('refs/heads/', '')
-    compare = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/commits/${branch}`
-    repositoryName = process.env.GITHUB_REPOSITORY
-    repositoryUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`
+    core.debug(JSON.stringify(context.payload))
+    text = 'default message'
   }
 
-  const text =
-    `*<${commit.url}/checks|Workflow _${workflow}_ ` +
-    `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-    `for <${compare}|\`${branch}\`>\n` +
-    `<${commit.url}|\`${commit.id.slice(0, 8)}\`> - ${commit.message}`
-
+  // add job steps, if provided
   const checks: string[] = []
   // eslint-disable-next-line github/array-foreach
   Object.entries(jobSteps).forEach(([step, status]) => {
     checks.push(`${stepIcon(status.outcome)} ${step}`)
   })
-
   const fields = []
   if (checks.length) {
     fields.push({
@@ -153,7 +74,16 @@ async function send(
     })
   }
 
-  const ts = new Date(context.payload.repository?.pushed_at) || new Date()
+  let sender
+  if (context.payload.sender) {
+    sender = context.payload?.sender
+  } else {
+    sender = {
+      login: process.env.GITHUB_ACTOR,
+      html_url: null,
+      avatar_url: null
+    }
+  }
 
   const message = {
     username: 'GitHub Action',
@@ -169,7 +99,7 @@ async function send(
         mrkdwn_in: ['text' as const],
         text,
         fields,
-        footer: `<${repositoryUrl}|${repositoryName}>`,
+        footer: `<${repositoryUrl}|${repositoryName}> #${runNumber}`,
         footer_icon: 'https://github.githubassets.com/favicon.ico',
         ts: ts.getTime().toString()
       }
