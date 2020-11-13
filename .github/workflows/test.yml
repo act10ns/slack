@@ -33,7 +33,7 @@ env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 jobs:
-  build: # make sure build/ci work properly
+  lint:
     runs-on: ubuntu-latest
     steps:
     - id: checkout
@@ -41,14 +41,9 @@ jobs:
     - id: build
       run: |
         npm install
-        npm run all
-    - uses: ./
-      with:
-        status: ${{ job.status }}
-        steps: ${{ toJson(steps) }}
-        channel: '#actions'
-      if: always()
-  test: # make sure the action works on a clean machine without building
+        npm run format-check
+        npm run lint
+  test:
     runs-on: ubuntu-latest
     steps:
     - id: checkout
@@ -81,5 +76,19 @@ jobs:
         status: ${{ job.status }}
         steps: ${{ toJson(steps) }}
         channel: '#actions'
-        # channel: '@nick'
+      if: always()
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - id: checkout
+      uses: actions/checkout@v2
+    - id: build
+      run: |
+        npm install
+        npm run all
+    - uses: ./
+      with:
+        status: ${{ job.status }}
+        steps: ${{ toJson(steps) }}
+        channel: '#actions'
       if: always()
