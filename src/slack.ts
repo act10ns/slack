@@ -23,9 +23,8 @@ async function send(
   jobSteps: object,
   channel?: string
 ): Promise<IncomingWebhookResult> {
-
   core.debug('******** ENVVAR ********')
-  for (var k of Object.keys(process.env).sort()) {
+  for (const k of Object.keys(process.env).sort((a, b) => a.localeCompare(b))) {
     core.debug(`${k} = ${process.env[k]}`)
   }
 
@@ -35,8 +34,6 @@ async function send(
   const workflow = context.workflow
   const eventName = context.eventName
   const repository = context.payload.repository
-  const repositoryName = repository?.full_name
-  const repositoryUrl = repository?.html_url
   const sender = context.payload.sender
 
   if (context.payload.action) {
@@ -51,7 +48,6 @@ async function send(
 
   if (context.payload.installation) {
     core.debug('******** INSTALLATION ********')
-
     core.debug(JSON.stringify(context.payload.installation, null, 2))
     // fields.push({
     //   title: 'Installation',
@@ -105,12 +101,14 @@ async function send(
     // })
   }
 
-  let commit, branch, compare
+  let commit, branch, compare, repositoryName, repositoryUrl
 
   if (context.eventName === 'push') {
     commit = context.payload.head_commit
     branch = context.ref?.replace('refs/heads/', '')
     compare = context.payload.compare
+    repositoryName = repository?.full_name
+    repositoryUrl = repository?.html_url
   } else if (context.eventName === 'pull_request') {
     commit = {
       id: context.payload.pull_request?.head.sha,
@@ -119,14 +117,19 @@ async function send(
     }
     branch = context.payload.pull_request?.head.ref
     compare = `${commit.url}/files`
+    repositoryName = repository?.full_name
+    repositoryUrl = repository?.html_url
   } else {
+    // fallback to environment variables
     commit = {
-      id: context.sha,
-      url: `${repositoryUrl}/commit/${context.sha}`,
-      message: 'new branch or tag'
+      id: process.env.GITHUB_SHA,
+      url: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/commit/${process.env.GITHUB_SHA}`,
+      message: ''
     }
-    branch = context.ref?.replace('refs/tags/', '').replace('refs/heads/', '')
-    compare = `${commit.url}` // FIXME - not sure this makes sense
+    branch = process.env.GITHUB_REF?.replace('refs/tags/', '').replace('refs/heads/', '')
+    compare = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/commits/${branch}`
+    repositoryName = process.env.GITHUB_REPOSITORY
+    repositoryUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`
   }
 
   const text =
@@ -150,7 +153,7 @@ async function send(
     })
   }
 
-  const ts = new Date(context.payload.repository?.pushed_at)
+  const ts = new Date(context.payload.repository?.pushed_at) || new Date()
 
   const message = {
     username: 'GitHub Action',

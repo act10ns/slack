@@ -21,6 +21,11 @@ github.context.workflow = dump.workflow
 github.context.action = dump.action
 github.context.actor = dump.actor
 
+process.env.GITHUB_SHA = dump.sha
+process.env.GITHUB_SERVER_URL = 'https://github.com'
+process.env.GITHUB_REF = dump.ref
+process.env.GITHUB_REPOSITORY = dump.repository
+
 test('release event to slack', async () => {
   const mockAxios = new MockAdapter(axios, {delayResponse: 200})
 
@@ -51,7 +56,7 @@ test('release event to slack', async () => {
           author_icon: 'https://avatars0.githubusercontent.com/u/615057?v=4',
           mrkdwn_in: ['text'],
           text:
-            '*<https://github.com/act10ns/slack/commit/21bd808031091c03bebc3472e13e91acd0b1de9e/checks|Workflow _build-test_ job _Build and Test_ triggered by _release_ is _Success_>* for <https://github.com/act10ns/slack/commit/21bd808031091c03bebc3472e13e91acd0b1de9e|`v1.0.6`>\n<https://github.com/act10ns/slack/commit/21bd808031091c03bebc3472e13e91acd0b1de9e|`21bd8080`> - new branch or tag',
+            '*<https://github.com/act10ns/slack/commit/21bd808031091c03bebc3472e13e91acd0b1de9e/checks|Workflow _build-test_ job _Build and Test_ triggered by _release_ is _Success_>* for <https://github.com/act10ns/slack/commits/v1.0.6|`v1.0.6`>\n<https://github.com/act10ns/slack/commit/21bd808031091c03bebc3472e13e91acd0b1de9e|`21bd8080`> - ',
           fields: [],
           footer: '<https://github.com/act10ns/slack|act10ns/slack>',
           footer_icon: 'https://github.githubassets.com/favicon.ico',
