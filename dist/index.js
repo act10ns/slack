@@ -3291,9 +3291,6 @@ const slack_1 = __importDefault(__webpack_require__(570));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
-            const { version, name } = require(`${process.env.GITHUB_WORKSPACE}/package.json`);
-            core.debug(`Running action ${name}, ${version}`);
             const event = process.env.GITHUB_EVENT_PATH;
             const readEvent = () => JSON.parse(fs_1.readFileSync(event, 'utf8'));
             core.debug(JSON.stringify(readEvent()));
