@@ -3291,6 +3291,10 @@ const slack_1 = __importDefault(__webpack_require__(570));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            // debug output of environment variables and event payload
+            for (const k of Object.keys(process.env).sort((a, b) => a.localeCompare(b))) {
+                core.debug(`${k} = ${process.env[k]}`);
+            }
             const event = process.env.GITHUB_EVENT_PATH;
             const readEvent = () => JSON.parse(fs_1.readFileSync(event, 'utf8'));
             core.debug(JSON.stringify(readEvent()));
@@ -9301,112 +9305,41 @@ function stepIcon(status) {
     return `:grey_question: ${status}`;
 }
 function send(url, jobName, jobStatus, jobSteps, channel) {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a, _b, _c, _d, _e;
     return __awaiter(this, void 0, void 0, function* () {
-        core.debug('******** ENVVAR ********');
-        for (const k of Object.keys(process.env).sort((a, b) => a.localeCompare(b))) {
-            core.debug(`${k} = ${process.env[k]}`);
+        const workflow = process.env.GITHUB_WORKFLOW;
+        const eventName = process.env.GITHUB_EVENT_NAME;
+        const repositoryName = process.env.GITHUB_REPOSITORY;
+        const repositoryUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`;
+        const runId = process.env.GITHUB_RUN_ID;
+        const runNumber = process.env.GITHUB_RUN_NUMBER;
+        const commit = process.env.GITHUB_SHA;
+        const branch = process.env.GITHUB_HEAD_REF || ((_a = process.env.GITHUB_REF) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', ''));
+        const issue = github_1.context.issue;
+        const compare = (_b = github_1.context.payload) === null || _b === void 0 ? void 0 : _b.compare;
+        // different Slack message based on context
+        let text, ts = new Date();
+        if (issue) {
+            text =
+                `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
+                    `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
+                    `for <${repositoryUrl}/pull/${issue.number}|\`#${issue.number}\`>\n` +
+                    `<${repositoryUrl}/pull/${issue.number}/commits|${branch}> - ${((_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.title) || ''}`;
+            ts = new Date((_d = github_1.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.updated_at);
         }
-        core.debug('******** PAYLOAD ********');
-        core.debug(JSON.stringify(github_1.context.payload, null, 2));
-        const workflow = github_1.context.workflow;
-        const eventName = github_1.context.eventName;
-        const repository = github_1.context.payload.repository;
-        const sender = github_1.context.payload.sender;
-        if (github_1.context.payload.action) {
-            core.debug('******** ACTION ********');
-            core.debug(github_1.context.payload.action);
-            // fields.push({
-            //   title: 'Action',
-            //   value: context.payload.action,
-            //   short: false
-            // })
-        }
-        if (github_1.context.payload.installation) {
-            core.debug('******** INSTALLATION ********');
-            core.debug(JSON.stringify(github_1.context.payload.installation, null, 2));
-            // fields.push({
-            //   title: 'Installation',
-            //   value: JSON.stringify(context.payload.installation, null, 2),
-            //   short: false
-            // })
-        }
-        if (github_1.context.payload.issue) {
-            core.debug('******** ISSUE ********');
-            core.debug(JSON.stringify(github_1.context.payload.issue, null, 2));
-            // fields.push({
-            //   title: 'Issue',
-            //   value: JSON.stringify(context.payload.issue, null, 2),
-            //   short: false
-            // })
-        }
-        if (github_1.context.payload.pull_request) {
-            core.debug('******** PULL_REQUEST ********');
-            core.debug(JSON.stringify(github_1.context.payload.pull_request, null, 2));
-            core.debug(github_1.context.payload.pull_request.base.repo.pushed_at);
-            core.debug(github_1.context.payload.pull_request.head.pushed_at);
-            core.debug(github_1.context.payload.pull_request.updated_at);
-            // fields.push({
-            //   title: 'Pull Request',
-            //   value: JSON.stringify(context.payload.pull_request, null, 2),
-            //   short: false
-            // })
-        }
-        if (github_1.context.payload.repository) {
-            core.debug('******** REPO ********');
-            core.debug(JSON.stringify(github_1.context.payload.repository, null, 2));
-            core.debug(github_1.context.payload.repository.pushed_at);
-            core.debug(github_1.context.payload.repository.updated_at);
-            // fields.push({
-            //   title: 'Repo',
-            //   value: JSON.stringify(context.payload.repository, null, 2),
-            //   short: false
-            // })
-        }
-        if (github_1.context.payload.sender) {
-            core.debug('******** SENDER ********');
-            core.debug(JSON.stringify(github_1.context.payload.sender, null, 2));
-            // fields.push({
-            //   title: 'Sender',
-            //   value: JSON.stringify(context.payload.sender, null, 2),
-            //   short: false
-            // })
-        }
-        let commit, branch, compare, repositoryName, repositoryUrl;
-        if (github_1.context.eventName === 'push') {
-            commit = github_1.context.payload.head_commit;
-            branch = (_a = github_1.context.ref) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', '');
-            compare = github_1.context.payload.compare;
-            repositoryName = repository === null || repository === void 0 ? void 0 : repository.full_name;
-            repositoryUrl = repository === null || repository === void 0 ? void 0 : repository.html_url;
-        }
-        else if (github_1.context.eventName === 'pull_request') {
-            commit = {
-                id: (_b = github_1.context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.head.sha,
-                url: (_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.html_url,
-                message: (_d = github_1.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.title
-            };
-            branch = (_e = github_1.context.payload.pull_request) === null || _e === void 0 ? void 0 : _e.head.ref;
-            compare = `${commit.url}/files`;
-            repositoryName = repository === null || repository === void 0 ? void 0 : repository.full_name;
-            repositoryUrl = repository === null || repository === void 0 ? void 0 : repository.html_url;
+        else if (compare) {
+            core.debug(JSON.stringify(github_1.context.payload));
+            text =
+                `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
+                    `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
+                    `for <${compare}|\`${branch}\`>\n` +
+                    `<${repositoryUrl}/commit/${commit}|\`${commit.slice(0, 8)}\`> - commit message?`;
         }
         else {
-            // fallback to environment variables
-            commit = {
-                id: process.env.GITHUB_SHA,
-                url: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/commit/${process.env.GITHUB_SHA}`,
-                message: ''
-            };
-            branch = (_f = process.env.GITHUB_REF) === null || _f === void 0 ? void 0 : _f.replace('refs/tags/', '').replace('refs/heads/', '');
-            compare = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/commits/${branch}`;
-            repositoryName = process.env.GITHUB_REPOSITORY;
-            repositoryUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`;
+            core.debug(JSON.stringify(github_1.context.payload));
+            text = 'default message';
         }
-        const text = `*<${commit.url}/checks|Workflow _${workflow}_ ` +
-            `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-            `for <${compare}|\`${branch}\`>\n` +
-            `<${commit.url}|\`${commit.id.slice(0, 8)}\`> - ${commit.message}`;
+        // add job steps, if provided
         const checks = [];
         // eslint-disable-next-line github/array-foreach
         Object.entries(jobSteps).forEach(([step, status]) => {
@@ -9420,7 +9353,17 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 short: false
             });
         }
-        const ts = new Date((_g = github_1.context.payload.repository) === null || _g === void 0 ? void 0 : _g.pushed_at) || new Date();
+        let sender;
+        if (github_1.context.payload.sender) {
+            sender = (_e = github_1.context.payload) === null || _e === void 0 ? void 0 : _e.sender;
+        }
+        else {
+            sender = {
+                login: process.env.GITHUB_ACTOR,
+                html_url: null,
+                avatar_url: null
+            };
+        }
         const message = {
             username: 'GitHub Action',
             icon_url: 'https://octodex.github.com/images/original.png',
@@ -9435,7 +9378,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                     mrkdwn_in: ['text'],
                     text,
                     fields,
-                    footer: `<${repositoryUrl}|${repositoryName}>`,
+                    footer: `<${repositoryUrl}|${repositoryName}> #${runNumber}`,
                     footer_icon: 'https://github.githubassets.com/favicon.ico',
                     ts: ts.getTime().toString()
                 }
