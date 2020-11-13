@@ -1,8 +1,17 @@
 import * as core from '@actions/core'
+import {readFileSync} from 'fs'
 import send from './slack'
 
 async function run(): Promise<void> {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+    const {version, name} = require(`${process.env.GITHUB_WORKSPACE}/package.json`)
+    core.debug(`Running action ${name}, ${version}`)
+
+    const event = process.env.GITHUB_EVENT_PATH as string
+    const readEvent = (): object => JSON.parse(readFileSync(event, 'utf8'))
+    core.debug(JSON.stringify(readEvent()))
+
     const url = process.env.SLACK_WEBHOOK_URL as string
     const jobName = process.env.GITHUB_JOB as string
 
@@ -11,9 +20,10 @@ async function run(): Promise<void> {
     const channel = core.getInput('channel', {required: false})
 
     await send(url, jobName, jobStatus, jobSteps, channel)
+    core.debug('Sent to Slack.')
   } catch (error) {
     core.setFailed(error.message)
-    core.debug(error.stack)
+    core.error(error.stack)
   }
 }
 
