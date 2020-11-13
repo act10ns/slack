@@ -21,6 +21,11 @@ github.context.workflow = dump.workflow
 github.context.action = dump.action
 github.context.actor = dump.actor
 
+process.env.GITHUB_SHA = dump.sha
+process.env.GITHUB_SERVER_URL = 'https://github.com'
+process.env.GITHUB_REF = dump.ref
+process.env.GITHUB_REPOSITORY = dump.repository
+
 test('delete event to slack', async () => {
   const mockAxios = new MockAdapter(axios, {delayResponse: 200})
 

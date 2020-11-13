@@ -2,7 +2,6 @@ import * as core from '@actions/core'
 import send from './slack'
 
 async function run(): Promise<void> {
-
   try {
     const url = process.env.SLACK_WEBHOOK_URL as string
     const jobName = process.env.GITHUB_JOB as string

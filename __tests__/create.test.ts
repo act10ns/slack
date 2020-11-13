@@ -21,6 +21,11 @@ github.context.workflow = dump.workflow
 github.context.action = dump.action
 github.context.actor = dump.actor
 
+process.env.GITHUB_SHA = dump.sha
+process.env.GITHUB_SERVER_URL = 'https://github.com'
+process.env.GITHUB_REF = dump.ref
+process.env.GITHUB_REPOSITORY = dump.repository
+
 test('create event to slack', async () => {
   const mockAxios = new MockAdapter(axios, {delayResponse: 200})
 
@@ -51,7 +56,7 @@ test('create event to slack', async () => {
           author_icon: 'https://avatars0.githubusercontent.com/u/615057?v=4',
           mrkdwn_in: ['text'],
           text:
-            '*<https://github.com/act10ns/slack/commit/d0d4530a505a87990b764d11f207ea0e8c6e93f7/checks|Workflow _build-test_ job _Build and Test_ triggered by _create_ is _Success_>* for <https://github.com/act10ns/slack/commit/d0d4530a505a87990b764d11f207ea0e8c6e93f7|`fix-undefined-url`>\n<https://github.com/act10ns/slack/commit/d0d4530a505a87990b764d11f207ea0e8c6e93f7|`d0d4530a`> - new branch or tag',
+            '*<https://github.com/act10ns/slack/commit/d0d4530a505a87990b764d11f207ea0e8c6e93f7/checks|Workflow _build-test_ job _Build and Test_ triggered by _create_ is _Success_>* for <https://github.com/act10ns/slack/commits/fix-undefined-url|`fix-undefined-url`>\n<https://github.com/act10ns/slack/commit/d0d4530a505a87990b764d11f207ea0e8c6e93f7|`d0d4530a`> - ',
           fields: [],
           footer: '<https://github.com/act10ns/slack|act10ns/slack>',
           footer_icon: 'https://github.githubassets.com/favicon.ico',
