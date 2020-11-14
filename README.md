@@ -179,10 +179,12 @@ See https://docs.github.com/en/free-pro-team@latest/actions/managing-workflow-ru
 
 ## References
 
-* GitHub Actions Toolkit https://github.com/actions/toolkit
+* GitHub Actions Toolkit https://github.com/actions/toolkit/tree/main/packages/github
 * GitHub Actions Starter Workflows https://github.com/actions/starter-workflows
 * Slack Incoming Webhooks https://slack.com/apps/A0F7XDUAZ-incoming-webhooks?next_id=0
 
+* Env vars https://docs.github.com/en/free-pro-team@latest/actions/reference/environment-variables
+* Webhook Payloads https://docs.github.com/en/free-pro-team@latest/developers/webhooks-and-events/webhook-events-and-payloads#webhook-payload-object-common-properties
 
 ## License
 

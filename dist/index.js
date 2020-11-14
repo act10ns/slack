@@ -9282,8 +9282,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const github_1 = __webpack_require__(469);
 const core = __importStar(__webpack_require__(470));
+const github = __importStar(__webpack_require__(469));
 const webhook_1 = __webpack_require__(736);
 function jobColor(status) {
     if (status.toLowerCase() === 'success')
@@ -9305,33 +9305,85 @@ function stepIcon(status) {
     return `:grey_question: ${status}`;
 }
 function send(url, jobName, jobStatus, jobSteps, channel) {
-    var _a, _b, _c, _d, _e, _f;
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        const workflow = process.env.GITHUB_WORKFLOW;
         const eventName = process.env.GITHUB_EVENT_NAME;
+        const workflow = process.env.GITHUB_WORKFLOW;
         const repositoryName = process.env.GITHUB_REPOSITORY;
         const repositoryUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`;
         const runId = process.env.GITHUB_RUN_ID;
         const runNumber = process.env.GITHUB_RUN_NUMBER;
-        core.debug(JSON.stringify(github_1.context.payload));
-        const commit = process.env.GITHUB_SHA;
+        const workflowUrl = `${repositoryUrl}/actions/runs/${runId}`;
+        const sha = process.env.GITHUB_SHA;
+        const shortSha = sha.slice(0, 8);
         const branch = process.env.GITHUB_HEAD_REF || ((_a = process.env.GITHUB_REF) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', ''));
-        let ref = branch;
-        let refUrl = `${repositoryUrl}/tree/${ref}`;
-        let diffUrl = ((_b = github_1.context.payload) === null || _b === void 0 ? void 0 : _b.compare) ? github_1.context.payload.compare : `${repositoryUrl}/compare/${ref}?expand=1`;
-        let title = 'no title';
-        let ts = new Date();
-        if (github_1.context === null || github_1.context === void 0 ? void 0 : github_1.context.issue.number) {
-            ref = `#${github_1.context.issue.number}`;
-            refUrl = `${repositoryUrl}/pull/${github_1.context.issue.number}`;
-            diffUrl = `${refUrl}/files`;
-            title = (_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.title;
-            ts = new Date((_d = github_1.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.updated_at);
+        // const eventName = github.context.eventName
+        let payload, action, ref, refUrl, diffUrl, title, sender, ts = new Date();
+        switch (eventName) {
+            case 'create': {
+                payload = github.context.payload;
+                action = null;
+                ref = payload.ref;
+                refUrl = payload.repository.html_url;
+                diffUrl = payload.repository.commits_url;
+                title = payload.description;
+                sender = payload.sender;
+                ts = new Date(payload.repository.updated_at);
+                break;
+            }
+            case 'issues': {
+                payload = github.context.payload;
+                action = payload.action;
+                ref = `#${payload.issue.number}`;
+                refUrl = payload.issue.html_url;
+                diffUrl = payload.issue.comments_url;
+                title = payload.issue.title;
+                sender = payload.sender;
+                ts = new Date(payload.issue.updated_at);
+                break;
+            }
+            case 'pull_request': {
+                payload = github.context.payload;
+                action = payload.action;
+                ref = `#${payload.number}`;
+                refUrl = payload.pull_request.url;
+                diffUrl = payload.pull_request.diff_url;
+                title = payload.pull_request.title;
+                sender = payload.sender;
+                ts = new Date(payload.pull_request.updated_at);
+                break;
+            }
+            case 'push': {
+                payload = github.context.payload;
+                action = null;
+                ref = payload.head_commit;
+                refUrl = payload.repository.git_refs_url;
+                diffUrl = payload.compare;
+                title = `${payload.commits.length} commits`;
+                sender = payload.sender;
+                ts = new Date(payload.commits[0].timestamp);
+                break;
+            }
+            case 'release': {
+                payload = github.context.payload;
+                action = payload.action;
+                ref = payload.release.id;
+                refUrl = payload.release.html_url;
+                diffUrl = payload.release.assets_url;
+                title = payload.release.name;
+                sender = payload.sender;
+                ts = new Date(payload.release.published_at);
+                break;
+            }
+            // workflow_dispatch, workflow_run
+            default: {
+                core.info('Unsupported webhook event type');
+            }
         }
-        const text = `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
+        const text = `*<${workflowUrl}|Workflow _${workflow}_ ` +
             `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
             `for <${refUrl}|\`${ref}\`>\n` +
-            `<${diffUrl}|\`${commit.slice(0, 8)}\`> - ${title}`;
+            `<${diffUrl}|\`${title}\`>`;
         // add job steps, if provided
         const checks = [];
         // eslint-disable-next-line github/array-foreach
@@ -9345,17 +9397,6 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 value: checks.join('\n'),
                 short: false
             });
-        }
-        let sender;
-        if ((_e = github_1.context.payload) === null || _e === void 0 ? void 0 : _e.sender) {
-            sender = (_f = github_1.context.payload) === null || _f === void 0 ? void 0 : _f.sender;
-        }
-        else {
-            sender = {
-                login: process.env.GITHUB_ACTOR,
-                html_url: null,
-                avatar_url: null
-            };
         }
         const message = {
             username: 'GitHub Action',

@@ -1,5 +1,6 @@
-import {context} from '@actions/github'
 import * as core from '@actions/core'
+import * as github from '@actions/github'
+import { EventPayloads } from '@octokit/webhooks'
 import {IncomingWebhook, IncomingWebhookResult} from '@slack/webhook'
 
 function jobColor(status: string): string | undefined {
@@ -23,38 +24,90 @@ async function send(
   jobSteps: object,
   channel?: string
 ): Promise<IncomingWebhookResult> {
-  const workflow = process.env.GITHUB_WORKFLOW
+
   const eventName = process.env.GITHUB_EVENT_NAME
+  const workflow = process.env.GITHUB_WORKFLOW
   const repositoryName = process.env.GITHUB_REPOSITORY
   const repositoryUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`
 
   const runId = process.env.GITHUB_RUN_ID
   const runNumber = process.env.GITHUB_RUN_NUMBER
+  const workflowUrl = `${repositoryUrl}/actions/runs/${runId}`
 
-  core.debug(JSON.stringify(context.payload))
-
-  const commit = process.env.GITHUB_SHA as string
+  const sha = process.env.GITHUB_SHA as string
+  const shortSha = sha.slice(0, 8)
   const branch = process.env.GITHUB_HEAD_REF || (process.env.GITHUB_REF?.replace('refs/heads/', '') as string)
 
-  let ref = branch
-  let refUrl = `${repositoryUrl}/tree/${ref}`
-  let diffUrl = context.payload?.compare ? context.payload.compare : `${repositoryUrl}/compare/${ref}?expand=1`
-  let title = 'no title'
-  let ts = new Date()
-
-  if (context?.issue.number) {
-    ref = `#${context.issue.number}`
-    refUrl = `${repositoryUrl}/pull/${context.issue.number}`
-    diffUrl = `${refUrl}/files`
-    title = context.payload.pull_request?.title
-    ts = new Date(context.payload.pull_request?.updated_at)
+  // const eventName = github.context.eventName
+  let payload, action, ref, refUrl, diffRef, diffUrl, title, sender, ts = new Date()
+  switch (eventName) {
+    case 'create': {
+      payload = github.context.payload as EventPayloads.WebhookPayloadCreate
+      action = null
+      ref = payload.ref
+      refUrl = payload.repository.html_url
+      diffUrl = payload.repository.commits_url
+      title = payload.description
+      sender = payload.sender
+      ts = new Date(payload.repository.updated_at)
+      break
+    }
+    case 'issues': {
+      payload = github.context.payload as EventPayloads.WebhookPayloadIssues
+      action = payload.action
+      ref = `#${payload.issue.number}`
+      refUrl = payload.issue.html_url
+      diffUrl = payload.issue.comments_url
+      title = payload.issue.title
+      sender = payload.sender
+      ts = new Date(payload.issue.updated_at)
+      break
+    }
+    case 'pull_request': {
+      payload = github.context.payload as EventPayloads.WebhookPayloadPullRequest
+      action = payload.action
+      ref = `#${payload.number}`
+      refUrl = payload.pull_request.html_url
+      diffUrl = `${payload.pull_request.html_url}/files`
+      diffRef = payload.pull_request.head.ref
+      title = payload.pull_request.title
+      sender = payload.sender
+      ts = new Date(payload.pull_request.updated_at)
+      break
+    }
+    case 'push': {
+      payload = github.context.payload as EventPayloads.WebhookPayloadPush
+      action = null
+      ref = payload.head_commit
+      refUrl = payload.repository.git_refs_url
+      diffUrl = payload.compare
+      title = `${payload.commits.length} commits`
+      sender = payload.sender
+      ts = new Date(payload.commits[0].timestamp)
+      break
+    }
+    case 'release': {
+      payload = github.context.payload as EventPayloads.WebhookPayloadRelease
+      action = payload.action
+      ref = payload.release.id
+      refUrl = payload.release.html_url
+      diffUrl = payload.release.assets_url
+      title = payload.release.name
+      sender = payload.sender
+      ts = new Date(payload.release.published_at)
+      break
+    }
+    // workflow_dispatch, workflow_run
+    default: {
+      core.info('Unsupported webhook event type')
+    }
   }
 
   const text =
-    `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
+    `*<${workflowUrl}|Workflow _${workflow}_ ` +
     `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
     `for <${refUrl}|\`${ref}\`>\n` +
-    `<${diffUrl}|\`${commit.slice(0, 8)}\`> - ${title}`
+    `<${diffUrl}|\`${diffRef}\`> - ${title}`
 
   // add job steps, if provided
   const checks: string[] = []
@@ -69,17 +122,6 @@ async function send(
       value: checks.join('\n'),
       short: false
     })
-  }
-
-  let sender
-  if (context.payload?.sender) {
-    sender = context.payload?.sender
-  } else {
-    sender = {
-      login: process.env.GITHUB_ACTOR,
-      html_url: null,
-      avatar_url: null
-    }
   }
 
   const message = {
