@@ -51,29 +51,27 @@ test('schedule event to slack', async () => {
   const res = await send(url, jobName, jobStatus, jobSteps, channel)
   await expect(res).toStrictEqual({text: {status: 'ok'}})
 
-  expect(mockAxios.history.post[0].data).toBe(
-    JSON.stringify({
-      username: 'GitHub Action',
-      icon_url: 'https://octodex.github.com/images/original.png',
-      channel: '@override',
-      attachments: [
-        {
-          fallback: '[GitHub]: [act10ns/slack] schedule-test schedule  Success',
-          color: 'good',
-          author_name: 'github',
-          author_link: 'https://github.com/github',
-          author_icon: 'https://avatars1.githubusercontent.com/u/9919?s=200&v=4',
-          mrkdwn_in: ['text'],
-          text:
-            '*<https://github.com/act10ns/slack/actions/runs/363600556|Workflow _schedule-test_ job _Build and Test_ triggered by _schedule_ is _Success_>* for <https://github.com/act10ns/slack|`master`>\n<https://github.com/act10ns/slack|`09a6b2c9`> - Schedule */15 * * * *',
-          fields: [],
-          footer: '<https://github.com/act10ns/slack|act10ns/slack> #179',
-          footer_icon: 'https://github.githubassets.com/favicon.ico',
-          ts: '1589447073000'
-        }
-      ]
-    })
-  )
+  expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({
+    username: 'GitHub Action',
+    icon_url: 'https://octodex.github.com/images/original.png',
+    channel: '@override',
+    attachments: [
+      {
+        fallback: '[GitHub]: [act10ns/slack] schedule-test schedule  Success',
+        color: 'good',
+        author_name: 'github',
+        author_link: 'https://github.com/github',
+        author_icon: 'https://avatars1.githubusercontent.com/u/9919?s=200&v=4',
+        mrkdwn_in: ['text'],
+        text:
+          '*<https://github.com/act10ns/slack/actions/runs/363600556|Workflow _schedule-test_ job _Build and Test_ triggered by _schedule_ is _Success_>* for <https://github.com/act10ns/slack|`master`>\n<https://github.com/act10ns/slack|`09a6b2c9`> - Schedule */15 * * * *',
+        fields: [],
+        footer: '<https://github.com/act10ns/slack|act10ns/slack> #179',
+        footer_icon: 'https://github.githubassets.com/favicon.ico',
+        ts: expect.stringMatching(/[0-9]+/)
+      }
+    ]
+  })
 
   mockAxios.resetHistory()
   mockAxios.reset()
