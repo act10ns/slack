@@ -185,6 +185,7 @@ See https://docs.github.com/en/free-pro-team@latest/actions/managing-workflow-ru
 
 * Env vars https://docs.github.com/en/free-pro-team@latest/actions/reference/environment-variables
 * Webhook Payloads https://docs.github.com/en/free-pro-team@latest/developers/webhooks-and-events/webhook-events-and-payloads#webhook-payload-object-common-properties
+* GitHub Actions Cheat Sheet https://github.github.io/actions-cheat-sheet/actions-cheat-sheet.html
 
 ## License
 
