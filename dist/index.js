@@ -9318,7 +9318,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
         const branch = process.env.GITHUB_HEAD_REF || ((_a = process.env.GITHUB_REF) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', ''));
         let ref = branch;
         let refUrl = `${repositoryUrl}/tree/${ref}`;
-        let diffUrl = ((_b = github_1.context.payload) === null || _b === void 0 ? void 0 : _b.compare) ? github_1.context.payload.compare : '';
+        let diffUrl = ((_b = github_1.context.payload) === null || _b === void 0 ? void 0 : _b.compare) ? github_1.context.payload.compare : `${repositoryUrl}/compare/${ref}?expand=1`;
         let title = 'no title';
         let ts = new Date();
         if (github_1.context === null || github_1.context === void 0 ? void 0 : github_1.context.issue.number) {

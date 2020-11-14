@@ -38,7 +38,7 @@ async function send(
 
   let ref = branch
   let refUrl = `${repositoryUrl}/tree/${ref}`
-  let diffUrl = context.payload?.compare ? context.payload.compare : ''
+  let diffUrl = context.payload?.compare ? context.payload.compare : `${repositoryUrl}/compare/${ref}?expand=1`
   let title = 'no title'
   let ts = new Date()
 
