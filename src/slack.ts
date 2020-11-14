@@ -33,14 +33,14 @@ async function send(
 
   const commit = process.env.GITHUB_SHA as string
   const branch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF?.replace('refs/heads/', '')
-  const issue = context.issue
   const compare = context.payload?.compare
 
-  // different Slack message based on context
   let text,
     ts = new Date()
 
-  if (issue) {
+  // different Slack message based on context
+  if (eventName === 'pull_request') {
+    const issue = context.issue
     text =
       `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
       `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
@@ -75,7 +75,7 @@ async function send(
   }
 
   let sender
-  if (context.payload.sender) {
+  if (context.payload?.sender) {
     sender = context.payload?.sender
   } else {
     sender = {
