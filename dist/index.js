@@ -9305,7 +9305,7 @@ function stepIcon(status) {
     return `:grey_question: ${status}`;
 }
 function send(url, jobName, jobStatus, jobSteps, channel) {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e, _f, _g;
     return __awaiter(this, void 0, void 0, function* () {
         const workflow = process.env.GITHUB_WORKFLOW;
         const eventName = process.env.GITHUB_EVENT_NAME;
@@ -9315,24 +9315,25 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
         const runNumber = process.env.GITHUB_RUN_NUMBER;
         const commit = process.env.GITHUB_SHA;
         const branch = process.env.GITHUB_HEAD_REF || ((_a = process.env.GITHUB_REF) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', ''));
-        const compare = (_b = github_1.context.payload) === null || _b === void 0 ? void 0 : _b.compare;
         let text, ts = new Date();
-        // different Slack message based on context
+        // https://docs.github.com/en/free-pro-team@latest/developers/webhooks-and-events/webhook-events-and-payloads#pull_request
         if (eventName === 'pull_request') {
             const issue = github_1.context.issue;
             text =
                 `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
                     `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-                    `for <${repositoryUrl}/pull/${issue.number}|\`#${issue.number}\`>\n` +
-                    `<${repositoryUrl}/pull/${issue.number}/commits|${branch}> - ${((_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.title) || ''}`;
-            ts = new Date((_d = github_1.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.updated_at);
+                    `for <${repositoryUrl}/pull/${issue.number}|\`#${issue.number}\`> (${(_b = github_1.context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.state})\n` +
+                    `<${repositoryUrl}/pull/${issue.number}/commits|\`${branch}\`> - ${((_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.title) || ''}\n` +
+                    `${(_d = github_1.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.body}`;
+            ts = new Date((_e = github_1.context.payload.pull_request) === null || _e === void 0 ? void 0 : _e.updated_at);
+            //  https://docs.github.com/en/free-pro-team@latest/developers/webhooks-and-events/webhook-events-and-payloads#push
         }
-        else if (compare) {
+        else if (eventName === 'push') {
             core.debug(JSON.stringify(github_1.context.payload));
             text =
                 `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
                     `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-                    `for <${compare}|\`${branch}\`>\n` +
+                    `for <${github_1.context.payload.compare}|\`${branch}\`>\n` +
                     `<${repositoryUrl}/commit/${commit}|\`${commit.slice(0, 8)}\`> - commit message?`;
         }
         else {
@@ -9354,8 +9355,8 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             });
         }
         let sender;
-        if ((_e = github_1.context.payload) === null || _e === void 0 ? void 0 : _e.sender) {
-            sender = (_f = github_1.context.payload) === null || _f === void 0 ? void 0 : _f.sender;
+        if ((_f = github_1.context.payload) === null || _f === void 0 ? void 0 : _f.sender) {
+            sender = (_g = github_1.context.payload) === null || _g === void 0 ? void 0 : _g.sender;
         }
         else {
             sender = {

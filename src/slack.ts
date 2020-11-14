@@ -55,7 +55,7 @@ async function send(
     text =
       `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
       `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-      `for <${compare}|\`${branch}\`>\n` +
+      `for <${context.payload.compare}|\`${branch}\`>\n` +
       `<${repositoryUrl}/commit/${commit}|\`${commit.slice(0, 8)}\`> - commit message?`
   } else {
     core.debug(JSON.stringify(context.payload))
