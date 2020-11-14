@@ -11,36 +11,32 @@ const jobSteps = {}
 const channel = '@override'
 
 // mock github context
-const dump = JSON.parse(readFileSync('./__tests__/fixtures/push.json', 'utf-8'))
+const dump = JSON.parse(readFileSync('./__tests__/fixtures/schedule.json', 'utf-8'))
 
-github.context.payload = dump.event
-github.context.eventName = dump.event_name
-github.context.sha = dump.sha
-github.context.ref = dump.ref
-github.context.workflow = dump.workflow
-github.context.action = dump.action
-github.context.actor = dump.actor
+github.context.payload = dump
 
 process.env.CI = 'true'
-process.env.GITHUB_WORKFLOW = 'build-test'
-process.env.GITHUB_RUN_ID = '100143423'
-process.env.GITHUB_RUN_NUMBER = '8'
+process.env.GITHUB_WORKFLOW = 'schedule-test'
+process.env.GITHUB_JOB = 'build'
+process.env.GITHUB_RUN_ID = '363600556'
+process.env.GITHUB_RUN_NUMBER = '179'
 process.env.GITHUB_ACTION = 'self2'
 process.env.GITHUB_ACTIONS = 'true'
 process.env.GITHUB_ACTOR = 'satterly'
 process.env.GITHUB_REPOSITORY = 'act10ns/slack'
-process.env.GITHUB_EVENT_NAME = 'push'
+process.env.GITHUB_EVENT_NAME = 'schedule'
 process.env.GITHUB_EVENT_PATH = '/home/runner/work/_temp/_github_workflow/event.json'
 process.env.GITHUB_WORKSPACE = '/home/runner/work/slack/slack'
-process.env.GITHUB_SHA = '68d48876e0794fba714cb331a1624af6b20942d8'
+process.env.GITHUB_SHA = '09a6b2c984766efb19eb39c97bc8be5d352a102f'
 process.env.GITHUB_REF = 'refs/heads/master'
 process.env.GITHUB_HEAD_REF = ''
 process.env.GITHUB_BASE_REF = ''
 process.env.GITHUB_SERVER_URL = 'https://github.com'
 process.env.GITHUB_API_URL = 'https://github.com'
 process.env.GITHUB_GRAPHQL_URL = 'https://api.github.com/graphql'
+process.env.INVOCATION_ID = '1a1f065e457f48ea96eb5d289fa1bb9f'
 
-test('push event to slack', async () => {
+test('schedule event to slack', async () => {
   const mockAxios = new MockAdapter(axios, {delayResponse: 200})
 
   mockAxios
@@ -62,18 +58,18 @@ test('push event to slack', async () => {
       channel: '@override',
       attachments: [
         {
-          fallback: '[GitHub]: [act10ns/slack] build-test push  Success',
+          fallback: '[GitHub]: [act10ns/slack] schedule-test schedule  Success',
           color: 'good',
-          author_name: 'satterly',
-          author_link: 'https://github.com/satterly',
-          author_icon: 'https://avatars0.githubusercontent.com/u/615057?v=4',
+          author_name: 'github',
+          author_link: 'https://github.com/github',
+          author_icon: 'https://avatars1.githubusercontent.com/u/9919?s=200&v=4',
           mrkdwn_in: ['text'],
           text:
-            '*<https://github.com/act10ns/slack/actions/runs/100143423|Workflow _build-test_ job _Build and Test_ triggered by _push_ is _Success_>* for <https://github.com/act10ns/slacky/compare/db9fe60430a6...68d48876e079|`master`>\n<https://github.com/act10ns/slacky/compare/db9fe60430a6...68d48876e079|`68d48876`> - 4 commits',
+            '*<https://github.com/act10ns/slack/actions/runs/363600556|Workflow _schedule-test_ job _Build and Test_ triggered by _schedule_ is _Success_>* for <https://github.com/act10ns/slack|`master`>\n<https://github.com/act10ns/slack|`09a6b2c9`> - Schedule */15 * * * *',
           fields: [],
-          footer: '<https://github.com/act10ns/slack|act10ns/slack> #8',
+          footer: '<https://github.com/act10ns/slack|act10ns/slack> #179',
           footer_icon: 'https://github.githubassets.com/favicon.ico',
-          ts: '1589052147'
+          ts: '1589447073000'
         }
       ]
     })

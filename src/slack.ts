@@ -52,7 +52,7 @@ async function send(
     case 'create': {
       payload = github.context.payload as EventPayloads.WebhookPayloadCreate
       action = null
-      ref = payload.ref
+      ref = payload.ref.replace('refs/heads/', '')
       refUrl = payload.repository.html_url
       diffUrl = payload.repository.commits_url
       title = payload.description
@@ -63,7 +63,7 @@ async function send(
     case 'delete': {
       payload = github.context.payload as EventPayloads.WebhookPayloadDelete
       action = null
-      ref = payload.ref
+      ref = payload.ref.replace('refs/heads/', '')
       refUrl = payload.repository.html_url
       diffUrl = payload.repository.commits_url
       title = `Deleted ${ref}`
@@ -100,8 +100,8 @@ async function send(
     case 'push': {
       payload = github.context.payload as EventPayloads.WebhookPayloadPush
       action = null
-      ref = payload.ref
-      refUrl = payload.repository.git_refs_url
+      ref = payload.ref.replace('refs/heads/', '')
+      refUrl = payload.repository.commits_url
       diffUrl = payload.compare
       title = `${payload.commits.length} commits`
       sender = payload.sender
@@ -119,10 +119,23 @@ async function send(
       ts = new Date(payload.release.published_at)
       break
     }
+    case 'schedule':
+      action = null
+      ref = (process.env.GITHUB_REF as string).replace('refs/heads/', '')
+      refUrl = repositoryUrl
+      diffUrl = repositoryUrl
+      title = `Schedule ${github.context.payload.schedule}`
+      sender = {
+        login: 'github',
+        html_url: 'https://github.com/github',
+        avatar_url: 'https://avatars1.githubusercontent.com/u/9919?s=200&v=4'
+      }
+      ts = new Date()
+      break
     case 'workflow_dispatch': {
       payload = github.context.payload as EventPayloads.WebhookPayloadWorkflowDispatch
       action = null
-      ref = payload.ref
+      ref = payload.ref.replace('refs/heads/', '')
       refUrl = null
       diffUrl = payload.inputs
       title = payload.workflow
@@ -130,7 +143,6 @@ async function send(
       ts = new Date()
       break
     }
-    // workflow_dispatch, workflow_run
     default: {
       core.info('Unsupported webhook event type')
     }
@@ -163,7 +175,7 @@ async function send(
     channel,
     attachments: [
       {
-        fallback: `[GitHub]: [${repositoryName}] ${workflow} ${eventName} ${action} ${jobStatus}`,
+        fallback: `[GitHub]: [${repositoryName}] ${workflow} ${eventName} ${action ? action : ''} ${jobStatus}`,
         color: jobColor(jobStatus),
         author_name: sender?.login,
         author_link: sender?.html_url,

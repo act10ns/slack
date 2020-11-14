@@ -9323,7 +9323,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             case 'create': {
                 payload = github.context.payload;
                 action = null;
-                ref = payload.ref;
+                ref = payload.ref.replace('refs/heads/', '');
                 refUrl = payload.repository.html_url;
                 diffUrl = payload.repository.commits_url;
                 title = payload.description;
@@ -9334,7 +9334,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             case 'delete': {
                 payload = github.context.payload;
                 action = null;
-                ref = payload.ref;
+                ref = payload.ref.replace('refs/heads/', '');
                 refUrl = payload.repository.html_url;
                 diffUrl = payload.repository.commits_url;
                 title = `Deleted ${ref}`;
@@ -9371,8 +9371,8 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             case 'push': {
                 payload = github.context.payload;
                 action = null;
-                ref = payload.ref;
-                refUrl = payload.repository.git_refs_url;
+                ref = payload.ref.replace('refs/heads/', '');
+                refUrl = payload.repository.commits_url;
                 diffUrl = payload.compare;
                 title = `${payload.commits.length} commits`;
                 sender = payload.sender;
@@ -9390,10 +9390,23 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 ts = new Date(payload.release.published_at);
                 break;
             }
+            case 'schedule':
+                action = null;
+                ref = process.env.GITHUB_REF.replace('refs/heads/', '');
+                refUrl = repositoryUrl;
+                diffUrl = repositoryUrl;
+                title = `Schedule ${github.context.payload.schedule}`;
+                sender = {
+                    login: 'github',
+                    html_url: 'https://github.com/github',
+                    avatar_url: 'https://avatars1.githubusercontent.com/u/9919?s=200&v=4'
+                };
+                ts = new Date();
+                break;
             case 'workflow_dispatch': {
                 payload = github.context.payload;
                 action = null;
-                ref = payload.ref;
+                ref = payload.ref.replace('refs/heads/', '');
                 refUrl = null;
                 diffUrl = payload.inputs;
                 title = payload.workflow;
@@ -9401,7 +9414,6 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 ts = new Date();
                 break;
             }
-            // workflow_dispatch, workflow_run
             default: {
                 core.info('Unsupported webhook event type');
             }
@@ -9430,7 +9442,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             channel,
             attachments: [
                 {
-                    fallback: `[GitHub]: [${repositoryName}] ${workflow} ${eventName} ${action} ${jobStatus}`,
+                    fallback: `[GitHub]: [${repositoryName}] ${workflow} ${eventName} ${action ? action : ''} ${jobStatus}`,
                     color: jobColor(jobStatus),
                     author_name: sender === null || sender === void 0 ? void 0 : sender.login,
                     author_link: sender === null || sender === void 0 ? void 0 : sender.html_url,
