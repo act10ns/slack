@@ -34,7 +34,7 @@ async function send(
   core.debug(JSON.stringify(context.payload))
 
   const commit = process.env.GITHUB_SHA as string
-  const branch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF?.replace('refs/heads/', '') as string
+  const branch = process.env.GITHUB_HEAD_REF || (process.env.GITHUB_REF?.replace('refs/heads/', '') as string)
 
   let ref = branch
   let refUrl = `${repositoryUrl}/tree/${ref}`
