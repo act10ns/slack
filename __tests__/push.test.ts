@@ -55,29 +55,27 @@ test('push event to slack', async () => {
   const res = await send(url, jobName, jobStatus, jobSteps, channel)
   await expect(res).toStrictEqual({text: {status: 'ok'}})
 
-  expect(mockAxios.history.post[0].data).toBe(
-    JSON.stringify({
-      username: 'GitHub Action',
-      icon_url: 'https://octodex.github.com/images/original.png',
-      channel: '@override',
-      attachments: [
-        {
-          fallback: '[GitHub]: [act10ns/slack] build-test push  Success',
-          color: 'good',
-          author_name: 'satterly',
-          author_link: 'https://github.com/satterly',
-          author_icon: 'https://avatars0.githubusercontent.com/u/615057?v=4',
-          mrkdwn_in: ['text'],
-          text:
-            '*<https://github.com/act10ns/slack/actions/runs/100143423|Workflow _build-test_ job _Build and Test_ triggered by _push_ is _Success_>* for <https://github.com/act10ns/slacky/compare/db9fe60430a6...68d48876e079|`master`>\n<https://github.com/act10ns/slacky/compare/db9fe60430a6...68d48876e079|`68d48876`> - 4 commits',
-          fields: [],
-          footer: '<https://github.com/act10ns/slack|act10ns/slack> #8',
-          footer_icon: 'https://github.githubassets.com/favicon.ico',
-          ts: '1589052147'
-        }
-      ]
-    })
-  )
+  expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({
+    username: 'GitHub Action',
+    icon_url: 'https://octodex.github.com/images/original.png',
+    channel: '@override',
+    attachments: [
+      {
+        fallback: '[GitHub]: [act10ns/slack] build-test push  Success',
+        color: 'good',
+        author_name: 'satterly',
+        author_link: 'https://github.com/satterly',
+        author_icon: 'https://avatars0.githubusercontent.com/u/615057?v=4',
+        mrkdwn_in: ['text'],
+        text:
+          '*<https://github.com/act10ns/slack/actions/runs/100143423|Workflow _build-test_ job _Build and Test_ triggered by _push_ is _Success_>* for <https://github.com/act10ns/slack|`master`>\n<https://github.com/act10ns/slack/compare/db9fe60430a6...68d48876e079|`68d48876`> - 4 commits',
+        fields: [],
+        footer: '<https://github.com/act10ns/slack|act10ns/slack> #8',
+        footer_icon: 'https://github.githubassets.com/favicon.ico',
+        ts: expect.stringMatching(/[0-9]+/)
+      }
+    ]
+  })
 
   mockAxios.resetHistory()
   mockAxios.reset()

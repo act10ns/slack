@@ -9372,7 +9372,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 payload = github.context.payload;
                 action = null;
                 ref = payload.ref.replace('refs/heads/', '');
-                refUrl = payload.repository.commits_url;
+                refUrl = payload.repository.html_url;
                 diffUrl = payload.compare;
                 title = `${payload.commits.length} commits`;
                 sender = payload.sender;

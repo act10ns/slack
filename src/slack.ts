@@ -101,7 +101,7 @@ async function send(
       payload = github.context.payload as EventPayloads.WebhookPayloadPush
       action = null
       ref = payload.ref.replace('refs/heads/', '')
-      refUrl = payload.repository.commits_url
+      refUrl = payload.repository.html_url
       diffUrl = payload.compare
       title = `${payload.commits.length} commits`
       sender = payload.sender
