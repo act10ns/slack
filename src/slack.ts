@@ -23,6 +23,7 @@ async function send(
   jobSteps: object,
   channel?: string
 ): Promise<IncomingWebhookResult> {
+
   const workflow = process.env.GITHUB_WORKFLOW
   const eventName = process.env.GITHUB_EVENT_NAME
   const repositoryName = process.env.GITHUB_REPOSITORY
@@ -33,21 +34,23 @@ async function send(
 
   const commit = process.env.GITHUB_SHA as string
   const branch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF?.replace('refs/heads/', '')
-  const compare = context.payload?.compare
 
   let text,
     ts = new Date()
 
-  // different Slack message based on context
+  // https://docs.github.com/en/free-pro-team@latest/developers/webhooks-and-events/webhook-events-and-payloads#pull_request
   if (eventName === 'pull_request') {
     const issue = context.issue
     text =
       `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
       `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-      `for <${repositoryUrl}/pull/${issue.number}|\`#${issue.number}\`>\n` +
-      `<${repositoryUrl}/pull/${issue.number}/commits|${branch}> - ${context.payload.pull_request?.title || ''}`
+      `for <${repositoryUrl}/pull/${issue.number}|\`#${issue.number}\`> (${context.payload.pull_request?.state})\n` +
+      `<${repositoryUrl}/pull/${issue.number}/commits|\`${branch}\`> - ${context.payload.pull_request?.title || ''}\n` +
+      `${context.payload.pull_request?.body}`
     ts = new Date(context.payload.pull_request?.updated_at)
-  } else if (compare) {
+
+  //  https://docs.github.com/en/free-pro-team@latest/developers/webhooks-and-events/webhook-events-and-payloads#push
+  } else if (eventName === 'push') {
     core.debug(JSON.stringify(context.payload))
     text =
       `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
