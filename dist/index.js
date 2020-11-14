@@ -9305,7 +9305,7 @@ function stepIcon(status) {
     return `:grey_question: ${status}`;
 }
 function send(url, jobName, jobStatus, jobSteps, channel) {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d, _e, _f;
     return __awaiter(this, void 0, void 0, function* () {
         const workflow = process.env.GITHUB_WORKFLOW;
         const eventName = process.env.GITHUB_EVENT_NAME;
@@ -9318,16 +9318,15 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
         const branch = process.env.GITHUB_HEAD_REF || ((_a = process.env.GITHUB_REF) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', ''));
         let ref = commit;
         let refUrl = `${repositoryUrl}/commits/${ref}`;
-        let diffUrl = github_1.context.payload.compare ? github_1.context.payload.compare : '';
+        let diffUrl = ((_b = github_1.context.payload) === null || _b === void 0 ? void 0 : _b.compare) ? github_1.context.payload.compare : '';
         let title = 'no title';
         let ts = new Date();
-        if (github_1.context.issue.number) {
+        if (github_1.context === null || github_1.context === void 0 ? void 0 : github_1.context.issue.number) {
             ref = `#${github_1.context.issue.number}`;
             refUrl = `${repositoryUrl}/pull/${github_1.context.issue.number}`;
             diffUrl = `${refUrl}/files`;
-            // commitUrl = `${repositoryUrl}/pull/${context.issue.number}/commits`
-            title = (_b = github_1.context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.title;
-            ts = new Date((_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.updated_at);
+            title = (_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.title;
+            ts = new Date((_d = github_1.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.updated_at);
         }
         const text = `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
             `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
@@ -9348,8 +9347,8 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             });
         }
         let sender;
-        if ((_d = github_1.context.payload) === null || _d === void 0 ? void 0 : _d.sender) {
-            sender = (_e = github_1.context.payload) === null || _e === void 0 ? void 0 : _e.sender;
+        if ((_e = github_1.context.payload) === null || _e === void 0 ? void 0 : _e.sender) {
+            sender = (_f = github_1.context.payload) === null || _f === void 0 ? void 0 : _f.sender;
         }
         else {
             sender = {
