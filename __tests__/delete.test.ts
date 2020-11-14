@@ -55,29 +55,29 @@ test('delete event to slack', async () => {
   const res = await send(url, jobName, jobStatus, jobSteps, channel)
   await expect(res).toStrictEqual({text: {status: 'ok'}})
 
-  // expect(mockAxios.history.post[0].data).toBe(
-  //   JSON.stringify({
-  //     username: 'GitHub Action',
-  //     icon_url: 'https://octodex.github.com/images/original.png',
-  //     channel: '@override',
-  //     attachments: [
-  //       {
-  //         fallback: '[GitHub]: [act10ns/slack] build-test pull_request Success',
-  //         color: 'good',
-  //         author_name: 'satterly',
-  //         author_link: 'https://github.com/satterly',
-  //         author_icon: 'https://avatars0.githubusercontent.com/u/615057?v=4',
-  //         mrkdwn_in: ['text'],
-  //         text:
-  //           '*<https://github.com/act10ns/slack/pull/17/checks|Workflow _build-test_ job _Build and Test_ triggered by _pull_request_ is _Success_>* for <https://github.com/act10ns/slack/pull/17/files|`rename-to-slack`>\n<https://github.com/act10ns/slack/pull/17|`37b5e3e7`> - Rename to slack',
-  //         fields: [],
-  //         footer: '<https://github.com/act10ns/slack|act10ns/slack>',
-  //         footer_icon: 'https://github.githubassets.com/favicon.ico',
-  //         ts: '1589446771000'
-  //       }
-  //     ]
-  //   })
-  // )
+  expect(mockAxios.history.post[0].data).toBe(
+    JSON.stringify({
+      username: 'GitHub Action',
+      icon_url: 'https://octodex.github.com/images/original.png',
+      channel: '@override',
+      attachments: [
+        {
+          fallback: '[GitHub]: [act10ns/slack] build-test delete Success',
+          color: 'good',
+          author_name: 'satterly',
+          author_link: 'https://github.com/satterly',
+          author_icon: 'https://avatars0.githubusercontent.com/u/615057?v=4',
+          mrkdwn_in: ['text'],
+          text:
+            '*<https://github.com/act10ns/slack/actions/runs/110240292|Workflow _build-test_ job _Build and Test_ triggered by _delete_ is _Success_>* for <https://github.com/act10ns/slack/pull/17/files|`rename-to-slack`>\n<https://github.com/act10ns/slack/pull/17|`37b5e3e7`> - Rename to slack',
+          fields: [],
+          footer: '<https://github.com/act10ns/slack|act10ns/slack> #143',
+          footer_icon: 'https://github.githubassets.com/favicon.ico',
+          ts: '1589967655000'
+        }
+      ]
+    })
+  )
 
   mockAxios.resetHistory()
   mockAxios.reset()

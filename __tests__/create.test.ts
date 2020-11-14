@@ -74,7 +74,7 @@ test('create event to slack', async () => {
           fields: [],
           footer: '<https://github.com/act10ns/slack|act10ns/slack> #134',
           footer_icon: 'https://github.githubassets.com/favicon.ico',
-          ts: '1605341656481'
+          ts: '1589964629000'
         }
       ]
     })
