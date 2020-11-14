@@ -36,8 +36,8 @@ async function send(
   const commit = process.env.GITHUB_SHA as string
   const branch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF?.replace('refs/heads/', '') as string
 
-  let ref = commit
-  let refUrl = `${repositoryUrl}/commits/${ref}`
+  let ref = branch
+  let refUrl = `${repositoryUrl}/tree/${ref}`
   let diffUrl = context.payload?.compare ? context.payload.compare : ''
   let title = 'no title'
   let ts = new Date()
@@ -54,7 +54,7 @@ async function send(
     `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
     `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
     `for <${refUrl}|\`${ref}\`>\n` +
-    `<${diffUrl}|\`${branch}\`> - ${title}`
+    `<${diffUrl}|\`${commit.slice(0, 8)}\`> - ${title}`
 
   // add job steps, if provided
   const checks: string[] = []
