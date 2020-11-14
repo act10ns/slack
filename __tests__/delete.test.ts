@@ -21,10 +21,25 @@ github.context.workflow = dump.workflow
 github.context.action = dump.action
 github.context.actor = dump.actor
 
-process.env.GITHUB_SHA = dump.sha
+process.env.CI = 'true'
+process.env.GITHUB_WORKFLOW = 'build-test'
+process.env.GITHUB_RUN_ID = '110240292'
+process.env.GITHUB_RUN_NUMBER = '143'
+process.env.GITHUB_ACTION = 'self2'
+process.env.GITHUB_ACTIONS = 'true'
+process.env.GITHUB_ACTOR = 'satterly'
+process.env.GITHUB_REPOSITORY = 'act10ns/slack'
+process.env.GITHUB_EVENT_NAME = 'delete'
+process.env.GITHUB_EVENT_PATH = '/home/runner/work/_temp/_github_workflow/event.json'
+process.env.GITHUB_WORKSPACE = '/home/runner/work/slack/slack'
+process.env.GITHUB_SHA = '6730ca0708dcf207e6090d8e721fa80749321ac3'
+process.env.GITHUB_REF = 'refs/heads/master'
+process.env.GITHUB_HEAD_REF = ''
+process.env.GITHUB_BASE_REF = ''
 process.env.GITHUB_SERVER_URL = 'https://github.com'
-process.env.GITHUB_REF = dump.ref
-process.env.GITHUB_REPOSITORY = dump.repository
+process.env.GITHUB_API_URL = 'https://github.com'
+process.env.GITHUB_GRAPHQL_URL = 'https://api.github.com/graphql'
+
 
 test('delete event to slack', async () => {
   const mockAxios = new MockAdapter(axios, {delayResponse: 200})
