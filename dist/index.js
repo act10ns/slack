@@ -9318,7 +9318,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
         const shortSha = sha.slice(0, 8);
         const branch = process.env.GITHUB_HEAD_REF || ((_a = process.env.GITHUB_REF) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', ''));
         // const eventName = github.context.eventName
-        let payload, action, ref, refUrl, diffUrl, title, sender, ts = new Date();
+        let payload, action, ref = branch, refUrl, diffRef = shortSha, diffUrl, title, sender, ts = new Date();
         switch (eventName) {
             case 'create': {
                 payload = github.context.payload;
@@ -9331,7 +9331,21 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 ts = new Date(payload.repository.updated_at);
                 break;
             }
-            case 'issues': {
+            case 'delete': {
+                payload = github.context.payload;
+                action = null;
+                ref = payload.ref;
+                refUrl = payload.repository.html_url;
+                diffUrl = payload.repository.commits_url;
+                title = `Deleted ${ref}`;
+                sender = payload.sender;
+                ts = new Date(payload.repository.updated_at);
+                break;
+            }
+            case 'issues':
+                payload = github.context.payload;
+            // falls through
+            case 'issue_comment': {
                 payload = github.context.payload;
                 action = payload.action;
                 ref = `#${payload.issue.number}`;
@@ -9346,8 +9360,9 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 payload = github.context.payload;
                 action = payload.action;
                 ref = `#${payload.number}`;
-                refUrl = payload.pull_request.url;
-                diffUrl = payload.pull_request.diff_url;
+                refUrl = payload.pull_request.html_url;
+                diffUrl = `${payload.pull_request.html_url}/files`;
+                diffRef = payload.pull_request.head.ref;
                 title = payload.pull_request.title;
                 sender = payload.sender;
                 ts = new Date(payload.pull_request.updated_at);
@@ -9356,7 +9371,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             case 'push': {
                 payload = github.context.payload;
                 action = null;
-                ref = payload.head_commit;
+                ref = payload.ref;
                 refUrl = payload.repository.git_refs_url;
                 diffUrl = payload.compare;
                 title = `${payload.commits.length} commits`;
@@ -9367,12 +9382,23 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             case 'release': {
                 payload = github.context.payload;
                 action = payload.action;
-                ref = payload.release.id;
+                ref = `${payload.release.id}`;
                 refUrl = payload.release.html_url;
                 diffUrl = payload.release.assets_url;
                 title = payload.release.name;
                 sender = payload.sender;
                 ts = new Date(payload.release.published_at);
+                break;
+            }
+            case 'workflow_dispatch': {
+                payload = github.context.payload;
+                action = null;
+                ref = payload.ref;
+                refUrl = null;
+                diffUrl = payload.inputs;
+                title = payload.workflow;
+                sender = payload.sender;
+                ts = new Date();
                 break;
             }
             // workflow_dispatch, workflow_run
@@ -9383,7 +9409,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
         const text = `*<${workflowUrl}|Workflow _${workflow}_ ` +
             `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
             `for <${refUrl}|\`${ref}\`>\n` +
-            `<${diffUrl}|\`${title}\`>`;
+            `<${diffUrl}|\`${diffRef}\`> - ${title}`;
         // add job steps, if provided
         const checks = [];
         // eslint-disable-next-line github/array-foreach
@@ -9404,7 +9430,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             channel,
             attachments: [
                 {
-                    fallback: `[GitHub]: [${repositoryName}] ${workflow} ${eventName} ${jobStatus}`,
+                    fallback: `[GitHub]: [${repositoryName}] ${workflow} ${eventName} ${action} ${jobStatus}`,
                     color: jobColor(jobStatus),
                     author_name: sender === null || sender === void 0 ? void 0 : sender.login,
                     author_link: sender === null || sender === void 0 ? void 0 : sender.html_url,
