@@ -9305,7 +9305,7 @@ function stepIcon(status) {
     return `:grey_question: ${status}`;
 }
 function send(url, jobName, jobStatus, jobSteps, channel) {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d, _e, _f;
     return __awaiter(this, void 0, void 0, function* () {
         const workflow = process.env.GITHUB_WORKFLOW;
         const eventName = process.env.GITHUB_EVENT_NAME;
@@ -9315,11 +9315,11 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
         const runNumber = process.env.GITHUB_RUN_NUMBER;
         const commit = process.env.GITHUB_SHA;
         const branch = process.env.GITHUB_HEAD_REF || ((_a = process.env.GITHUB_REF) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', ''));
-        const issue = github_1.context.issue;
         const compare = (_b = github_1.context.payload) === null || _b === void 0 ? void 0 : _b.compare;
-        // different Slack message based on context
         let text, ts = new Date();
-        if (issue) {
+        // different Slack message based on context
+        if (eventName === 'pull_request') {
+            const issue = github_1.context.issue;
             text =
                 `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
                     `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
@@ -9354,8 +9354,8 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             });
         }
         let sender;
-        if (github_1.context.payload.sender) {
-            sender = (_e = github_1.context.payload) === null || _e === void 0 ? void 0 : _e.sender;
+        if ((_e = github_1.context.payload) === null || _e === void 0 ? void 0 : _e.sender) {
+            sender = (_f = github_1.context.payload) === null || _f === void 0 ? void 0 : _f.sender;
         }
         else {
             sender = {
