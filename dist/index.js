@@ -9305,7 +9305,7 @@ function stepIcon(status) {
     return `:grey_question: ${status}`;
 }
 function send(url, jobName, jobStatus, jobSteps, channel) {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e;
     return __awaiter(this, void 0, void 0, function* () {
         const workflow = process.env.GITHUB_WORKFLOW;
         const eventName = process.env.GITHUB_EVENT_NAME;
@@ -9313,32 +9313,26 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
         const repositoryUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`;
         const runId = process.env.GITHUB_RUN_ID;
         const runNumber = process.env.GITHUB_RUN_NUMBER;
+        core.debug(JSON.stringify(github_1.context.payload));
         const commit = process.env.GITHUB_SHA;
         const branch = process.env.GITHUB_HEAD_REF || ((_a = process.env.GITHUB_REF) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', ''));
-        const compare = (_b = github_1.context.payload) === null || _b === void 0 ? void 0 : _b.compare;
-        let text, ts = new Date();
-        // different Slack message based on context
-        if (eventName === 'pull_request') {
-            const issue = github_1.context.issue;
-            text =
-                `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
-                    `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-                    `for <${repositoryUrl}/pull/${issue.number}|\`#${issue.number}\`>\n` +
-                    `<${repositoryUrl}/pull/${issue.number}/commits|${branch}> - ${((_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.title) || ''}`;
-            ts = new Date((_d = github_1.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.updated_at);
+        let ref = commit;
+        let refUrl = `${repositoryUrl}/commits/${ref}`;
+        let diffUrl = github_1.context.payload.compare ? github_1.context.payload.compare : '';
+        let title = 'no title';
+        let ts = new Date();
+        if (github_1.context.issue.number) {
+            ref = `#${github_1.context.issue.number}`;
+            refUrl = `${repositoryUrl}/pull/${github_1.context.issue.number}`;
+            diffUrl = `${refUrl}/files`;
+            // commitUrl = `${repositoryUrl}/pull/${context.issue.number}/commits`
+            title = (_b = github_1.context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.title;
+            ts = new Date((_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.updated_at);
         }
-        else if (compare) {
-            core.debug(JSON.stringify(github_1.context.payload));
-            text =
-                `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
-                    `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-                    `for <${compare}|\`${branch}\`>\n` +
-                    `<${repositoryUrl}/commit/${commit}|\`${commit.slice(0, 8)}\`> - commit message?`;
-        }
-        else {
-            core.debug(JSON.stringify(github_1.context.payload));
-            text = 'default message';
-        }
+        const text = `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
+            `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
+            `for <${refUrl}|\`${ref}\`>\n` +
+            `<${diffUrl}|\`${branch}\`> - ${title}`;
         // add job steps, if provided
         const checks = [];
         // eslint-disable-next-line github/array-foreach
@@ -9354,8 +9348,8 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             });
         }
         let sender;
-        if ((_e = github_1.context.payload) === null || _e === void 0 ? void 0 : _e.sender) {
-            sender = (_f = github_1.context.payload) === null || _f === void 0 ? void 0 : _f.sender;
+        if ((_d = github_1.context.payload) === null || _d === void 0 ? void 0 : _d.sender) {
+            sender = (_e = github_1.context.payload) === null || _e === void 0 ? void 0 : _e.sender;
         }
         else {
             sender = {

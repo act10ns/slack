@@ -31,33 +31,30 @@ async function send(
   const runId = process.env.GITHUB_RUN_ID
   const runNumber = process.env.GITHUB_RUN_NUMBER
 
+  core.debug(JSON.stringify(context.payload))
+
   const commit = process.env.GITHUB_SHA as string
-  const branch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF?.replace('refs/heads/', '')
-  const compare = context.payload?.compare
+  const branch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF?.replace('refs/heads/', '') as string
 
-  let text,
-    ts = new Date()
+  let ref = commit
+  let refUrl = `${repositoryUrl}/commits/${ref}`
+  let diffUrl = context.payload?.compare ? context.payload.compare : ''
+  let title = 'no title'
+  let ts = new Date()
 
-  // different Slack message based on context
-  if (eventName === 'pull_request') {
-    const issue = context.issue
-    text =
-      `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
-      `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-      `for <${repositoryUrl}/pull/${issue.number}|\`#${issue.number}\`>\n` +
-      `<${repositoryUrl}/pull/${issue.number}/commits|${branch}> - ${context.payload.pull_request?.title || ''}`
+  if (context?.issue.number) {
+    ref = `#${context.issue.number}`
+    refUrl = `${repositoryUrl}/pull/${context.issue.number}`
+    diffUrl = `${refUrl}/files`
+    title = context.payload.pull_request?.title
     ts = new Date(context.payload.pull_request?.updated_at)
-  } else if (compare) {
-    core.debug(JSON.stringify(context.payload))
-    text =
-      `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
-      `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-      `for <${compare}|\`${branch}\`>\n` +
-      `<${repositoryUrl}/commit/${commit}|\`${commit.slice(0, 8)}\`> - commit message?`
-  } else {
-    core.debug(JSON.stringify(context.payload))
-    text = 'default message'
   }
+
+  const text =
+    `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
+    `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
+    `for <${refUrl}|\`${ref}\`>\n` +
+    `<${diffUrl}|\`${branch}\`> - ${title}`
 
   // add job steps, if provided
   const checks: string[] = []
