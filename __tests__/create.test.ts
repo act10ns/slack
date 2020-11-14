@@ -40,7 +40,6 @@ process.env.GITHUB_SERVER_URL = 'https://github.com'
 process.env.GITHUB_API_URL = 'https://github.com'
 process.env.GITHUB_GRAPHQL_URL = 'https://api.github.com/graphql'
 
-
 test('create event to slack', async () => {
   const mockAxios = new MockAdapter(axios, {delayResponse: 200})
 

@@ -62,7 +62,7 @@ test('pull request event to slack', async () => {
       channel: '@override',
       attachments: [
         {
-          fallback: '[GitHub]: [act10ns/slack] build-test pull_request Success',
+          fallback: '[GitHub]: [act10ns/slack] build-test pull_request opened Success',
           color: 'good',
           author_name: 'satterly',
           author_link: 'https://github.com/satterly',
