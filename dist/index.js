@@ -9316,9 +9316,9 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
         core.debug(JSON.stringify(github_1.context.payload));
         const commit = process.env.GITHUB_SHA;
         const branch = process.env.GITHUB_HEAD_REF || ((_a = process.env.GITHUB_REF) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', ''));
-        let ref = commit;
-        let refUrl = `${repositoryUrl}/commits/${ref}`;
-        let diffUrl = ((_b = github_1.context.payload) === null || _b === void 0 ? void 0 : _b.compare) ? github_1.context.payload.compare : '';
+        let ref = branch;
+        let refUrl = `${repositoryUrl}/tree/${ref}`;
+        let diffUrl = ((_b = github_1.context.payload) === null || _b === void 0 ? void 0 : _b.compare) ? github_1.context.payload.compare : `${repositoryUrl}/compare/${ref}?expand=1`;
         let title = 'no title';
         let ts = new Date();
         if (github_1.context === null || github_1.context === void 0 ? void 0 : github_1.context.issue.number) {
@@ -9331,7 +9331,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
         const text = `*<${repositoryUrl}/actions/runs/${runId}|Workflow _${workflow}_ ` +
             `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
             `for <${refUrl}|\`${ref}\`>\n` +
-            `<${diffUrl}|\`${branch}\`> - ${title}`;
+            `<${diffUrl}|\`${commit.slice(0, 8)}\`> - ${title}`;
         // add job steps, if provided
         const checks = [];
         // eslint-disable-next-line github/array-foreach
