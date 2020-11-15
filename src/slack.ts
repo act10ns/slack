@@ -54,7 +54,7 @@ async function send(
       action = null
       ref = payload.ref.replace('refs/heads/', '')
       refUrl = payload.repository.html_url
-      diffUrl = payload.repository.commits_url
+      diffUrl = payload.repository.
       title = payload.description
       sender = payload.sender
       ts = new Date(payload.repository.updated_at)

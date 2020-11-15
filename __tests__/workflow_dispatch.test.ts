@@ -63,7 +63,7 @@ test('workflow_dispatch event to slack', async () => {
       channel: '@override',
       attachments: [
         {
-          fallback: '[GitHub]: [act10ns/slack] build-test pull_request opened Success',
+          fallback: '[GitHub]: [act10ns/slack] build-test workflow_dispatch opened Success',
           color: 'good',
           author_name: 'satterly',
           author_link: 'https://github.com/satterly',
