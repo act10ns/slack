@@ -20,11 +20,28 @@ github.context.ref = dump.ref
 github.context.workflow = dump.workflow
 github.context.action = dump.action
 github.context.actor = dump.actor
+console.log(github.context)
 
-process.env.GITHUB_SHA = dump.sha
+process.env.CI = 'true'
+process.env.GITHUB_WORKFLOW = 'build-test'
+process.env.GITHUB_JOB = 'build'
+process.env.GITHUB_RUN_ID = '361391443'
+process.env.GITHUB_RUN_NUMBER = '817'
+process.env.GITHUB_ACTION = 'self'
+process.env.GITHUB_ACTION_REF = 'v2'
+process.env.GITHUB_ACTIONS = 'true'
+process.env.GITHUB_ACTOR = 'satterly'
+process.env.GITHUB_REPOSITORY = 'act10ns/slack'
+process.env.GITHUB_EVENT_NAME = 'release'
+process.env.GITHUB_EVENT_PATH = 'fixtures/release.json'
+process.env.GITHUB_WORKSPACE = '/home/runner/work/slack/slack'
+process.env.GITHUB_SHA = '332b8416cd15a8f77816a5d3df21423b16b46756'
+process.env.GITHUB_REF = 'refs/tags/v1.0.13'
+process.env.GITHUB_HEAD_REF = ''
+process.env.GITHUB_BASE_REF = ''
 process.env.GITHUB_SERVER_URL = 'https://github.com'
-process.env.GITHUB_REF = dump.ref
-process.env.GITHUB_REPOSITORY = dump.repository
+process.env.GITHUB_API_URL = 'https://api.github.com'
+process.env.GITHUB_GRAPHQL_URL = 'https://api.github.com/graphql'
 
 test('release event to slack', async () => {
   const mockAxios = new MockAdapter(axios, {delayResponse: 200})
@@ -41,30 +58,27 @@ test('release event to slack', async () => {
   const res = await send(url, jobName, jobStatus, jobSteps, channel)
   await expect(res).toStrictEqual({text: {status: 'ok'}})
 
-  console.log(mockAxios.history.post[0].data)
-  expect(mockAxios.history.post[0].data).toBe(
-    JSON.stringify({
-      username: 'GitHub Action',
-      icon_url: 'https://octodex.github.com/images/original.png',
-      channel: '@override',
-      attachments: [
-        {
-          fallback: '[GitHub]: [act10ns/slack] build-test release Success',
-          color: 'good',
-          author_name: 'satterly',
-          author_link: 'https://github.com/satterly',
-          author_icon: 'https://avatars0.githubusercontent.com/u/615057?v=4',
-          mrkdwn_in: ['text'],
-          text:
-            '*<https://github.com/act10ns/slack/commit/21bd808031091c03bebc3472e13e91acd0b1de9e/checks|Workflow _build-test_ job _Build and Test_ triggered by _release_ is _Success_>* for <https://github.com/act10ns/slack/commits/v1.0.6|`v1.0.6`>\n<https://github.com/act10ns/slack/commit/21bd808031091c03bebc3472e13e91acd0b1de9e|`21bd8080`> - ',
-          fields: [],
-          footer: '<https://github.com/act10ns/slack|act10ns/slack>',
-          footer_icon: 'https://github.githubassets.com/favicon.ico',
-          ts: '1589964656000'
-        }
-      ]
-    })
-  )
+  expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({
+    username: 'GitHub Action',
+    icon_url: 'https://octodex.github.com/images/original.png',
+    channel: '@override',
+    attachments: [
+      {
+        fallback: '[GitHub]: [act10ns/slack] build-test release Success',
+        color: 'good',
+        author_name: 'satterly',
+        author_link: 'https://github.com/satterly',
+        author_icon: '',
+        mrkdwn_in: ['text'],
+        text:
+          '*<https://github.com/act10ns/slack/actions/runs/361391443|Workflow _build-test_ job _Build and Test_ triggered by _release_ is _Success_>* for <https://github.com/act10ns/slack/commits/refs/tags/v1.0.13|`refs/tags/v1.0.13`>\n',
+        fields: [],
+        footer: '<https://github.com/act10ns/slack|act10ns/slack> #817',
+        footer_icon: 'https://github.githubassets.com/favicon.ico',
+        ts: expect.stringMatching(/[0-9]+/)
+      }
+    ]
+  })
 
   mockAxios.resetHistory()
   mockAxios.reset()

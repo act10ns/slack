@@ -36,8 +36,8 @@ async function send(
   const sha = process.env.GITHUB_SHA as string
   const shortSha = sha.slice(0, 8)
   const branch = process.env.GITHUB_HEAD_REF || (process.env.GITHUB_REF?.replace('refs/heads/', '') as string)
+  const actor = process.env.GITHUB_ACTOR
 
-  // const eventName = github.context.eventName
   let payload,
     action,
     ref = branch,
@@ -49,29 +49,6 @@ async function send(
     ts = new Date()
 
   switch (eventName) {
-    case 'create': {
-      payload = github.context.payload as EventPayloads.WebhookPayloadCreate
-      action = null
-      ref = payload.ref.replace('refs/heads/', '')
-      refUrl = payload.repository.html_url
-      diffRef = ref
-      diffUrl = `${repositoryUrl}/pull/new/${ref}`
-      title = `Create a pull request for '${ref}' on GitHub by visiting ${diffUrl}`
-      sender = payload.sender
-      ts = new Date(payload.repository.updated_at)
-      break
-    }
-    case 'delete': {
-      payload = github.context.payload as EventPayloads.WebhookPayloadDelete
-      action = null
-      ref = payload.ref.replace('refs/heads/', '')
-      refUrl = payload.repository.html_url
-      diffUrl = payload.repository.commits_url
-      title = `Deleted ${ref}`
-      sender = payload.sender
-      ts = new Date(payload.repository.updated_at)
-      break
-    }
     case 'issues':
       payload = github.context.payload as EventPayloads.WebhookPayloadIssues
     // falls through
@@ -109,17 +86,6 @@ async function send(
       ts = new Date(payload.commits[0].timestamp)
       break
     }
-    case 'release': {
-      payload = github.context.payload as EventPayloads.WebhookPayloadRelease
-      action = payload.action
-      ref = `${payload.release.id}`
-      refUrl = payload.release.html_url
-      diffUrl = payload.release.assets_url
-      title = payload.release.name
-      sender = payload.sender
-      ts = new Date(payload.release.published_at)
-      break
-    }
     case 'schedule':
       action = null
       ref = (process.env.GITHUB_REF as string).replace('refs/heads/', '')
@@ -133,27 +99,25 @@ async function send(
       }
       ts = new Date()
       break
-    case 'workflow_dispatch': {
-      payload = github.context.payload as EventPayloads.WebhookPayloadWorkflowDispatch
-      action = null
-      ref = payload.ref.replace('refs/heads/', '')
-      refUrl = null
-      diffUrl = payload.inputs
-      title = payload.workflow
-      sender = payload.sender
-      ts = new Date()
-      break
-    }
     default: {
-      core.info('Unsupported webhook event type')
+      core.info('Unsupported webhook event type. Using environment variables.')
+      action = process.env.GITHUB_ACTION?.startsWith('self') ? '' : process.env.GITHUB_ACTION
+      ref = (process.env.GITHUB_REF as string).replace('refs/heads/', '')
+      refUrl = `${repositoryUrl}/commits/${branch}`
+      sender = {
+        login: actor,
+        html_url: `https://github.com/${actor}`,
+        avatar_url: ''
+      }
+      ts = new Date()
     }
   }
 
-  const text =
+  const text = `${
     `*<${workflowUrl}|Workflow _${workflow}_ ` +
     `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-    `for <${refUrl}|\`${ref}\`>\n` +
-    `<${diffUrl}|\`${diffRef}\`> - ${title}`
+    `for <${refUrl}|\`${ref}\`>\n`
+  }${title ? `<${diffUrl}|\`${diffRef}\`> - ${title}` : ''}`
 
   // add job steps, if provided
   const checks: string[] = []
