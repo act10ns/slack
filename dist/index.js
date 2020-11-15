@@ -9325,8 +9325,9 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 action = null;
                 ref = payload.ref.replace('refs/heads/', '');
                 refUrl = payload.repository.html_url;
-                diffUrl = payload.repository.commits_url;
-                title = payload.description;
+                diffRef = ref;
+                diffUrl = `${repositoryUrl}/pull/new/${ref}`;
+                title = `Create a pull request for '${ref}' on GitHub by visiting ${diffUrl}`;
                 sender = payload.sender;
                 ts = new Date(payload.repository.updated_at);
                 break;
@@ -9395,7 +9396,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 ref = process.env.GITHUB_REF.replace('refs/heads/', '');
                 refUrl = repositoryUrl;
                 diffUrl = repositoryUrl;
-                title = `Schedule ${github.context.payload.schedule}`;
+                title = `Schedule \`${github.context.payload.schedule}\``;
                 sender = {
                     login: 'github',
                     html_url: 'https://github.com/github',
@@ -9442,7 +9443,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
             channel,
             attachments: [
                 {
-                    fallback: `[GitHub]: [${repositoryName}] ${workflow} ${eventName} ${action ? action : ''} ${jobStatus}`,
+                    fallback: `[GitHub]: [${repositoryName}] ${workflow} ${eventName} ${action ? `${action} ` : ''}${jobStatus}`,
                     color: jobColor(jobStatus),
                     author_name: sender === null || sender === void 0 ? void 0 : sender.login,
                     author_link: sender === null || sender === void 0 ? void 0 : sender.html_url,
