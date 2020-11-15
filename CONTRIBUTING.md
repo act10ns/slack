@@ -99,3 +99,20 @@ See the [actions tab](https://github.com/actions/javascript-action/actions) for 
 ## Usage:
 
 After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and latest V1 action
+
+## Release
+
+```bash
+$ vi package.json
+$ vi package-lock.json
+$ git add .
+$ git commit -m 'Bump version 1.0.13 -> 1.1.0'
+$ git tag -a v1.1.0 -m 'version 1.1.0'
+$ git push --follow-tags
+git tag -fa v1 -m "Update v1 tag"
+git push origin v1 --force
+```
+
+Go to [GitHub Releases]() and create a new release
+
+See 
