@@ -41,9 +41,9 @@ async function send(
   let payload,
     action,
     ref = branch,
-    refUrl,
+    refUrl = `${repositoryUrl}/commits/${branch}`,
     diffRef = shortSha,
-    diffUrl,
+    diffUrl = `${repositoryUrl}/commit/${shortSha}`,
     title,
     sender,
     ts = new Date()
@@ -79,7 +79,6 @@ async function send(
       payload = github.context.payload as EventPayloads.WebhookPayloadPush
       action = null
       ref = payload.ref.replace('refs/heads/', '')
-      refUrl = payload.repository.html_url
       diffUrl = payload.compare
       title = `${payload.commits.length} commits`
       sender = payload.sender
@@ -89,8 +88,6 @@ async function send(
     case 'schedule':
       action = null
       ref = (process.env.GITHUB_REF as string).replace('refs/heads/', '')
-      refUrl = repositoryUrl
-      diffUrl = repositoryUrl
       title = `Schedule \`${github.context.payload.schedule}\``
       sender = {
         login: 'github',
@@ -103,7 +100,6 @@ async function send(
       core.info('Unsupported webhook event type. Using environment variables.')
       action = process.env.GITHUB_ACTION?.startsWith('self') ? '' : process.env.GITHUB_ACTION
       ref = (process.env.GITHUB_REF as string).replace('refs/heads/', '')
-      refUrl = `${repositoryUrl}/commits/${branch}`
       sender = {
         login: actor,
         html_url: `https://github.com/${actor}`,

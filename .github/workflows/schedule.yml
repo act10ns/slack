@@ -1,7 +1,7 @@
 name: "schedule-test"
 on:
   schedule:
-    - cron:  '0 10 * * *'
+    - cron:  '*/15 * * * *'
 
 env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -9305,7 +9305,7 @@ function stepIcon(status) {
     return `:grey_question: ${status}`;
 }
 function send(url, jobName, jobStatus, jobSteps, channel) {
-    var _a;
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         const eventName = process.env.GITHUB_EVENT_NAME;
         const workflow = process.env.GITHUB_WORKFLOW;
@@ -9317,32 +9317,9 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
         const sha = process.env.GITHUB_SHA;
         const shortSha = sha.slice(0, 8);
         const branch = process.env.GITHUB_HEAD_REF || ((_a = process.env.GITHUB_REF) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', ''));
-        // const eventName = github.context.eventName
-        let payload, action, ref = branch, refUrl, diffRef = shortSha, diffUrl, title, sender, ts = new Date();
+        const actor = process.env.GITHUB_ACTOR;
+        let payload, action, ref = branch, refUrl = `${repositoryUrl}/commits/${branch}`, diffRef = shortSha, diffUrl = `${repositoryUrl}/commit/${shortSha}`, title, sender, ts = new Date();
         switch (eventName) {
-            case 'create': {
-                payload = github.context.payload;
-                action = null;
-                ref = payload.ref.replace('refs/heads/', '');
-                refUrl = payload.repository.html_url;
-                diffRef = ref;
-                diffUrl = `${repositoryUrl}/pull/new/${ref}`;
-                title = `Create a pull request for '${ref}' on GitHub by visiting ${diffUrl}`;
-                sender = payload.sender;
-                ts = new Date(payload.repository.updated_at);
-                break;
-            }
-            case 'delete': {
-                payload = github.context.payload;
-                action = null;
-                ref = payload.ref.replace('refs/heads/', '');
-                refUrl = payload.repository.html_url;
-                diffUrl = payload.repository.commits_url;
-                title = `Deleted ${ref}`;
-                sender = payload.sender;
-                ts = new Date(payload.repository.updated_at);
-                break;
-            }
             case 'issues':
                 payload = github.context.payload;
             // falls through
@@ -9373,29 +9350,15 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 payload = github.context.payload;
                 action = null;
                 ref = payload.ref.replace('refs/heads/', '');
-                refUrl = payload.repository.html_url;
                 diffUrl = payload.compare;
                 title = `${payload.commits.length} commits`;
                 sender = payload.sender;
                 ts = new Date(payload.commits[0].timestamp);
                 break;
             }
-            case 'release': {
-                payload = github.context.payload;
-                action = payload.action;
-                ref = `${payload.release.id}`;
-                refUrl = payload.release.html_url;
-                diffUrl = payload.release.assets_url;
-                title = payload.release.name;
-                sender = payload.sender;
-                ts = new Date(payload.release.published_at);
-                break;
-            }
             case 'schedule':
                 action = null;
                 ref = process.env.GITHUB_REF.replace('refs/heads/', '');
-                refUrl = repositoryUrl;
-                diffUrl = repositoryUrl;
                 title = `Schedule \`${github.context.payload.schedule}\``;
                 sender = {
                     login: 'github',
@@ -9404,25 +9367,21 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 };
                 ts = new Date();
                 break;
-            case 'workflow_dispatch': {
-                payload = github.context.payload;
-                action = null;
-                ref = payload.ref.replace('refs/heads/', '');
-                refUrl = null;
-                diffUrl = payload.inputs;
-                title = payload.workflow;
-                sender = payload.sender;
-                ts = new Date();
-                break;
-            }
             default: {
-                core.info('Unsupported webhook event type');
+                core.info('Unsupported webhook event type. Using environment variables.');
+                action = ((_b = process.env.GITHUB_ACTION) === null || _b === void 0 ? void 0 : _b.startsWith('self')) ? '' : process.env.GITHUB_ACTION;
+                ref = process.env.GITHUB_REF.replace('refs/heads/', '');
+                sender = {
+                    login: actor,
+                    html_url: `https://github.com/${actor}`,
+                    avatar_url: ''
+                };
+                ts = new Date();
             }
         }
-        const text = `*<${workflowUrl}|Workflow _${workflow}_ ` +
+        const text = `${`*<${workflowUrl}|Workflow _${workflow}_ ` +
             `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-            `for <${refUrl}|\`${ref}\`>\n` +
-            `<${diffUrl}|\`${diffRef}\`> - ${title}`;
+            `for <${refUrl}|\`${ref}\`>\n`}${title ? `<${diffUrl}|\`${diffRef}\`> - ${title}` : ''}`;
         // add job steps, if provided
         const checks = [];
         // eslint-disable-next-line github/array-foreach
