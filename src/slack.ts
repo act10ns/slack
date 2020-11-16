@@ -45,8 +45,8 @@ async function send(
     diffRef = shortSha,
     diffUrl = `${repositoryUrl}/commit/${shortSha}`,
     title,
-    sender,
-    ts = new Date().getTime() / 1000
+    sender
+  const ts = Math.round(new Date().getTime() / 1000)
 
   switch (eventName) {
     case 'issues':
@@ -60,7 +60,7 @@ async function send(
       diffUrl = payload.issue.comments_url
       title = payload.issue.title
       sender = payload.sender
-      ts = new Date(payload.issue.updated_at).getTime() / 1000
+      // ts = new Date(payload.issue.updated_at).getTime() / 1000
       break
     }
     case 'pull_request': {
@@ -72,7 +72,7 @@ async function send(
       diffRef = payload.pull_request.head.ref
       title = payload.pull_request.title
       sender = payload.sender
-      ts = new Date(payload.pull_request.updated_at).getTime() / 1000
+      // ts = new Date(payload.pull_request.updated_at).getTime() / 1000
       break
     }
     case 'push': {
@@ -82,7 +82,7 @@ async function send(
       diffUrl = payload.compare
       title = `${payload.commits.length} commits`
       sender = payload.sender
-      ts = new Date(payload.commits[0].timestamp).getTime() / 1000
+      // ts = new Date(payload.commits[0].timestamp).getTime() / 1000
       break
     }
     case 'schedule':
