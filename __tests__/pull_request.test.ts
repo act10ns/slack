@@ -72,7 +72,7 @@ test('pull request event to slack', async () => {
         fields: [],
         footer: '<https://github.com/act10ns/slack|act10ns/slack> #760',
         footer_icon: 'https://github.githubassets.com/favicon.ico',
-        ts: '1589447073'
+        ts: expect.stringMatching(/[0-9]+/)
       }
     ]
   })
