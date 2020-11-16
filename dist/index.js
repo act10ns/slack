@@ -9318,7 +9318,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
         const shortSha = sha.slice(0, 8);
         const branch = process.env.GITHUB_HEAD_REF || ((_a = process.env.GITHUB_REF) === null || _a === void 0 ? void 0 : _a.replace('refs/heads/', ''));
         const actor = process.env.GITHUB_ACTOR;
-        let payload, action, ref = branch, refUrl = `${repositoryUrl}/commits/${branch}`, diffRef = shortSha, diffUrl = `${repositoryUrl}/commit/${shortSha}`, title, sender, ts = new Date();
+        let payload, action, ref = branch, refUrl = `${repositoryUrl}/commits/${branch}`, diffRef = shortSha, diffUrl = `${repositoryUrl}/commit/${shortSha}`, title, sender, ts = new Date().getTime() / 1000;
         switch (eventName) {
             case 'issues':
                 payload = github.context.payload;
@@ -9331,7 +9331,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 diffUrl = payload.issue.comments_url;
                 title = payload.issue.title;
                 sender = payload.sender;
-                ts = new Date(payload.issue.updated_at);
+                ts = new Date(payload.issue.updated_at).getTime() / 1000;
                 break;
             }
             case 'pull_request': {
@@ -9343,7 +9343,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 diffRef = payload.pull_request.head.ref;
                 title = payload.pull_request.title;
                 sender = payload.sender;
-                ts = new Date(payload.pull_request.updated_at);
+                ts = new Date(payload.pull_request.updated_at).getTime() / 1000;
                 break;
             }
             case 'push': {
@@ -9353,7 +9353,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 diffUrl = payload.compare;
                 title = `${payload.commits.length} commits`;
                 sender = payload.sender;
-                ts = new Date(payload.commits[0].timestamp);
+                ts = new Date(payload.commits[0].timestamp).getTime() / 1000;
                 break;
             }
             case 'schedule':
@@ -9365,7 +9365,6 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                     html_url: 'https://github.com/github',
                     avatar_url: 'https://avatars1.githubusercontent.com/u/9919?s=200&v=4'
                 };
-                ts = new Date();
                 break;
             default: {
                 core.info('Unsupported webhook event type. Using environment variables.');
@@ -9376,7 +9375,6 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                     html_url: `https://github.com/${actor}`,
                     avatar_url: ''
                 };
-                ts = new Date();
             }
         }
         const text = `${`*<${workflowUrl}|Workflow _${workflow}_ ` +
@@ -9412,7 +9410,7 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                     fields,
                     footer: `<${repositoryUrl}|${repositoryName}> #${runNumber}`,
                     footer_icon: 'https://github.githubassets.com/favicon.ico',
-                    ts: ts.getTime().toString()
+                    ts: ts.toString()
                 }
             ]
         };

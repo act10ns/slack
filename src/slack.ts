@@ -46,7 +46,7 @@ async function send(
     diffUrl = `${repositoryUrl}/commit/${shortSha}`,
     title,
     sender,
-    ts = new Date()
+    ts = new Date().getTime() / 1000
 
   switch (eventName) {
     case 'issues':
@@ -60,7 +60,7 @@ async function send(
       diffUrl = payload.issue.comments_url
       title = payload.issue.title
       sender = payload.sender
-      ts = new Date(payload.issue.updated_at)
+      ts = new Date(payload.issue.updated_at).getTime() / 1000
       break
     }
     case 'pull_request': {
@@ -72,7 +72,7 @@ async function send(
       diffRef = payload.pull_request.head.ref
       title = payload.pull_request.title
       sender = payload.sender
-      ts = new Date(payload.pull_request.updated_at)
+      ts = new Date(payload.pull_request.updated_at).getTime() / 1000
       break
     }
     case 'push': {
@@ -82,7 +82,7 @@ async function send(
       diffUrl = payload.compare
       title = `${payload.commits.length} commits`
       sender = payload.sender
-      ts = new Date(payload.commits[0].timestamp)
+      ts = new Date(payload.commits[0].timestamp).getTime() / 1000
       break
     }
     case 'schedule':
@@ -94,7 +94,6 @@ async function send(
         html_url: 'https://github.com/github',
         avatar_url: 'https://avatars1.githubusercontent.com/u/9919?s=200&v=4'
       }
-      ts = new Date()
       break
     default: {
       core.info('Unsupported webhook event type. Using environment variables.')
@@ -105,7 +104,6 @@ async function send(
         html_url: `https://github.com/${actor}`,
         avatar_url: ''
       }
-      ts = new Date()
     }
   }
 
@@ -146,7 +144,7 @@ async function send(
         fields,
         footer: `<${repositoryUrl}|${repositoryName}> #${runNumber}`,
         footer_icon: 'https://github.githubassets.com/favicon.ico',
-        ts: ts.getTime().toString()
+        ts: ts.toString()
       }
     ]
   }
