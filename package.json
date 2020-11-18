@@ -31,7 +31,7 @@
     "@octokit/webhooks": "^7.15.1",
     "@slack/webhook": "^5.0.3",
     "flow-bin": "^0.138.0",
-    "graphql": "^14.0.0"
+    "graphql": "^15.4.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
