@@ -115,7 +115,6 @@ async function send(
 
   // add job steps, if provided
   const checks: string[] = []
-  // eslint-disable-next-line github/array-foreach
   Object.entries(jobSteps).forEach(([step, status]) => {
     checks.push(`${stepIcon(status.outcome)} ${step}`)
   })
