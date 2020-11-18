@@ -115,9 +115,9 @@ async function send(
 
   // add job steps, if provided
   const checks: string[] = []
-  Object.entries(jobSteps).forEach(([step, status]) => {
+  for (let [step, status] of Object.entries(jobSteps)) {
     checks.push(`${stepIcon(status.outcome)} ${step}`)
-  })
+  }
   const fields = []
   if (checks.length) {
     fields.push({
