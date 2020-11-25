@@ -1423,8 +1423,13 @@ function run() {
             const jobStatus = core.getInput('status', { required: true }).toUpperCase();
             const jobSteps = JSON.parse(core.getInput('steps', { required: false }) || '{}');
             const channel = core.getInput('channel', { required: false });
-            yield slack_1.default(url, jobName, jobStatus, jobSteps, channel);
-            core.debug('Sent to Slack.');
+            if (url) {
+                yield slack_1.default(url, jobName, jobStatus, jobSteps, channel);
+                core.debug('Sent to Slack.');
+            }
+            else {
+                core.info('No "SLACK_WEBHOOK_URL" secret configured. Skip.');
+            }
         }
         catch (error) {
             core.setFailed(error.message);
