@@ -18,8 +18,12 @@ async function run(): Promise<void> {
     const jobSteps = JSON.parse(core.getInput('steps', {required: false}) || '{}')
     const channel = core.getInput('channel', {required: false})
 
-    await send(url, jobName, jobStatus, jobSteps, channel)
-    core.debug('Sent to Slack.')
+    if (url) {
+      await send(url, jobName, jobStatus, jobSteps, channel)
+      core.debug('Sent to Slack.')
+    } else {
+      core.info('No "SLACK_WEBHOOK_URL" secret configured. Skip.')
+    }
   } catch (error) {
     core.setFailed(error.message)
     core.error(error.stack)
