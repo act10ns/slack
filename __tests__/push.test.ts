@@ -69,7 +69,13 @@ test('push event to slack', async () => {
         mrkdwn_in: ['text'],
         text:
           '*<https://github.com/act10ns/slack/actions/runs/100143423|Workflow _build-test_ job _Build and Test_ triggered by _push_ is _Success_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n<https://github.com/act10ns/slack/compare/db9fe60430a6...68d48876e079|`68d48876`> - 4 commits',
-        fields: [],
+        fields: [
+          {
+            title: "",
+            value: "<https://github.com/act10ns/slack/commit/b1f512300ea6e925e095c51a441fcf30104523aa|b1f51230> - wip\n<https://github.com/act10ns/slack/commit/b246b5fdcc2722909503d5a43eb635885aa5fd25|b246b5fd> - wip\n<https://github.com/act10ns/slack/commit/553c22356fadc36947653de987dabd8da40cb06b|553c2235> - wip\n<https://github.com/act10ns/slack/commit/68d48876e0794fba714cb331a1624af6b20942d8|68d48876> - wip",
+            short: false,
+          },
+        ],
         footer: '<https://github.com/act10ns/slack|act10ns/slack> #8',
         footer_icon: 'https://github.githubassets.com/favicon.ico',
         ts: expect.stringMatching(/[0-9]+/)
