@@ -85,10 +85,9 @@ async function send(
       title = `${payload.commits.length} commits`
       sender = payload.sender
 
-      for (let commit of payload.commits) {
+      for (const commit of payload.commits) {
         commits.push(`<${commit.url}|${commit.id.substring(0, 8)}> - ${commit.message}`)
       }
-      
       // ts = new Date(payload.commits[0].timestamp).getTime() / 1000
       break
     }
