@@ -37,6 +37,8 @@ async function send(
   const shortSha = sha.slice(0, 8)
   const branch = process.env.GITHUB_HEAD_REF || (process.env.GITHUB_REF?.replace('refs/heads/', '') as string)
   const actor = process.env.GITHUB_ACTOR
+  const fields = []
+  const commits: string[] = []
 
   let payload,
     action,
@@ -82,6 +84,11 @@ async function send(
       diffUrl = payload.compare
       title = `${payload.commits.length} commits`
       sender = payload.sender
+
+      for (let commit of payload.commits) {
+        commits.push(`<${commit.url}|${commit.id}> - ${commit.message}`)
+      }
+      
       // ts = new Date(payload.commits[0].timestamp).getTime() / 1000
       break
     }
@@ -118,7 +125,15 @@ async function send(
   for (const [step, status] of Object.entries(jobSteps)) {
     checks.push(`${stepIcon(status.outcome)} ${step}`)
   }
-  const fields = []
+
+  if (commits.length) {
+    fields.push({
+      title: '',
+      value: commits.join('\n'),
+      short: false
+    })
+  }
+
   if (checks.length) {
     fields.push({
       title: 'Job Steps',
