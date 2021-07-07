@@ -107,11 +107,15 @@ async function send(
     }
   }
 
-  const text = `${
+  let text = `${
     `*<${workflowUrl}|Workflow _${workflow}_ ` +
     `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
     `for <${refUrl}|\`${ref}\`>\n`
   }${title ? `<${diffUrl}|\`${diffRef}\`> - ${title}` : ''}`
+
+  if (jobStatus.toLowerCase() === 'failure') {
+    text = `<!here>${text}`
+  }
 
   // add job steps, if provided
   const checks: string[] = []
