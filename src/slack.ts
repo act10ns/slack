@@ -108,10 +108,11 @@ async function send(
   }
 
   const text = `${
-    `*<${workflowUrl}|Workflow _${workflow}_ ` +
-    `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-    `for <${refUrl}|\`${ref}\`>\n`
-  }${title ? `<${diffUrl}|\`${diffRef}\`> - ${title}` : ''}`
+    `*Build status: _${jobStatus}_*\n` +
+    `<${workflowUrl}|${title}>\n\n` +
+    `*Branch*\n<${refUrl}|\`${diffRef}\` - \`${ref}\`>` +
+    `*Commit*\n<${diffUrl}|${sha}`
+  }`
 
   // add job steps, if provided
   const checks: string[] = []
