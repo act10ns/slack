@@ -6783,6 +6783,14 @@ function stepIcon(status) {
         return ':no_entry_sign:';
     return `:grey_question: ${status}`;
 }
+function statusMessage(rawStatus) {
+  let status = rawStatus;
+
+  if (rawStatus.toLowerCase() === 'success') status = 'succeeded';
+  if (rawStatus.toLowerCase() === 'failure') status = 'failed';
+
+  return `Build ${status}`;
+}
 function send(url, jobName, jobStatus, jobSteps, channel) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
@@ -6857,11 +6865,12 @@ function send(url, jobName, jobStatus, jobSteps, channel) {
                 };
             }
         }
-        const text = `${`*Build status: _${jobStatus}_*\n` +
-	    `<${workflowUrl}|${title}>\n\n` +
-	    `*Branch*\n<${refUrl}|\`${diffRef}\` - \`${ref}\`>` +
-	    `*Commit*\n<${diffUrl}|${sha}`
-	}`
+        const text = `${
+          `*${statusMessage}*\n` +
+          `<${workflowUrl}|${title}>\n\n` +
+          `*Branch*\n<${refUrl}|\`${diffRef}\` - \`${ref}\`>\n` +
+          `*Commit*\n<${diffUrl}|${sha}>`
+        }`
         // add job steps, if provided
         const checks = [];
         for (const [step, status] of Object.entries(jobSteps)) {
