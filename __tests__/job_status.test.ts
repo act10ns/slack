@@ -105,7 +105,7 @@ test('push event to slack', async () => {
             short: false,
             title: 'Job Steps',
             value:
-              ':no_entry_sign: install-deps\n:no_entry_sign: hooks\n:no_entry_sign: lint\n:no_entry_sign: types\n:no_entry_sign: unit-test\n:no_entry_sign: integration-test'
+              ':heavy_minus_sign: install-deps\n:heavy_minus_sign: hooks\n:heavy_minus_sign: lint\n:heavy_minus_sign: types\n:heavy_minus_sign: unit-test\n:heavy_minus_sign: integration-test'
           }
         ],
         footer: '<https://github.com/act10ns/slack|act10ns/slack> #8',
