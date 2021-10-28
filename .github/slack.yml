@@ -1,0 +1,24 @@
+username: GitHub-CI
+icon_url: 'https://octodex.github.com/images/mona-the-rivetertocat.png'
+
+text: |
+  *<{{workflowUrl}}|Workflow _{{workflow}}_ job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* for <{{refUrl}}|`{{ref}}`>
+  {{#if title}}<{{diffUrl}}|`{{diffRef}}`> - {{title}}{{/if}}
+
+fallback: |-
+  {{workflow}} {{jobName}} is {{jobStatus}}
+
+footer: >-
+  <{{repositoryUrl}}|{{repositoryName}}> {{workflow}} #{{runNumber}}
+
+colors:
+  success: '#5DADE2'
+  failure: '#884EA0'
+  cancelled: '#A569BD'
+
+icons:
+  success: ':white_check_mark:'
+  failure: ':grimacing:'
+  cancelled: ':x:'
+  skipped: ':heavy_minus_sign:'
+  default: ':interrobang:'

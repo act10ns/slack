@@ -1,7 +1,7 @@
 import * as github from '@actions/github'
 import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
-import send from '../src/slack'
+import {send} from '../src/slack'
 import {readFileSync} from 'fs'
 
 const url = 'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX'
@@ -9,6 +9,7 @@ const jobName = 'Build and Test'
 const jobStatus = 'Success'
 const jobSteps = {}
 const channel = '@override'
+const message = undefined
 
 // mock github context
 const dump = JSON.parse(readFileSync('./__tests__/fixtures/schedule.json', 'utf-8'))
@@ -48,7 +49,7 @@ test('schedule event to slack', async () => {
     .onAny()
     .reply(500)
 
-  const res = await send(url, jobName, jobStatus, jobSteps, channel)
+  const res = await send(url, jobName, jobStatus, jobSteps, channel, message)
   await expect(res).toStrictEqual({text: {status: 'ok'}})
 
   expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({
@@ -64,7 +65,7 @@ test('schedule event to slack', async () => {
         author_icon: 'https://avatars1.githubusercontent.com/u/9919?s=200&v=4',
         mrkdwn_in: ['text'],
         text:
-          '*<https://github.com/act10ns/slack/actions/runs/363600556|Workflow _schedule-test_ job _Build and Test_ triggered by _schedule_ is _Success_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n<https://github.com/act10ns/slack/commit/09a6b2c9|`09a6b2c9`> - Schedule `*/15 * * * *`',
+          '*<https://github.com/act10ns/slack/actions/runs/363600556|Workflow _schedule-test_ job _Build and Test_ triggered by _schedule_ is _Success_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n<https://github.com/act10ns/slack/commit/09a6b2c9|`09a6b2c9`> - Schedule &#x60;*/15 * * * *&#x60;',
         fields: [],
         footer: '<https://github.com/act10ns/slack|act10ns/slack> #179',
         footer_icon: 'https://github.githubassets.com/favicon.ico',

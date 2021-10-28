@@ -59,6 +59,19 @@ use:
 **Note: To override the channel the Slack webhook URL must be an
 Incoming Webhook URL. See https://api.slack.com/faq#incoming_webhooks**
 
+### `config` (optional)
+
+A configuration file can be used to customise the icons displayed
+for each job status.
+
+Default: `.github/slack.yml`
+
+Example Config File
+
+```
+
+```
+
 ### Conditionals (`if`)
 
 To ensure the Slack message is sent even if the job fails add the

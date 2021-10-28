@@ -30,8 +30,11 @@
     "@actions/github": "^4.0.0",
     "@octokit/webhooks": "^7.15.1",
     "@slack/webhook": "^5.0.3",
+    "@types/js-yaml": "^4.0.4",
     "flow-bin": "^0.138.0",
-    "graphql": "^15.4.0"
+    "graphql": "^15.4.0",
+    "handlebars": "^4.7.7",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
