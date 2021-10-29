@@ -8,6 +8,9 @@ title_link: https://support.github.com
 text: |
   *<{{workflowUrl}}|Workflow _{{workflow}}_ job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* for <{{refUrl}}|`{{ref}}`>
   {{#if description}}<{{diffUrl}}|`{{diffRef}}`> - {{description}}{{/if}}
+  {{#each payload.commits}}
+  <{{this.url}}|{{this.id}}> - {{this.message}}
+  {{/each}}
 
 fallback: |-
   {{workflow}} {{jobName}} is {{jobStatus}}
