@@ -35,6 +35,9 @@ function stepIcon(status: string, opts?: IconOptions): string {
 export interface ConfigOptions {
   username?: string | undefined
   icon_url?: string | undefined
+  pretext?: string | undefined
+  title?: string | undefined
+  title_link?: string | undefined
   text?: string | undefined
   fallback?: string | undefined
   footer?: string | undefined
@@ -75,7 +78,7 @@ export async function send(
     refUrl = `${repositoryUrl}/commits/${branch}`,
     diffRef = shortSha,
     diffUrl = `${repositoryUrl}/commit/${shortSha}`,
-    title,
+    description,
     sender
   const ts = Math.round(new Date().getTime() / 1000)
 
@@ -89,7 +92,7 @@ export async function send(
       ref = `#${payload.issue.number}`
       refUrl = payload.issue.html_url
       diffUrl = payload.issue.comments_url
-      title = payload.issue.title
+      description = payload.issue.title
       sender = payload.sender
       // ts = new Date(payload.issue.updated_at).getTime() / 1000
       break
@@ -101,7 +104,7 @@ export async function send(
       refUrl = payload.pull_request.html_url
       diffUrl = `${payload.pull_request.html_url}/files`
       diffRef = payload.pull_request.head.ref
-      title = payload.pull_request.title
+      description = payload.pull_request.title
       sender = payload.sender
       // ts = new Date(payload.pull_request.updated_at).getTime() / 1000
       break
@@ -111,7 +114,7 @@ export async function send(
       action = null
       ref = payload.ref.replace('refs/heads/', '')
       diffUrl = payload.compare
-      title = `${payload.commits.length} commits`
+      description = `${payload.commits.length} commits`
       sender = payload.sender
       // ts = new Date(payload.commits[0].timestamp).getTime() / 1000
       break
@@ -119,7 +122,7 @@ export async function send(
     case 'schedule':
       action = null
       ref = (process.env.GITHUB_REF as string).replace('refs/heads/', '')
-      title = `Schedule \`${github.context.payload.schedule}\``
+      description = `Schedule \`${github.context.payload.schedule}\``
       sender = {
         login: 'github',
         html_url: 'https://github.com/github',
@@ -138,11 +141,14 @@ export async function send(
     }
   }
 
+  const pretextTemplate = Handlebars.compile(opts?.pretext || '')
+  const titleTemplate = Handlebars.compile(opts?.title || '')
+
   const defaultText = `${
     '*<{{workflowUrl}}|Workflow _{{workflow}}_ ' +
     'job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* ' +
     'for <{{refUrl}}|`{{ref}}`>\n'
-  }${title ? '<{{diffUrl}}|`{{diffRef}}`> - {{title}}' : ''}`
+  }${description ? '<{{diffUrl}}|`{{diffRef}}`> - {{description}}' : ''}`
   const textTemplate = Handlebars.compile(message || opts?.text || defaultText)
 
   const defaultFallback = `[GitHub]: [{{repositoryName}}] {{workflow}} {{eventName}} ${
@@ -190,11 +196,13 @@ export async function send(
     refUrl,
     diffRef,
     diffUrl,
-    title,
+    description,
     sender,
     ts
   }
 
+  const pretext = pretextTemplate(data)
+  const title = titleTemplate(data)
   const text = textTemplate(data)
   const fallback = fallbackTemplate(data)
   const footer = footerTemplate(data)
@@ -205,14 +213,17 @@ export async function send(
     channel,
     attachments: [
       {
-        fallback,
+        mrkdwn_in: ['text' as const],
         color: jobColor(jobStatus, opts?.colors),
+        pretext,
         author_name: sender?.login,
         author_link: sender?.html_url,
         author_icon: sender?.avatar_url,
-        mrkdwn_in: ['text' as const],
+        title,
+        title_link: opts?.title_link,
         text,
         fields,
+        fallback,
         footer,
         footer_icon: 'https://github.githubassets.com/favicon.ico',
         ts: ts.toString()

@@ -69,8 +69,10 @@ test('workflow_dispatch event to slack', async () => {
         author_link: 'https://github.com/satterly',
         author_icon: '',
         mrkdwn_in: ['text'],
+        pretext: '',
         text:
           '*<https://github.com/act10ns/slack/actions/runs/360767681|Workflow _manual-test_ job _Build and Test_ triggered by _workflow_dispatch_ is _Success_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n',
+        title: '',
         fields: [],
         footer: '<https://github.com/act10ns/slack|act10ns/slack> #6',
         footer_icon: 'https://github.githubassets.com/favicon.ico',
