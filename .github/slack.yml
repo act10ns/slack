@@ -8,6 +8,7 @@ title_link: https://support.github.com
 text: |
   *<{{workflowUrl}}|Workflow _{{workflow}}_ job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* for <{{refUrl}}|`{{ref}}`>
   {{#if description}}<{{diffUrl}}|`{{diffRef}}`> - {{description}}{{/if}}
+  *Commits*
   {{#each payload.commits}}
   <{{this.url}}|`{{limitTo this.id 8}}`> - {{this.message}}
   {{/each}}
