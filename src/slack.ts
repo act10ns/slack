@@ -141,6 +141,10 @@ export async function send(
     }
   }
 
+  Handlebars.registerHelper('limitTo', function (aString, size) {
+    return aString.substring(0, size)
+  })
+
   const pretextTemplate = Handlebars.compile(opts?.pretext || '')
   const titleTemplate = Handlebars.compile(opts?.title || '')
 
