@@ -59,17 +59,62 @@ use:
 **Note: To override the channel the Slack webhook URL must be an
 Incoming Webhook URL. See https://api.slack.com/faq#incoming_webhooks**
 
+### `message` (optional)
+
+To override the slack message use:
+
+      with: 
+        status: ${{ job.status }}
+        channel: '#workflows'
+        message: New beta on channel ${{github.event.inputs.channel}} ready at ${{some_output_link}}
+
 ### `config` (optional)
 
-A configuration file can be used to customise the icons displayed
-for each job status.
+A configuration file can be used to customise the following Slack message fields:
+
+  - `username`
+  - `icon_url`
+  - `pretext`
+  - `title` and `title_link`
+  - `text`
+  - `fallback` plain text summary used for dumb clients and notifications
+  - message `footer`
+  - border `colors` based job status `success`, `failure`, `cancelled`. valid colors are `good` (green), `warning` (yellow), `danger` (red) or any hex color code eg. `#439FE0`
+  - `icons` for step status `success`, `failure`, `cancelled`, `skipped`, and a default
 
 Default: `.github/slack.yml`
 
-Example Config File
+      with: 
+        status: ${{ job.status }}
+        config: .slack.yml
+
+**Example Config File**
 
 ```
+username: GitHub-CI
+icon_url: 'https://octodex.github.com/images/mona-the-rivetertocat.png'
 
+text: |
+  *<{{workflowUrl}}|Workflow _{{workflow}}_ job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* for <{{refUrl}}|`{{ref}}`>
+  {{#if title}}<{{diffUrl}}|`{{diffRef}}`> - {{title}}{{/if}}
+
+fallback: |-
+  {{workflow}} {{jobName}} is {{jobStatus}}
+
+footer: >-
+  <{{repositoryUrl}}|{{repositoryName}}> {{workflow}} #{{runNumber}}
+
+colors:
+  success: '#5DADE2'
+  failure: '#884EA0'
+  cancelled: '#A569BD'
+
+icons:
+  success: ':white_check_mark:'
+  failure: ':grimacing:'
+  cancelled: ':x:'
+  skipped: ':heavy_minus_sign:'
+  default: ':interrobang:'
 ```
 
 ### Conditionals (`if`)
@@ -202,4 +247,4 @@ See https://docs.github.com/en/free-pro-team@latest/actions/managing-workflow-ru
 
 ## License
 
-Copyright (c) 2020 Nick Satterly. Available under the MIT License.
+Copyright (c) 2020-2021 Nick Satterly. Available under the MIT License.
