@@ -213,7 +213,7 @@ export async function send(
   const footer = footerTemplate(data)
 
   const octokit = new Octokit()
-  const [owner, repo] = repositoryName.split("/")
+  const [owner, repo] = (repositoryName || '').split("/")
 
   const response = await octokit.request("GET /repos/{owner}/{repo}/actions/runs/{run_id}/timing", {
     owner,
