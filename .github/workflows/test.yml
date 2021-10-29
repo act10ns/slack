@@ -91,4 +91,5 @@ jobs:
         status: ${{ job.status }}
         steps: ${{ toJson(steps) }}
         channel: '#actions'
+        # message: '[{{shortSha}}] {{title}} -> {{jobStatus}}'
       if: always()

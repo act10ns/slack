@@ -17,6 +17,10 @@ lint:
 test:
 	npm test
 
+## install		- Install dependencies.
+install:
+	npm install
+
 ## build			- Build and pack.
 build:
 	npm run build && npm run pack

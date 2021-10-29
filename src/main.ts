@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import {readFileSync} from 'fs'
-import send from './slack'
+import {send, ConfigOptions} from './slack'
+import * as yaml from 'js-yaml'
 
 async function run(): Promise<void> {
   try {
@@ -12,14 +13,19 @@ async function run(): Promise<void> {
     const readEvent = (): object => JSON.parse(readFileSync(event, 'utf8'))
     core.debug(JSON.stringify(readEvent()))
 
+    const configFile = core.getInput('config', {required: false})
+    const config = yaml.load(readFileSync(configFile, 'utf-8'), {schema: yaml.FAILSAFE_SCHEMA}) as ConfigOptions
+    core.debug(config.toString())
+
     const url = process.env.SLACK_WEBHOOK_URL as string
     const jobName = process.env.GITHUB_JOB as string
     const jobStatus = core.getInput('status', {required: true}).toUpperCase()
     const jobSteps = JSON.parse(core.getInput('steps', {required: false}) || '{}')
     const channel = core.getInput('channel', {required: false})
+    const message = core.getInput('message', {required: false})
 
     if (url) {
-      await send(url, jobName, jobStatus, jobSteps, channel)
+      await send(url, jobName, jobStatus, jobSteps, channel, message, config)
       core.debug('Sent to Slack.')
     } else {
       core.info('No "SLACK_WEBHOOK_URL" secret configured. Skip.')

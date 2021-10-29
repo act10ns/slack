@@ -2,27 +2,58 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {EventPayloads} from '@octokit/webhooks'
 import {IncomingWebhook, IncomingWebhookResult} from '@slack/webhook'
+import Handlebars from 'handlebars'
 
-function jobColor(status: string): string | undefined {
-  if (status.toLowerCase() === 'success') return 'good'
-  if (status.toLowerCase() === 'failure') return 'danger'
-  if (status.toLowerCase() === 'cancelled') return 'warning'
+interface ColorOptions {
+  success?: string | undefined
+  failure?: string | undefined
+  cancelled?: string | undefined
 }
 
-function stepIcon(status: string): string {
-  if (status.toLowerCase() === 'success') return ':heavy_check_mark:'
-  if (status.toLowerCase() === 'failure') return ':x:'
-  if (status.toLowerCase() === 'cancelled') return ':exclamation:'
-  if (status.toLowerCase() === 'skipped') return ':no_entry_sign:'
+function jobColor(status: string, opts?: ColorOptions): string | undefined {
+  if (status.toLowerCase() === 'success') return opts?.success || 'good'
+  if (status.toLowerCase() === 'failure') return opts?.failure || 'danger'
+  if (status.toLowerCase() === 'cancelled') return opts?.cancelled || 'warning'
+}
+
+interface IconOptions {
+  success?: string | undefined
+  failure?: string | undefined
+  cancelled?: string | undefined
+  skipped?: string | undefined
+  default?: string | undefined
+}
+
+function stepIcon(status: string, opts?: IconOptions): string {
+  if (status.toLowerCase() === 'success') return opts?.success || ':heavy_check_mark:'
+  if (status.toLowerCase() === 'failure') return opts?.failure || ':x:'
+  if (status.toLowerCase() === 'cancelled') return opts?.cancelled || ':exclamation:'
+  if (status.toLowerCase() === 'skipped') return opts?.skipped || ':no_entry_sign:'
   return `:grey_question: ${status}`
 }
 
-async function send(
+export interface ConfigOptions {
+  username?: string | undefined
+  icon_url?: string | undefined
+  text?: string | undefined
+  fallback?: string | undefined
+  footer?: string | undefined
+  colors?: object | undefined
+  icons?: object | undefined
+  attachments?: object | undefined
+  blocks?: object | undefined
+  unfurl_links?: boolean | undefined
+  unfurl_media?: boolean | undefined
+}
+
+export async function send(
   url: string,
   jobName: string,
   jobStatus: string,
   jobSteps: object,
-  channel?: string
+  channel?: string,
+  message?: string,
+  opts?: ConfigOptions
 ): Promise<IncomingWebhookResult> {
   const eventName = process.env.GITHUB_EVENT_NAME
   const workflow = process.env.GITHUB_WORKFLOW
@@ -107,16 +138,25 @@ async function send(
     }
   }
 
-  const text = `${
-    `*<${workflowUrl}|Workflow _${workflow}_ ` +
-    `job _${jobName}_ triggered by _${eventName}_ is _${jobStatus}_>* ` +
-    `for <${refUrl}|\`${ref}\`>\n`
-  }${title ? `<${diffUrl}|\`${diffRef}\`> - ${title}` : ''}`
+  const defaultText = `${
+    '*<{{workflowUrl}}|Workflow _{{workflow}}_ ' +
+    'job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* ' +
+    'for <{{refUrl}}|`{{ref}}`>\n'
+  }${title ? '<{{diffUrl}}|`{{diffRef}}`> - {{title}}' : ''}`
+  const textTemplate = Handlebars.compile(message || opts?.text || defaultText)
+
+  const defaultFallback = `[GitHub]: [{{repositoryName}}] {{workflow}} {{eventName}} ${
+    action ? '{{action}} ' : ''
+  }{{jobStatus}}`
+  const fallbackTemplate = Handlebars.compile(opts?.fallback || defaultFallback)
+
+  const defaultFooter = '<{{repositoryUrl}}|{{repositoryName}}> #{{runNumber}}'
+  const footerTemplate = Handlebars.compile(opts?.footer || defaultFooter)
 
   // add job steps, if provided
   const checks: string[] = []
   for (const [step, status] of Object.entries(jobSteps)) {
-    checks.push(`${stepIcon(status.outcome)} ${step}`)
+    checks.push(`${stepIcon(status.outcome, opts?.icons)} ${step}`)
   }
   const fields = []
   if (checks.length) {
@@ -127,21 +167,53 @@ async function send(
     })
   }
 
-  const message = {
-    username: 'GitHub Action',
-    icon_url: 'https://octodex.github.com/images/original.png',
+  const data = {
+    env: process.env,
+    payload: payload || {},
+    url,
+    jobName,
+    jobStatus,
+    jobSteps,
+    eventName,
+    workflow,
+    workflowUrl,
+    repositoryName,
+    repositoryUrl,
+    runId,
+    runNumber,
+    sha,
+    shortSha,
+    branch,
+    actor,
+    action,
+    ref,
+    refUrl,
+    diffRef,
+    diffUrl,
+    title,
+    sender,
+    ts
+  }
+
+  const text = textTemplate(data)
+  const fallback = fallbackTemplate(data)
+  const footer = footerTemplate(data)
+
+  const postMessage = {
+    username: opts?.username || 'GitHub Action',
+    icon_url: opts?.icon_url || 'https://octodex.github.com/images/original.png',
     channel,
     attachments: [
       {
-        fallback: `[GitHub]: [${repositoryName}] ${workflow} ${eventName} ${action ? `${action} ` : ''}${jobStatus}`,
-        color: jobColor(jobStatus),
+        fallback,
+        color: jobColor(jobStatus, opts?.colors),
         author_name: sender?.login,
         author_link: sender?.html_url,
         author_icon: sender?.avatar_url,
         mrkdwn_in: ['text' as const],
         text,
         fields,
-        footer: `<${repositoryUrl}|${repositoryName}> #${runNumber}`,
+        footer,
         footer_icon: 'https://github.githubassets.com/favicon.ico',
         ts: ts.toString()
       }
@@ -150,7 +222,5 @@ async function send(
   core.debug(JSON.stringify(message, null, 2))
 
   const webhook = new IncomingWebhook(url)
-  return await webhook.send(message)
+  return await webhook.send(postMessage)
 }
-
-export default send

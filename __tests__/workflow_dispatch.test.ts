@@ -1,7 +1,7 @@
 import * as github from '@actions/github'
 import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
-import send from '../src/slack'
+import {send} from '../src/slack'
 import {readFileSync} from 'fs'
 
 const url = 'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX'
@@ -9,6 +9,7 @@ const jobName = 'Build and Test'
 const jobStatus = 'Success'
 const jobSteps = {}
 const channel = '@override'
+const message = undefined
 
 // mock github context
 const dump = JSON.parse(readFileSync('./__tests__/fixtures/workflow_dispatch.json', 'utf-8'))
@@ -53,7 +54,7 @@ test('workflow_dispatch event to slack', async () => {
     .onAny()
     .reply(500)
 
-  const res = await send(url, jobName, jobStatus, jobSteps, channel)
+  const res = await send(url, jobName, jobStatus, jobSteps, channel, message)
   await expect(res).toStrictEqual({text: {status: 'ok'}})
 
   expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({

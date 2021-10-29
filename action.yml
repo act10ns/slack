@@ -2,6 +2,10 @@ name: slack - GitHub Actions Slack integration
 description: Notify Slack of GitHub Actions workflows, jobs and step status.
 author: satterly
 inputs:
+  config:
+    description: Configuration file
+    required: false
+    default: .github/slack.yml
   status:
     description: Specify success, failure, cancelled or a custom status.
     required: true
@@ -10,6 +14,9 @@ inputs:
     required: false
   channel:
     description: Override default channel with different channel or username
+    required: false
+  message:
+    description: Override message format for step
     required: false
 runs:
   using: 'node12'
