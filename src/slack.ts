@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import {Octokit} from '@octokit/action'
 import {EventPayloads} from '@octokit/webhooks'
 import {IncomingWebhook, IncomingWebhookResult} from '@slack/webhook'
 import Handlebars from 'handlebars'
@@ -210,6 +211,16 @@ export async function send(
   const text = textTemplate(data)
   const fallback = fallbackTemplate(data)
   const footer = footerTemplate(data)
+
+  const octokit = new Octokit()
+  const [owner, repo] = repositoryName.split("/")
+
+  const response = await octokit.request("GET /repos/{owner}/{repo}/actions/runs/{run_id}/timing", {
+    owner,
+    repo,
+    run_id: runNumber
+  });
+  core.info(response.toString())
 
   const postMessage = {
     username: opts?.username || 'GitHub Action',
