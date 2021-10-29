@@ -87,7 +87,10 @@ test('custom config of slack action', async () => {
   let config: ConfigOptions = {
     username: 'Act10ns Slack',
     icon_url: 'https://octodex.github.com/images/mona-the-rivetertocat.png',
+    pretext: 'Optional pre-text that appears above the attachment block',
     text: '[{{jobStatus}}] {{ workflow }} workflow {{jobName}} job triggered by {{eventName}}',
+    title: 'GitHub Actions',
+    title_link: 'https://support.github.com',
     fallback: '[GitHub]: [{{repositoryName}}] {{workflow}} workflow triggered on {{eventName}} is {{jobStatus}}',
     footer: '',
     colors: {
@@ -120,7 +123,10 @@ test('custom config of slack action', async () => {
         author_link: 'https://github.com/satterly',
         author_icon: 'https://avatars0.githubusercontent.com/u/615057?v=4',
         mrkdwn_in: ['text'],
+        pretext: 'Optional pre-text that appears above the attachment block',
         text: '[failure] build-test workflow CI Tests job triggered by push',
+        title: 'GitHub Actions',
+        title_link: 'https://support.github.com',
         fields: [
           {
             short: false,
@@ -173,7 +179,9 @@ test('custom config of slack action', async () => {
         author_link: 'https://github.com/satterly',
         author_icon: 'https://avatars0.githubusercontent.com/u/615057?v=4',
         mrkdwn_in: ['text'],
+        pretext: '',
         text: '[failure] build-test workflow CI Tests job triggered by push',
+        title: '',
         fields: [
           {
             short: false,
