@@ -43,8 +43,7 @@ export interface ConfigOptions {
   footer?: string | undefined
   colors?: object | undefined
   icons?: object | undefined
-  attachments?: object | undefined
-  blocks?: object | undefined
+  blocks?: Array<object> | undefined
   unfurl_links?: boolean | undefined
   unfurl_media?: boolean | undefined
 }
@@ -211,8 +210,9 @@ export async function send(
   const fallback = fallbackTemplate(data)
   const footer = footerTemplate(data)
 
+  let postMessage: object
   if (opts?.blocks) {
-    const postMessage = {
+    postMessage = {
       username: opts?.username || 'GitHub Action',
       icon_url: opts?.icon_url || 'https://octodex.github.com/images/original.png',
       channel,
@@ -236,7 +236,7 @@ export async function send(
       ]
     }
   } else {
-    const postMessage = {
+    postMessage = {
       username: opts?.username || 'GitHub Action',
       icon_url: opts?.icon_url || 'https://octodex.github.com/images/original.png',
       channel,
