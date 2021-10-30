@@ -211,29 +211,56 @@ export async function send(
   const fallback = fallbackTemplate(data)
   const footer = footerTemplate(data)
 
-  const postMessage = {
-    username: opts?.username || 'GitHub Action',
-    icon_url: opts?.icon_url || 'https://octodex.github.com/images/original.png',
-    channel,
-    attachments: [
-      {
-        mrkdwn_in: ['text' as const],
-        color: jobColor(jobStatus, opts?.colors),
-        pretext,
-        author_name: sender?.login,
-        author_link: sender?.html_url,
-        author_icon: sender?.avatar_url,
-        title,
-        title_link: opts?.title_link,
-        text,
-        fields,
-        fallback,
-        footer,
-        footer_icon: 'https://github.githubassets.com/favicon.ico',
-        ts: ts.toString()
-      }
-    ]
+  if (opts?.blocks) {
+    const postMessage = {
+      username: opts?.username || 'GitHub Action',
+      icon_url: opts?.icon_url || 'https://octodex.github.com/images/original.png',
+      channel,
+      attachments: [
+        {
+          mrkdwn_in: ['text' as const],
+          color: jobColor(jobStatus, opts?.colors),
+          pretext,
+          author_name: sender?.login,
+          author_link: sender?.html_url,
+          author_icon: sender?.avatar_url,
+          title,
+          title_link: opts?.title_link,
+          text,
+          fields,
+          fallback,
+          footer,
+          footer_icon: 'https://github.githubassets.com/favicon.ico',
+          ts: ts.toString()
+        }
+      ]
+    }
+  } else {
+    const postMessage = {
+      username: opts?.username || 'GitHub Action',
+      icon_url: opts?.icon_url || 'https://octodex.github.com/images/original.png',
+      channel,
+      attachments: [
+        {
+          mrkdwn_in: ['text' as const],
+          color: jobColor(jobStatus, opts?.colors),
+          pretext,
+          author_name: sender?.login,
+          author_link: sender?.html_url,
+          author_icon: sender?.avatar_url,
+          title,
+          title_link: opts?.title_link,
+          text,
+          fields,
+          fallback,
+          footer,
+          footer_icon: 'https://github.githubassets.com/favicon.ico',
+          ts: ts.toString()
+        }
+      ]
+    }
   }
+
   core.debug(JSON.stringify(message, null, 2))
 
   const webhook = new IncomingWebhook(url)

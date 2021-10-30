@@ -30,6 +30,7 @@ on: # rebuild any PRs and main branch changes
   watch:
 
 env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 jobs:
