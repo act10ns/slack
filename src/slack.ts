@@ -216,23 +216,8 @@ export async function send(
       username: opts?.username || 'GitHub Action',
       icon_url: opts?.icon_url || 'https://octodex.github.com/images/original.png',
       channel,
-      attachments: [
-        {
-          mrkdwn_in: ['text' as const],
-          color: jobColor(jobStatus, opts?.colors),
-          pretext,
-          author_name: sender?.login,
-          author_link: sender?.html_url,
-          author_icon: sender?.avatar_url,
-          title,
-          title_link: opts?.title_link,
-          text,
-          fields,
-          fallback,
-          footer,
-          footer_icon: 'https://github.githubassets.com/favicon.ico',
-          ts: ts.toString()
-        }
+      blocks: [
+        
       ]
     }
   } else {
