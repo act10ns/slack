@@ -32,6 +32,13 @@ function stepIcon(status: string, opts?: IconOptions): string {
   return `:grey_question: ${status}`
 }
 
+interface Field {
+  title: string
+  value: string
+  short: boolean
+  if?: string | undefined
+}
+
 export interface ConfigOptions {
   username?: string | undefined
   icon_url?: string | undefined
@@ -40,11 +47,10 @@ export interface ConfigOptions {
   title_link?: string | undefined
   text?: string | undefined
   fallback?: string | undefined
+  fields?: Field[] | undefined
   footer?: string | undefined
   colors?: object | undefined
   icons?: object | undefined
-  attachments?: object | undefined
-  blocks?: object | undefined
   unfurl_links?: boolean | undefined
   unfurl_media?: boolean | undefined
 }
@@ -65,11 +71,13 @@ export async function send(
 
   const runId = process.env.GITHUB_RUN_ID
   const runNumber = process.env.GITHUB_RUN_NUMBER
-  const workflowUrl = `${repositoryUrl}/actions/runs/${runId}`
+  const workflowUrl = `${repositoryUrl}/actions?query=${workflow}`
+  const workflowRunUrl = `${repositoryUrl}/actions/runs/${runId}`
 
   const sha = process.env.GITHUB_SHA as string
   const shortSha = sha.slice(0, 8)
   const branch = process.env.GITHUB_HEAD_REF || (process.env.GITHUB_REF?.replace('refs/heads/', '') as string)
+  const refType = process.env.GITHUB_REF_TYPE
   const actor = process.env.GITHUB_ACTOR
 
   let payload,
@@ -141,8 +149,20 @@ export async function send(
     }
   }
 
-  Handlebars.registerHelper('limitTo', function (aString, size) {
-    return aString.substring(0, size)
+  Handlebars.registerHelper('icon', function (status) {
+    return stepIcon(status, opts?.icons)
+  })
+
+  Handlebars.registerHelper('json', function (context) {
+    return JSON.stringify(context)
+  })
+
+  Handlebars.registerHelper('limitTo', function (text, size) {
+    return text.substring(0, size)
+  })
+
+  Handlebars.registerHelper('or', function (op1, op2) {
+    return op1 || op2
   })
 
   const pretextTemplate = Handlebars.compile(opts?.pretext || '')
@@ -160,22 +180,32 @@ export async function send(
   }{{jobStatus}}`
   const fallbackTemplate = Handlebars.compile(opts?.fallback || defaultFallback)
 
+  const defaultFields = Object.entries(jobSteps).length
+    ? [
+        {
+          title: 'Job Steps',
+          value: '{{#each jobSteps}}{{icon this.outcome}} {{@key}}\n{{~/each}}',
+          short: false,
+          if: 'always()'
+        }
+      ]
+    : []
+
+  const filteredFields: object[] = []
+  for (const field of opts?.fields || defaultFields) {
+    const field_if = field?.if || 'always()'
+    if (field_if === 'always()' || field_if.startsWith(jobStatus.toLowerCase())) {
+      filteredFields.push({
+        title: field.title,
+        value: field.value,
+        short: JSON.parse(field.short.toString())
+      })
+    }
+  }
+  const fieldsTemplate = Handlebars.compile(JSON.stringify(filteredFields))
+
   const defaultFooter = '<{{repositoryUrl}}|{{repositoryName}}> #{{runNumber}}'
   const footerTemplate = Handlebars.compile(opts?.footer || defaultFooter)
-
-  // add job steps, if provided
-  const checks: string[] = []
-  for (const [step, status] of Object.entries(jobSteps)) {
-    checks.push(`${stepIcon(status.outcome, opts?.icons)} ${step}`)
-  }
-  const fields = []
-  if (checks.length) {
-    fields.push({
-      title: 'Job Steps',
-      value: checks.join('\n'),
-      short: false
-    })
-  }
 
   const data = {
     env: process.env,
@@ -187,6 +217,7 @@ export async function send(
     eventName,
     workflow,
     workflowUrl,
+    workflowRunUrl,
     repositoryName,
     repositoryUrl,
     runId,
@@ -197,6 +228,7 @@ export async function send(
     actor,
     action,
     ref,
+    refType,
     refUrl,
     diffRef,
     diffUrl,
@@ -209,6 +241,7 @@ export async function send(
   const title = titleTemplate(data)
   const text = textTemplate(data)
   const fallback = fallbackTemplate(data)
+  const fields = JSON.parse(fieldsTemplate(data))
   const footer = footerTemplate(data)
 
   const postMessage = {
@@ -217,7 +250,7 @@ export async function send(
     channel,
     attachments: [
       {
-        mrkdwn_in: ['text' as const],
+        mrkdwn_in: ['pretext' as const, 'text' as const, 'fields' as const],
         color: jobColor(jobStatus, opts?.colors),
         pretext,
         author_name: sender?.login,
@@ -234,7 +267,7 @@ export async function send(
       }
     ]
   }
-  core.debug(JSON.stringify(message, null, 2))
+  core.debug(JSON.stringify(postMessage, null, 2))
 
   const webhook = new IncomingWebhook(url)
   return await webhook.send(postMessage)

@@ -1,9 +1,15 @@
 #!make
 
+TEST_REGEX ?= *.ts
+
 .DEFAULT_GOAL:=help
 
 all:
 	npm run all
+
+## install		- Install dependencies.
+install:
+	npm install
 
 ## format			- Code formatter.
 format:
@@ -17,9 +23,9 @@ lint:
 test:
 	npm test
 
-## install		- Install dependencies.
-install:
-	npm install
+## test.only		- Only run defined unit tests.
+test.only:
+	npm test -- $(TEST_REGEX)
 
 ## build			- Build and pack.
 build:

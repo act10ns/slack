@@ -67,10 +67,10 @@ test('pull request event to slack', async () => {
         author_name: 'satterly',
         author_link: 'https://github.com/satterly',
         author_icon: 'https://avatars0.githubusercontent.com/u/615057?v=4',
-        mrkdwn_in: ['text'],
+        mrkdwn_in: ['pretext', 'text', 'fields'],
         pretext: '',
         text:
-          '*<https://github.com/act10ns/slack/actions/runs/360703544|Workflow _build-test_ job _Build and Test_ triggered by _pull_request_ is _Success_>* for <https://github.com/act10ns/slack/pull/17|`#17`>\n<https://github.com/act10ns/slack/pull/17/files|`rename-to-slack`> - Rename to slack',
+          '*<https://github.com/act10ns/slack/actions?query&#x3D;build-test|Workflow _build-test_ job _Build and Test_ triggered by _pull_request_ is _Success_>* for <https://github.com/act10ns/slack/pull/17|`#17`>\n<https://github.com/act10ns/slack/pull/17/files|`rename-to-slack`> - Rename to slack',
         title: '',
         fields: [],
         footer: '<https://github.com/act10ns/slack|act10ns/slack> #760',
