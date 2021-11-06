@@ -23,6 +23,9 @@ async function run(): Promise<void> {
     const jobSteps = JSON.parse(core.getInput('steps', {required: false}) || '{}')
     const channel = core.getInput('channel', {required: false})
     const message = core.getInput('message', {required: false})
+    core.debug(`url: ${url}`)
+    core.debug(`jobName: ${jobName}, jobStatus: ${jobStatus}`)
+    core.debug(`channel: ${channel}, message: ${message}`)
 
     if (url) {
       await send(url, jobName, jobStatus, jobSteps, channel, message, config)
