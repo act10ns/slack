@@ -1,20 +1,46 @@
 username: GitHub-CI
-icon_url: 'https://octodex.github.com/images/mona-the-rivetertocat.png'
+icon_url: https://octodex.github.com/images/mona-the-rivetertocat.png
 
-pretext: Optional pre-text that appears above the attachment block
+pretext: Triggered via {{eventName}} by {{actor}} {{or action "action"}} {{ref}} `{{diffRef}}`
 title: GitHub Actions
 title_link: https://support.github.com
 
 text: |
-  *<{{workflowUrl}}|Workflow _{{workflow}}_ job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* for <{{refUrl}}|`{{ref}}`>
+  *<{{workflowRunUrl}}|Workflow _{{workflow}}_ job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* for <{{refUrl}}|`{{ref}}`>
   {{#if description}}<{{diffUrl}}|`{{diffRef}}`> - {{description}}{{/if}}
+  {{#if payload.commits}}
   *Commits*
   {{#each payload.commits}}
   <{{this.url}}|`{{limitTo this.id 8}}`> - {{this.message}}
   {{/each}}
+  {{/if}}
 
 fallback: |-
-  {{workflow}} {{jobName}} is {{jobStatus}}
+  [GitHub] {{workflow}} #{{runNumber}} {{jobName}} is {{jobStatus}}
+
+fields:
+  - title: Job Steps
+    value: "{{#each jobSteps}}{{icon this.outcome}} {{@key}}\n{{/each}}"
+    short: false
+  - title: Workflow
+    value: "<{{workflowUrl}}|{{workflow}}>"
+    short: true
+  - title: Git Ref
+    value: "{{ref}} ({{refType}})"
+    short: true
+  - title: Run ID
+    value: |-
+      <{{workflowRunUrl}}|{{runId}}>
+    short: true
+  - title: Run Number
+    value: "{{runNumber}}"
+    short: true
+  - title: Actor
+    value: "{{actor}}"
+    short: true
+  - title: Job Status
+    value: "{{jobStatus}}"
+    short: true
 
 footer: >-
   <{{repositoryUrl}}|{{repositoryName}}> {{workflow}} #{{runNumber}}

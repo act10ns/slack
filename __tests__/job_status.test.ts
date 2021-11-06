@@ -100,17 +100,17 @@ test('push event to slack', async () => {
         author_name: 'satterly',
         author_link: 'https://github.com/satterly',
         author_icon: 'https://avatars0.githubusercontent.com/u/615057?v=4',
-        mrkdwn_in: ['text'],
+        mrkdwn_in: ['pretext', 'text', 'fields'],
         pretext: '',
         text:
-          '*<https://github.com/act10ns/slack/actions/runs/100143423|Workflow _build-test_ job _CI Tests_ triggered by _push_ is _failure_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n<https://github.com/act10ns/slack/compare/db9fe60430a6...68d48876e079|`68d48876`> - 4 commits',
+          '*<https://github.com/act10ns/slack/actions?query&#x3D;build-test|Workflow _build-test_ job _CI Tests_ triggered by _push_ is _failure_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n<https://github.com/act10ns/slack/compare/db9fe60430a6...68d48876e079|`68d48876`> - 4 commits',
         title: '',
         fields: [
           {
             short: false,
             title: 'Job Steps',
             value:
-              ':no_entry_sign: install-deps\n:no_entry_sign: hooks\n:no_entry_sign: lint\n:no_entry_sign: types\n:no_entry_sign: unit-test\n:no_entry_sign: integration-test'
+              ':no_entry_sign: install-deps\n:no_entry_sign: hooks\n:no_entry_sign: lint\n:no_entry_sign: types\n:no_entry_sign: unit-test\n:no_entry_sign: integration-test\n'
           }
         ],
         footer: '<https://github.com/act10ns/slack|act10ns/slack> #8',

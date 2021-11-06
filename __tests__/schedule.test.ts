@@ -63,10 +63,10 @@ test('schedule event to slack', async () => {
         author_name: 'github',
         author_link: 'https://github.com/github',
         author_icon: 'https://avatars1.githubusercontent.com/u/9919?s=200&v=4',
-        mrkdwn_in: ['text'],
+        mrkdwn_in: ['pretext', 'text', 'fields'],
         pretext: '',
         text:
-          '*<https://github.com/act10ns/slack/actions/runs/363600556|Workflow _schedule-test_ job _Build and Test_ triggered by _schedule_ is _Success_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n<https://github.com/act10ns/slack/commit/09a6b2c9|`09a6b2c9`> - Schedule &#x60;*/15 * * * *&#x60;',
+          '*<https://github.com/act10ns/slack/actions?query&#x3D;schedule-test|Workflow _schedule-test_ job _Build and Test_ triggered by _schedule_ is _Success_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n<https://github.com/act10ns/slack/commit/09a6b2c9|`09a6b2c9`> - Schedule &#x60;*/15 * * * *&#x60;',
         title: '',
         fields: [],
         footer: '<https://github.com/act10ns/slack|act10ns/slack> #179',
