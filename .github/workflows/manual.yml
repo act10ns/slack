@@ -19,4 +19,5 @@ jobs:
         status: ${{ job.status }}
         steps: ${{ toJson(steps) }}
         channel: '#actions'
+        message: Manual test of {{ env.GITHUB_REF_NAME }} branch...
       if: always()

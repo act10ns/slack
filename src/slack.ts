@@ -8,12 +8,14 @@ interface ColorOptions {
   success?: string | undefined
   failure?: string | undefined
   cancelled?: string | undefined
+  default?: string | undefined
 }
 
 function jobColor(status: string, opts?: ColorOptions): string | undefined {
   if (status.toLowerCase() === 'success') return opts?.success || 'good'
   if (status.toLowerCase() === 'failure') return opts?.failure || 'danger'
   if (status.toLowerCase() === 'cancelled') return opts?.cancelled || 'warning'
+  return opts?.default || '#C0C0C0' // silver
 }
 
 interface IconOptions {
