@@ -4012,14 +4012,13 @@ function run() {
             core.debug(JSON.stringify(readEvent()));
             const configFile = core.getInput('config', { required: false });
             const config = yaml.load(fs_1.readFileSync(configFile, 'utf-8'), { schema: yaml.FAILSAFE_SCHEMA });
-            core.debug(config.toString());
+            core.debug(yaml.dump(config));
             const url = process.env.SLACK_WEBHOOK_URL;
             const jobName = process.env.GITHUB_JOB;
             const jobStatus = core.getInput('status', { required: true }).toUpperCase();
             const jobSteps = JSON.parse(core.getInput('steps', { required: false }) || '{}');
             const channel = core.getInput('channel', { required: false });
             const message = core.getInput('message', { required: false });
-            core.debug(`url: ${url}`);
             core.debug(`jobName: ${jobName}, jobStatus: ${jobStatus}`);
             core.debug(`channel: ${channel}, message: ${message}`);
             if (url) {
@@ -13412,7 +13411,6 @@ function send(url, jobName, jobStatus, jobSteps, channel, message, opts) {
         const data = {
             env: process.env,
             payload: payload || {},
-            url,
             jobName,
             jobStatus,
             jobSteps,

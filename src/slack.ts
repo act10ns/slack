@@ -212,7 +212,6 @@ export async function send(
   const data = {
     env: process.env,
     payload: payload || {},
-    url,
     jobName,
     jobStatus,
     jobSteps,

@@ -66,7 +66,7 @@ To override the slack message use:
       with: 
         status: ${{ job.status }}
         channel: '#workflows'
-        message: New beta on channel ${{github.event.inputs.channel}} ready at ${{some_output_link}}
+        message: Deploying {{ env.GITHUB_REF_NAME }} branch
 
 ### `config` (optional)
 
@@ -78,6 +78,7 @@ A configuration file can be used to customise the following Slack message fields
   - `title` and `title_link`
   - `text`
   - `fallback` plain text summary used for dumb clients and notifications
+  - `fields` title, value and short/long
   - message `footer`
   - border `colors` based job status `success`, `failure`, `cancelled`. valid colors are `good` (green), `warning` (yellow), `danger` (red) or any hex color code eg. `#439FE0`
   - `icons` for step status `success`, `failure`, `cancelled`, `skipped`, and a default
@@ -86,20 +87,83 @@ Default: `.github/slack.yml`
 
       with: 
         status: ${{ job.status }}
-        config: .slack.yml
+        config: .github/config/slack.yml
 
-**Example Config File**
+The following [Slack message fields](https://api.slack.com/reference/messaging/attachments) support templating using [Handlebars.js](https://handlebarsjs.com/guide/) format:
+
+- `pretext`
+- `title`
+- `text` and `message`
+- `fallback`
+- `fields` `title` and `value`
+
+**Supported Template variables**
+
+`env.*`, `payload.*`, `jobName`, `jobStatus`, `jobSteps`,
+`eventName`, `workflow`, `workflowUrl`, `workflowRunUrl`, `repositoryName`, `repositoryUrl`, `runId`, `runNumber`, `sha`, `shortSha`, `branch`, `actor`, `action`, `ref`, `refType`, `refUrl`, `diffRef`, `diffUrl`, `description`, `sender`
+
+**Helper Functions**
+
+Apart from the [standard helper functions](https://handlebarsjs.com/guide/builtin-helpers.html#if) such as `#if` and `#each` there are also a few custom
+ones:
+
+- `icon` converts a job status into an icon eg. `{{icon jobStatus}}`
+- `json` dumps the value as a JSON string eg. `{{json payload.commits}}`
+- `limitTo` cuts the string at the limit eg. `{{limitTo sha 8}}`
+- `or` allows a alternative or default value eg. `{{or headRef baseRef}}`
+
+**Example Using Config File**
+
+To generate the message format below use the `slack.yml` configuration file that follows.
+
+<img src="./docs/images/example3.png" width="540" title="Slack Example #1">
+
+*Example Configuration File: slack.yml*
 
 ```
 username: GitHub-CI
-icon_url: 'https://octodex.github.com/images/mona-the-rivetertocat.png'
+icon_url: https://octodex.github.com/images/mona-the-rivetertocat.png
+
+pretext: Triggered via {{eventName}} by {{actor}} {{or action "action"}} {{ref}} `{{diffRef}}`
+title: GitHub Actions
+title_link: https://support.github.com
 
 text: |
-  *<{{workflowUrl}}|Workflow _{{workflow}}_ job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* for <{{refUrl}}|`{{ref}}`>
-  {{#if title}}<{{diffUrl}}|`{{diffRef}}`> - {{title}}{{/if}}
+  *<{{workflowRunUrl}}|Workflow _{{workflow}}_ job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* for <{{refUrl}}|`{{ref}}`>
+  {{#if description}}<{{diffUrl}}|`{{diffRef}}`> - {{description}}{{/if}}
+  {{#if payload.commits}}
+  *Commits*
+  {{#each payload.commits}}
+  <{{this.url}}|`{{limitTo this.id 8}}`> - {{this.message}}
+  {{/each}}
+  {{/if}}
 
 fallback: |-
-  {{workflow}} {{jobName}} is {{jobStatus}}
+  [GitHub] {{workflow}} #{{runNumber}} {{jobName}} is {{jobStatus}}
+
+fields:
+  - title: Job Steps
+    value: "{{#each jobSteps}}{{icon this.outcome}} {{@key}}\n{{/each}}"
+    short: false
+  - title: Workflow
+    value: "<{{workflowUrl}}|{{workflow}}>"
+    short: true
+  - title: Git Ref
+    value: "{{ref}} ({{refType}})"
+    short: true
+  - title: Run ID
+    value: |-
+      <{{workflowRunUrl}}|{{runId}}>
+    short: true
+  - title: Run Number
+    value: "{{runNumber}}"
+    short: true
+  - title: Actor
+    value: "{{actor}}"
+    short: true
+  - title: Job Status
+    value: "{{jobStatus}}"
+    short: true
 
 footer: >-
   <{{repositoryUrl}}|{{repositoryName}}> {{workflow}} #{{runNumber}}
@@ -108,6 +172,7 @@ colors:
   success: '#5DADE2'
   failure: '#884EA0'
   cancelled: '#A569BD'
+  default: '#7D3C98'
 
 icons:
   success: ':white_check_mark:'
@@ -116,6 +181,12 @@ icons:
   skipped: ':heavy_minus_sign:'
   default: ':interrobang:'
 ```
+
+*Notes:*
+
+* If template expressions occur at the start of a string the string must be double-quoted eg. `pretext: "{{eventName}} triggered by {{actor}}"`
+* Use [YAML multiline string formats](https://yaml-multiline.info/) `|`, `>`, `|-` and `>-` or double-quotes `"\n"` to control how new lines
+* Use `~` (tilde) character to control whitepace when looping see [Whitespace control](https://handlebarsjs.com/guide/expressions.html#whitespace-control)
 
 ### Conditionals (`if`)
 
@@ -194,6 +265,7 @@ or
             with:
               status: starting
               channel: '#workflows'
+              message: Starting Docker Build and Push...
             if: always()
           - name: Checkout
             uses: actions/checkout@v2
@@ -240,10 +312,12 @@ See https://docs.github.com/en/free-pro-team@latest/actions/managing-workflow-ru
 * GitHub Actions Toolkit https://github.com/actions/toolkit/tree/main/packages/github
 * GitHub Actions Starter Workflows https://github.com/actions/starter-workflows
 * Slack Incoming Webhooks https://slack.com/apps/A0F7XDUAZ-incoming-webhooks?next_id=0
-
 * Env vars https://docs.github.com/en/free-pro-team@latest/actions/reference/environment-variables
 * Webhook Payloads https://docs.github.com/en/free-pro-team@latest/developers/webhooks-and-events/webhook-events-and-payloads#webhook-payload-object-common-properties
 * GitHub Actions Cheat Sheet https://github.github.io/actions-cheat-sheet/actions-cheat-sheet.html
+* Slack Secondary message attachments https://api.slack.com/reference/messaging/attachments
+* Handlebars Language Guide https://handlebarsjs.com/guide/
+* YAML multiline string formats https://yaml-multiline.info/
 
 ## License
 

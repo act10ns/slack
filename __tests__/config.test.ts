@@ -88,7 +88,9 @@ test('custom config of slack action', async () => {
 
   let message = undefined
 
-  let config = yaml.load(readFileSync('./.github/slack.yml', 'utf-8'), {schema: yaml.FAILSAFE_SCHEMA}) as ConfigOptions
+  let config = yaml.load(readFileSync('./__tests__/fixtures/slack.yml', 'utf-8'), {
+    schema: yaml.FAILSAFE_SCHEMA
+  }) as ConfigOptions
 
   let res = await send(url, jobName, jobStatus, jobSteps, channel, message, config)
   await expect(res).toStrictEqual({text: {status: 'ok'}})
