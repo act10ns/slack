@@ -103,9 +103,9 @@ After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/
 ## Release
 
 ```bash
-$ make build
 $ vi package.json
 $ vi package-lock.json
+$ make build
 $ git add .
 $ git commit -m 'Bump version 1.0.13 -> 1.1.0'
 $ git tag -a v1.1.0 -m 'version 1.1.0'
