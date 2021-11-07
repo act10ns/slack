@@ -4011,7 +4011,16 @@ function run() {
             const readEvent = () => JSON.parse(fs_1.readFileSync(event, 'utf8'));
             core.debug(JSON.stringify(readEvent()));
             const configFile = core.getInput('config', { required: false });
-            const config = yaml.load(fs_1.readFileSync(configFile, 'utf-8'), { schema: yaml.FAILSAFE_SCHEMA });
+            let config = {};
+            try {
+                core.info(`Reading config file ${configFile}...`);
+                if (fs_1.existsSync(configFile)) {
+                    config = yaml.load(fs_1.readFileSync(configFile, 'utf-8'), { schema: yaml.FAILSAFE_SCHEMA });
+                }
+            }
+            catch (error) {
+                core.info(error.message);
+            }
             core.debug(yaml.dump(config));
             const url = process.env.SLACK_WEBHOOK_URL;
             const jobName = process.env.GITHUB_JOB;
