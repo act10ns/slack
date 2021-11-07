@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import {readFileSync} from 'fs'
+import {existsSync, readFileSync} from 'fs'
 import {send, ConfigOptions} from './slack'
 import * as yaml from 'js-yaml'
 
@@ -14,7 +14,15 @@ async function run(): Promise<void> {
     core.debug(JSON.stringify(readEvent()))
 
     const configFile = core.getInput('config', {required: false})
-    const config = yaml.load(readFileSync(configFile, 'utf-8'), {schema: yaml.FAILSAFE_SCHEMA}) as ConfigOptions
+    let config: ConfigOptions = {}
+    try {
+      core.info(`Reading config file ${configFile}...`)
+      if (existsSync(configFile)) {
+        config = yaml.load(readFileSync(configFile, 'utf-8'), {schema: yaml.FAILSAFE_SCHEMA}) as ConfigOptions
+      }
+    } catch (error) {
+      core.info(error.message)
+    }
     core.debug(yaml.dump(config))
 
     const url = process.env.SLACK_WEBHOOK_URL as string
