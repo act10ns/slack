@@ -73,7 +73,7 @@ test('release event to slack', async () => {
         mrkdwn_in: ['pretext', 'text', 'fields'],
         pretext: '',
         text:
-          '*<https://github.com/act10ns/slack/actions?query&#x3D;build-test|Workflow _build-test_ job _Build and Test_ triggered by _release_ is _Success_>* for <https://github.com/act10ns/slack/commits/refs/tags/v1.0.13|`refs/tags/v1.0.13`>\n',
+          '*<https://github.com/act10ns/slack/actions?query=build-test|Workflow _build-test_ job _Build and Test_ triggered by _release_ is _Success_>* for <https://github.com/act10ns/slack/commits/refs/tags/v1.0.13|`refs/tags/v1.0.13`>\n',
         title: '',
         fields: [],
         footer: '<https://github.com/act10ns/slack|act10ns/slack> #817',

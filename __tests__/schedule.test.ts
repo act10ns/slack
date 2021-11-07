@@ -66,7 +66,7 @@ test('schedule event to slack', async () => {
         mrkdwn_in: ['pretext', 'text', 'fields'],
         pretext: '',
         text:
-          '*<https://github.com/act10ns/slack/actions?query&#x3D;schedule-test|Workflow _schedule-test_ job _Build and Test_ triggered by _schedule_ is _Success_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n<https://github.com/act10ns/slack/commit/09a6b2c9|`09a6b2c9`> - Schedule &#x60;*/15 * * * *&#x60;',
+          '*<https://github.com/act10ns/slack/actions?query=schedule-test|Workflow _schedule-test_ job _Build and Test_ triggered by _schedule_ is _Success_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n<https://github.com/act10ns/slack/commit/09a6b2c9|`09a6b2c9`> - Schedule `*/15 * * * *`',
         title: '',
         fields: [],
         footer: '<https://github.com/act10ns/slack|act10ns/slack> #179',
