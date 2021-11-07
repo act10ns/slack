@@ -1,5 +1,12 @@
 #!make
 
+ACT=act
+NPM=npm
+
+-include .env .env.local .env.*.local
+
+EVENT_NAME ?= pull_request
+JOB_NAME ?= build
 TEST_REGEX ?= *.ts
 
 .DEFAULT_GOAL:=help
@@ -26,6 +33,14 @@ test:
 ## test.only		- Only run defined unit tests.
 test.only:
 	npm test -- $(TEST_REGEX)
+
+## test.integration	- Run integration tests using "act" tool. (experimental)
+test.integration:
+	$(ACT) \
+	${EVENT_NAME} \
+	--eventpath __tests__/fixtures/${EVENT_NAME}.json \
+	--job ${JOB_NAME} \
+	--verbose
 
 ## build			- Build and pack.
 build:

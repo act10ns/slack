@@ -101,3 +101,9 @@ lib/**/*
 # IDE files
 .idea
 .vs
+
+# act
+.secrets
+.env.local
+.env.*.local
+
