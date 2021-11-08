@@ -27,9 +27,9 @@ test:
 test.only:
 	npm test -- $(TEST_REGEX)
 
-## build			- Build and pack.
+## build			- Build and package.
 build:
-	npm run build && npm run pack
+	npm run build && npm run package
 
 ## help			- Show this help.
 help: Makefile
