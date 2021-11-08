@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import {EventPayloads} from '@octokit/webhooks'
 import {IncomingWebhook, IncomingWebhookResult} from '@slack/webhook'
+import {EventPayloads} from '@octokit/webhooks'
 import Handlebars from 'handlebars'
 
 interface ColorOptions {
@@ -82,14 +82,14 @@ export async function send(
   const refType = process.env.GITHUB_REF_TYPE
   const actor = process.env.GITHUB_ACTOR
 
-  let payload,
-    action,
-    ref = branch,
-    refUrl = `${repositoryUrl}/commits/${branch}`,
-    diffRef = shortSha,
-    diffUrl = `${repositoryUrl}/commit/${shortSha}`,
-    description,
-    sender
+  let payload
+  let action
+  let ref = branch
+  let refUrl = `${repositoryUrl}/commits/${branch}`
+  let diffRef = shortSha
+  let diffUrl = `${repositoryUrl}/commit/${shortSha}`
+  let description
+  let sender
   const ts = Math.round(new Date().getTime() / 1000)
 
   switch (eventName) {

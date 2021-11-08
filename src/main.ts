@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
-import {existsSync, readFileSync} from 'fs'
-import {send, ConfigOptions} from './slack'
 import * as yaml from 'js-yaml'
+import {ConfigOptions, send} from './slack'
+import {existsSync, readFileSync} from 'fs'
 
 async function run(): Promise<void> {
   try {
@@ -21,7 +21,7 @@ async function run(): Promise<void> {
         config = yaml.load(readFileSync(configFile, 'utf-8'), {schema: yaml.FAILSAFE_SCHEMA}) as ConfigOptions
       }
     } catch (error) {
-      core.info(error.message)
+      if (error instanceof Error) core.info(error.message)
     }
     core.debug(yaml.dump(config))
 
@@ -41,8 +41,7 @@ async function run(): Promise<void> {
       core.info('No "SLACK_WEBHOOK_URL" secret configured. Skip.')
     }
   } catch (error) {
-    core.setFailed(error.message)
-    core.error(error.stack)
+    if (error instanceof Error) core.setFailed(error.message)
   }
 }
 
