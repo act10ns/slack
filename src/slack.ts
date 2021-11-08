@@ -171,10 +171,10 @@ export async function send(
   const titleTemplate = Handlebars.compile(opts?.title || '')
 
   const defaultText = `${
-    '*<{{workflowUrl}}|Workflow _{{workflow}}_ ' +
+    '*<{{{workflowUrl}}}|Workflow _{{workflow}}_ ' +
     'job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* ' +
     'for <{{refUrl}}|`{{ref}}`>\n'
-  }${description ? '<{{diffUrl}}|`{{diffRef}}`> - {{description}}' : ''}`
+  }${description ? '<{{diffUrl}}|`{{diffRef}}`> - {{{description}}}' : ''}`
   const textTemplate = Handlebars.compile(message || opts?.text || defaultText)
 
   const defaultFallback = `[GitHub]: [{{repositoryName}}] {{workflow}} {{eventName}} ${

@@ -13387,9 +13387,9 @@ function send(url, jobName, jobStatus, jobSteps, channel, message, opts) {
         });
         const pretextTemplate = handlebars_1.default.compile((opts === null || opts === void 0 ? void 0 : opts.pretext) || '');
         const titleTemplate = handlebars_1.default.compile((opts === null || opts === void 0 ? void 0 : opts.title) || '');
-        const defaultText = `${'*<{{workflowUrl}}|Workflow _{{workflow}}_ ' +
+        const defaultText = `${'*<{{{workflowUrl}}}|Workflow _{{workflow}}_ ' +
             'job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* ' +
-            'for <{{refUrl}}|`{{ref}}`>\n'}${description ? '<{{diffUrl}}|`{{diffRef}}`> - {{description}}' : ''}`;
+            'for <{{refUrl}}|`{{ref}}`>\n'}${description ? '<{{diffUrl}}|`{{diffRef}}`> - {{{description}}}' : ''}`;
         const textTemplate = handlebars_1.default.compile(message || (opts === null || opts === void 0 ? void 0 : opts.text) || defaultText);
         const defaultFallback = `[GitHub]: [{{repositoryName}}] {{workflow}} {{eventName}} ${action ? '{{action}} ' : ''}{{jobStatus}}`;
         const fallbackTemplate = handlebars_1.default.compile((opts === null || opts === void 0 ? void 0 : opts.fallback) || defaultFallback);

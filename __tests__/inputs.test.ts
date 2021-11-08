@@ -121,7 +121,7 @@ test('custom config of slack action', async () => {
           {
             short: true,
             title: 'Workflow',
-            value: '<https://github.com/act10ns/slack/actions?query&#x3D;build-test|build-test>'
+            value: '<https://github.com/act10ns/slack/actions?query=build-test|build-test>'
           },
           {
             short: true,
