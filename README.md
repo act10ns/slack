@@ -4,6 +4,9 @@
 
 A simple and flexible Slack integration with GitHub Actions.
 
+**NEW: Advanced users can now use a [configuration file](#config-optional) and
+Handlebars templates to configure every aspect of the Slack message. Awesome!**
+
 <img src="./docs/images/example1.png" width="540" title="Slack Example #1">
 
 ## Configuration
