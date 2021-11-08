@@ -148,7 +148,7 @@
       "created_at": 1589033076,
       "default_branch": "master",
       "deployments_url": "https://api.github.com/repos/act10ns/slack/deployments",
-      "description": "GitHub Action for Slack",
+      "description": "GitHub Actions for Slack",
       "disabled": false,
       "downloads_url": "https://api.github.com/repos/act10ns/slack/downloads",
       "events_url": "https://api.github.com/repos/act10ns/slack/events",

@@ -69,7 +69,7 @@
     "created_at": "2020-05-09T14:04:36Z",
     "default_branch": "master",
     "deployments_url": "https://api.github.com/repos/act10ns/slack/deployments",
-    "description": "Slack messages for GitHub Action workflows, jobs and steps",
+    "description": "Slack messages for GitHub Actions workflows, jobs and steps",
     "disabled": false,
     "downloads_url": "https://api.github.com/repos/act10ns/slack/downloads",
     "events_url": "https://api.github.com/repos/act10ns/slack/events",

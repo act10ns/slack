@@ -1,6 +1,6 @@
 ![build-test](https://github.com/act10ns/slack/workflows/build-test/badge.svg)
 
-# Slack messages for GitHub Action workflows, jobs and steps
+# Slack messages for GitHub Actions workflows, jobs and steps
 
 A simple and flexible Slack integration with GitHub Actions.
 
