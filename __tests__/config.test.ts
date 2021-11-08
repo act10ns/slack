@@ -11,8 +11,8 @@ const jobStatus = 'failure'
 const jobSteps = {
   'install-deps': {
     outputs: {},
-    outcome: 'skipped',
-    conclusion: 'skipped'
+    outcome: 'success',
+    conclusion: 'success'
   },
   hooks: {
     outputs: {},
@@ -21,8 +21,8 @@ const jobSteps = {
   },
   lint: {
     outputs: {},
-    outcome: 'skipped',
-    conclusion: 'skipped'
+    outcome: 'failure',
+    conclusion: 'failure'
   },
   types: {
     outputs: {},
@@ -36,8 +36,8 @@ const jobSteps = {
   },
   'integration-test': {
     outputs: {},
-    outcome: 'skipped',
-    conclusion: 'skipped'
+    outcome: 'failure',
+    conclusion: 'failure'
   }
 }
 const channel = '#github-ci'
@@ -122,8 +122,7 @@ test('custom config of slack action', async () => {
           {
             short: false,
             title: 'Job Steps',
-            value:
-              ':heavy_minus_sign: install-deps\n:heavy_minus_sign: hooks\n:heavy_minus_sign: lint\n:heavy_minus_sign: types\n:heavy_minus_sign: unit-test\n:heavy_minus_sign: integration-test\n'
+            value: ':white_check_mark: install-deps\n:grimacing: lint\n:grimacing: integration-test\n'
           },
           {
             short: true,

@@ -1,7 +1,7 @@
 username: GitHub-CI
 icon_url: https://octodex.github.com/images/mona-the-rivetertocat.png
 
-pretext: Triggered via {{eventName}} by {{actor}} {{or action "action"}} {{ref}} `{{diffRef}}`
+pretext: Triggered via {{eventName}} by {{actor}} {{default action "action"}} {{ref}} `{{diffRef}}`
 title: GitHub Actions
 title_link: https://support.github.com
 
@@ -11,7 +11,7 @@ text: |
   {{#if payload.commits}}
   *Commits*
   {{#each payload.commits}}
-  <{{this.url}}|`{{limitTo this.id 8}}`> - {{this.message}}
+  <{{this.url}}|`{{truncate this.id 8}}`> - {{this.message}}
   {{/each}}
   {{/if}}
 
@@ -20,7 +20,9 @@ fallback: |-
 
 fields:
   - title: Job Steps
-    value: "{{#each jobSteps}}{{icon this.outcome}} {{@key}}\n{{/each}}"
+    value: |-
+      {{#each jobSteps}}{{#compare this.outcome '!=' 'skipped'}}{{icon this.outcome}} {{@key}}
+      {{/compare}}{{/each}}
     short: false
   - title: Workflow
     value: "<{{{workflowUrl}}}|{{workflow}}>"

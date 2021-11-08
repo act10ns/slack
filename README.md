@@ -104,13 +104,9 @@ The following [Slack message fields](https://api.slack.com/reference/messaging/a
 
 **Helper Functions**
 
-Apart from the [standard helper functions](https://handlebarsjs.com/guide/builtin-helpers.html#if) such as `#if` and `#each` there are also a few custom
-ones:
+Apart from the [standard helper functions](https://handlebarsjs.com/guide/builtin-helpers.html#if) such as `#if` and `#each` there are also more than 130 helpers from the [handlebars-helpers library](https://github.com/helpers/handlebars-helpers), plus one additional helper specific for this slack action:
 
 - `icon` converts a job status into an icon eg. `{{icon jobStatus}}`
-- `json` dumps the value as a JSON string eg. `{{json payload.commits}}`
-- `limitTo` cuts the string at the limit eg. `{{limitTo sha 8}}`
-- `or` allows a alternative or default value eg. `{{or headRef baseRef}}`
 
 **Example Using Config File**
 
