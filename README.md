@@ -112,8 +112,12 @@ ones:
 
 - `icon` converts a job status into an icon eg. `{{icon jobStatus}}`
 - `json` dumps the value as a JSON string eg. `{{json payload.commits}}`
-- `limitTo` cuts the string at the limit eg. `{{limitTo sha 8}}`
-- `or` allows a alternative or default value eg. `{{or headRef baseRef}}`
+- `truncate` cuts the string at the limit eg. `{{truncate sha 8}}`
+- `default` allows a alternative or default value eg. `{{default headRef "master"}}`
+- `pluralize` outputs different text based on item count eg. `{{pluralize requested_reviewers "reviewer" "reviewers"}}` (if only singular form is given plural is derived by adding an "s")
+
+- `eq`, `neq`, `not`, `and`, and `or` can be used as logical operators eg. `{{#if (and (not has_issues) (or has_pages has_wiki))}}yes{{else}}no{{/if}}`
+- `#ifeq` and `#ifneq` test for variable equality or not eg. `{{#ifneq event_name "create"}}yes{{else}}no{{/ifneq}}`
 
 **Example Using Config File**
 
@@ -188,7 +192,7 @@ icons:
 *Notes:*
 
 * If template expressions occur at the start of a string the string must be double-quoted eg. `pretext: "{{eventName}} triggered by {{actor}}"`
-* Use [YAML multiline string formats](https://yaml-multiline.info/) `|`, `>`, `|-` and `>-` or double-quotes `"\n"` to control how new lines
+* Use [YAML multiline string formats](https://yaml-multiline.info/) `|`, `>`, `|-` and `>-` or double-quotes `"\n"` to control new lines
 * Use `~` (tilde) character to control whitepace when looping see [Whitespace control](https://handlebarsjs.com/guide/expressions.html#whitespace-control)
 
 ### Conditionals (`if`)

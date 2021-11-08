@@ -9,6 +9,49 @@ module.exports = JSON.parse('{"name":"@slack/webhook","version":"6.0.0","descrip
 
 /***/ }),
 
+/***/ 5595:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const handlebars_1 = __importDefault(__nccwpck_require__(7492));
+// utilities
+handlebars_1.default.registerHelper('json', value => new handlebars_1.default.SafeString(JSON.stringify(value)));
+handlebars_1.default.registerHelper('truncate', (text, size) => text.substring(0, size));
+handlebars_1.default.registerHelper('default', (want, fallback) => want !== null && want !== void 0 ? want : fallback);
+handlebars_1.default.registerHelper('pluralize', (items, ...args) => {
+    const count = items.length;
+    const singular = args.length === 1 ? 'item' : args[0];
+    const plural = args.length === 3 ? args[1] : `${singular}s`;
+    if (count === 0)
+        return `no ${plural}`;
+    if (count === 1)
+        return `1 ${singular}`;
+    return `${count} ${plural}`;
+});
+// equality
+handlebars_1.default.registerHelper('eq', (a, b) => a === b);
+handlebars_1.default.registerHelper('neq', (a, b) => a !== b);
+// logical operators
+handlebars_1.default.registerHelper('not', a => !a);
+handlebars_1.default.registerHelper('and', (a, b) => a && b);
+handlebars_1.default.registerHelper('or', (a, b) => a || b);
+// conditionals
+handlebars_1.default.registerHelper('ifeq', function (a, b, options) {
+    return a === b ? options.fn(this) : options.inverse(this); // eslint-disable-line no-invalid-this
+});
+handlebars_1.default.registerHelper('ifneq', function (a, b, options) {
+    return a !== b ? options.fn(this) : options.inverse(this); // eslint-disable-line no-invalid-this
+});
+exports.default = handlebars_1.default;
+
+
+/***/ }),
+
 /***/ 3109:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -138,7 +181,7 @@ exports.send = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const webhook_1 = __nccwpck_require__(1095);
-const handlebars_1 = __importDefault(__nccwpck_require__(7492));
+const handlebars_1 = __importDefault(__nccwpck_require__(5595));
 function jobColor(status, opts) {
     if (status.toLowerCase() === 'success')
         return (opts === null || opts === void 0 ? void 0 : opts.success) || 'good';
@@ -242,18 +285,7 @@ function send(url, jobName, jobStatus, jobSteps, channel, message, opts) {
                 };
             }
         }
-        handlebars_1.default.registerHelper('icon', function (status) {
-            return stepIcon(status, opts === null || opts === void 0 ? void 0 : opts.icons);
-        });
-        handlebars_1.default.registerHelper('json', function (context) {
-            return JSON.stringify(context);
-        });
-        handlebars_1.default.registerHelper('limitTo', function (text, size) {
-            return text.substring(0, size);
-        });
-        handlebars_1.default.registerHelper('or', function (op1, op2) {
-            return op1 || op2;
-        });
+        handlebars_1.default.registerHelper('icon', status => stepIcon(status, opts === null || opts === void 0 ? void 0 : opts.icons));
         const pretextTemplate = handlebars_1.default.compile((opts === null || opts === void 0 ? void 0 : opts.pretext) || '');
         const titleTemplate = handlebars_1.default.compile((opts === null || opts === void 0 ? void 0 : opts.title) || '');
         const defaultText = `${'*<{{{workflowUrl}}}|Workflow _{{workflow}}_ ' +

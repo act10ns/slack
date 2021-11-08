@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {IncomingWebhook, IncomingWebhookResult} from '@slack/webhook'
 import {EventPayloads} from '@octokit/webhooks'
-import Handlebars from 'handlebars'
+import Handlebars from './handlebars'
 
 interface ColorOptions {
   success?: string | undefined
@@ -151,21 +151,7 @@ export async function send(
     }
   }
 
-  Handlebars.registerHelper('icon', function (status) {
-    return stepIcon(status, opts?.icons)
-  })
-
-  Handlebars.registerHelper('json', function (context) {
-    return JSON.stringify(context)
-  })
-
-  Handlebars.registerHelper('limitTo', function (text, size) {
-    return text.substring(0, size)
-  })
-
-  Handlebars.registerHelper('or', function (op1, op2) {
-    return op1 || op2
-  })
+  Handlebars.registerHelper('icon', status => stepIcon(status, opts?.icons))
 
   const pretextTemplate = Handlebars.compile(opts?.pretext || '')
   const titleTemplate = Handlebars.compile(opts?.title || '')
