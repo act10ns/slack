@@ -27,6 +27,10 @@ test:
 test.only:
 	npm test -- $(TEST_REGEX)
 
+## test.package		- Run ncc compiled code.
+test.package:
+	npm run package:test
+
 ## build			- Build and package.
 build:
 	npm run build && npm run package

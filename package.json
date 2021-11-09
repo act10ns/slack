@@ -11,6 +11,7 @@
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint --fix src/**/*.ts",
     "package": "ncc build --source-map --license licenses.txt",
+    "package:test": "ncc run dist/index.js",
     "test": "jest",
     "all": "npm run build && npm run format && npm run lint && npm run package && npm test"
   },

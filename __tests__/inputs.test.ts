@@ -11,8 +11,8 @@ const jobStatus = 'in progress'
 const jobSteps = {
   'install-deps': {
     outputs: {},
-    outcome: 'skipped',
-    conclusion: 'skipped'
+    outcome: 'success',
+    conclusion: 'success'
   },
   hooks: {
     outputs: {},
@@ -31,13 +31,13 @@ const jobSteps = {
   },
   'unit-test': {
     outputs: {},
-    outcome: 'skipped',
-    conclusion: 'skipped'
+    outcome: 'failure',
+    conclusion: 'failure'
   },
   'integration-test': {
     outputs: {},
-    outcome: 'skipped',
-    conclusion: 'skipped'
+    outcome: 'cancelled',
+    conclusion: 'cancelled'
   }
 }
 const channel = '#deploy'
@@ -115,8 +115,7 @@ test('custom config of slack action', async () => {
           {
             short: false,
             title: 'Job Steps',
-            value:
-              ':heavy_minus_sign: install-deps\n:heavy_minus_sign: hooks\n:heavy_minus_sign: lint\n:heavy_minus_sign: types\n:heavy_minus_sign: unit-test\n:heavy_minus_sign: integration-test\n'
+            value: ':white_check_mark: install-deps\n:grimacing: unit-test\n:x: integration-test\n'
           },
           {
             short: true,
