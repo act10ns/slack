@@ -232,7 +232,7 @@ export async function send(
   const footer = footerTemplate(data)
 
   const postMessage = {
-    username: opts?.username || 'GitHub Action',
+    username: opts?.username || 'GitHub Actions',
     icon_url: opts?.icon_url || 'https://octodex.github.com/images/original.png',
     channel,
     attachments: [

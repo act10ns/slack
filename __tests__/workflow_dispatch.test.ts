@@ -58,7 +58,7 @@ test('workflow_dispatch event to slack', async () => {
   await expect(res).toStrictEqual({text: {status: 'ok'}})
 
   expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({
-    username: 'GitHub Action',
+    username: 'GitHub Actions',
     icon_url: 'https://octodex.github.com/images/original.png',
     channel: '@override',
     attachments: [

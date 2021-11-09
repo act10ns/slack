@@ -353,7 +353,7 @@ function send(url, jobName, jobStatus, jobSteps, channel, message, opts) {
         const fields = JSON.parse(fieldsTemplate(data));
         const footer = footerTemplate(data);
         const postMessage = {
-            username: (opts === null || opts === void 0 ? void 0 : opts.username) || 'GitHub Action',
+            username: (opts === null || opts === void 0 ? void 0 : opts.username) || 'GitHub Actions',
             icon_url: (opts === null || opts === void 0 ? void 0 : opts.icon_url) || 'https://octodex.github.com/images/original.png',
             channel,
             attachments: [

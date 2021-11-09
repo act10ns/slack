@@ -101,3 +101,5 @@ lib/**/*
 # IDE files
 .idea
 .vs
+.vscode
+
