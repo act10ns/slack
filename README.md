@@ -85,6 +85,7 @@ A configuration file can be used to customise the following Slack message fields
   - `text`
   - `fallback` plain text summary used for dumb clients and notifications
   - `fields` title, value and short/long
+  - `blocks` including `actions`, `context`, `divider`, `file`,  `header`, `image`, `input` and `section` blocks
   - message `footer`
   - border `colors` based job status `success`, `failure`, `cancelled`. valid colors are `good` (green), `warning` (yellow), `danger` (red) or any hex color code eg. `#439FE0`
   - `icons` for step status `success`, `failure`, `cancelled`, `skipped`, and a default
