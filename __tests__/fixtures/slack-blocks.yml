@@ -70,6 +70,8 @@ blocks:
       text: "*Run Number*\n{{runNumber}}"
     - type: mrkdwn
       text: "*Actor*\n{{actor}}"
+    - type: mrkdwn
+      text: "*Job Status*\n{{jobStatus}}"
 
   # footer
   - type: context

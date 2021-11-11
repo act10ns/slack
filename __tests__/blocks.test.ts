@@ -160,7 +160,8 @@ test('custom config of slack action using legacy and blocks', async () => {
               {type: 'mrkdwn', text: '*Git Ref*\nmaster (branch)'},
               {type: 'mrkdwn', text: '*Run ID*\n<https://github.com/act10ns/slack/actions/runs/100143423|100143423>'},
               {type: 'mrkdwn', text: '*Run Number*\n8'},
-              {type: 'mrkdwn', text: '*Actor*\nsatterly'}
+              {type: 'mrkdwn', text: '*Actor*\nsatterly'},
+              {type: 'mrkdwn', text: '*Job Status*\nfailure'}
             ]
           },
           {
