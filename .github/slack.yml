@@ -64,6 +64,14 @@ blocks:
     text:
       type: mrkdwn
       text: *text
+    accessory:
+      type: button
+      text:
+        type: plain_text
+        text: View
+      value: workflow_run_{{runId}}
+      url: '{{workflowRunUrl}}'
+      action_id: button-action
 
   # fields
   - type: section
