@@ -41,6 +41,7 @@ async function run(): Promise<void> {
       core.info('No "SLACK_WEBHOOK_URL" secret configured. Skip.')
     }
   } catch (error) {
+    core.debug(JSON.stringify(error))
     if (error instanceof Error) core.setFailed(error.message)
   }
 }

@@ -267,10 +267,6 @@ export async function send(
   }
   core.debug(JSON.stringify(postMessage, null, 2))
 
-  try {
-    const webhook = new IncomingWebhook(url)
-    return await webhook.send(postMessage)
-  } catch (err) {
-    core.error(JSON.stringify(err))
-  }
+  const webhook = new IncomingWebhook(url)
+  return await webhook.send(postMessage)
 }
