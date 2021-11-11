@@ -237,16 +237,7 @@ export async function send(
     channel,
     attachments: [
       {
-        mrkdwn_in: ['pretext' as const, 'text' as const, 'fields' as const],
-        color: jobColor(jobStatus, opts?.colors),
-        pretext,
-        author_name: sender?.login,
-        author_link: sender?.html_url,
-        author_icon: sender?.avatar_url,
-        title,
-        title_link: opts?.title_link,
         text,
-        fields,
         blocks: [
           {
             "type": "section",
@@ -257,11 +248,7 @@ export async function send(
               }
             ]
           }
-        ],
-        fallback,
-        footer,
-        footer_icon: 'https://github.githubassets.com/favicon.ico',
-        ts: ts.toString()
+        ]
       }
     ]
   }
