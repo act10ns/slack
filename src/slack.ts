@@ -247,6 +247,17 @@ export async function send(
         title_link: opts?.title_link,
         text,
         fields,
+        "blocks": [
+          {
+            "type": "section",
+            "fields": [
+              {
+                "type": "plain_text",
+                "text": "*this is plain text*"
+              }
+            ]
+          }
+        ],
         fallback,
         footer,
         footer_icon: 'https://github.githubassets.com/favicon.ico',
