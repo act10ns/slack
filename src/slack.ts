@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import {IncomingWebhook, IncomingWebhookResult} from '@slack/webhook'
+import {IncomingWebhook, IncomingWebhookRequestError, IncomingWebhookResult} from '@slack/webhook'
 import {EventPayloads} from '@octokit/webhooks'
 import Handlebars from './handlebars'
 
@@ -257,5 +257,10 @@ export async function send(
   core.debug(JSON.stringify(postMessage, null, 2))
 
   const webhook = new IncomingWebhook(url)
-  return await webhook.send(postMessage)
+  try {
+    const result = await webhook.send(postMessage)
+    return result
+  } catch (error) {
+    core.debug(JSON.stringify(error))
+  }
 }
