@@ -75,7 +75,7 @@ jobs:
         status: ${{ job.status }}
         steps: ${{ toJson(steps) }}
         channel: '#actions'
-        config: __tests__/fixtures/slack-block.yml
+        config: __tests__/fixtures/slack-blocks.yml
       if: always()
 
   build:
