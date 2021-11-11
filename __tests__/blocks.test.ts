@@ -129,7 +129,7 @@ test('custom config of slack action using legacy and blocks', async () => {
           {
             type: 'context',
             elements: [
-              {type: 'image', image_url: 'https://github.com/satterly', alt_text: 'satterly'},
+              {type: 'image', image_url: 'https://avatars0.githubusercontent.com/u/615057?v=4', alt_text: 'satterly'},
               {type: 'mrkdwn', text: '*<https://github.com/satterly|satterly>*'}
             ]
           },

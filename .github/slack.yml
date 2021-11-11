@@ -47,7 +47,7 @@ blocks:
   - type: context
     elements:
     - type: image
-      image_url: '{{sender.html_url}}'
+      image_url: '{{{sender.avatar_url}}}'
       alt_text: '{{sender.login}}'
     - type: mrkdwn
       text: "*<{{sender.html_url}}|{{sender.login}}>*"
