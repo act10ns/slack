@@ -92,13 +92,16 @@ Default: `.github/slack.yml`
         status: ${{ job.status }}
         config: .github/config/slack.yml
 
-The following [Slack message fields](https://api.slack.com/reference/messaging/attachments) support templating using [Handlebars.js](https://handlebarsjs.com/guide/) format:
+The following Slack [message fields](https://api.slack.com/reference/messaging/attachments) and
+[block layouts](https://api.slack.com/reference/block-kit/blocks) support templating using
+[Handlebars.js](https://handlebarsjs.com/guide/) format:
 
 - `pretext`
 - `title`
 - `text` and `message`
 - `fallback`
 - `fields` `title` and `value`
+- `blocks`
 
 **Supported Template variables**
 
@@ -325,6 +328,7 @@ See https://docs.github.com/en/free-pro-team@latest/actions/managing-workflow-ru
 * Slack Secondary message attachments https://api.slack.com/reference/messaging/attachments
 * Handlebars Language Guide https://handlebarsjs.com/guide/
 * YAML multiline string formats https://yaml-multiline.info/
+* Migrate your legacy message compositions to blocks https://api.slack.com/messaging/attachments-to-blocks
 
 ## License
 
