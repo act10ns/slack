@@ -5,7 +5,7 @@ pretext: Triggered via {{eventName}} by {{actor}} {{default action "action"}} {{
 title: GitHub Actions
 title_link: https://support.github.com
 
-text: |
+text: &text |
   *<{{workflowRunUrl}}|Workflow _{{workflow}}_ job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* for <{{refUrl}}|`{{ref}}`>
   {{#if description}}<{{diffUrl}}|`{{diffRef}}`> - {{{description}}}{{/if}}
   {{#if payload.commits}}
