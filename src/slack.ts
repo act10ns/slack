@@ -247,6 +247,17 @@ export async function send(
         title_link: opts?.title_link,
         text,
         fields,
+        blocks: [
+          {
+            "type": "section",
+            "fields": [
+              {
+                "type": "plain_text",
+                "text": "*this is plain text*"
+              }
+            ]
+          }
+        ],
         fallback,
         footer,
         footer_icon: 'https://github.githubassets.com/favicon.ico',
@@ -256,10 +267,9 @@ export async function send(
   }
   core.debug(JSON.stringify(postMessage, null, 2))
 
-  let result : IncomingWebhookResult
   try {
     const webhook = new IncomingWebhook(url)
-    result = await webhook.send(postMessage)
+    return await webhook.send(postMessage)
   } catch (err) {
     core.error(JSON.stringify(err))
   }
