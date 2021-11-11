@@ -76,7 +76,7 @@ process.env.GITHUB_SERVER_URL = 'https://github.com'
 process.env.GITHUB_API_URL = 'https://github.com'
 process.env.GITHUB_GRAPHQL_URL = 'https://api.github.com/graphql'
 
-test('custom config of slack action', async () => {
+test('custom config of slack action using inputs for channel and message', async () => {
   const mockAxios = new MockAdapter(axios, {delayResponse: 200})
 
   mockAxios
@@ -88,7 +88,7 @@ test('custom config of slack action', async () => {
     .onAny()
     .reply(500)
 
-  let config = yaml.load(readFileSync('./__tests__/fixtures/slack.yml', 'utf-8'), {
+  let config = yaml.load(readFileSync('./__tests__/fixtures/slack-legacy.yml', 'utf-8'), {
     schema: yaml.FAILSAFE_SCHEMA
   }) as ConfigOptions
 

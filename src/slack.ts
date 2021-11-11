@@ -1,17 +1,22 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import {Block, KnownBlock, MessageAttachment} from '@slack/types'
 import {IncomingWebhook, IncomingWebhookResult} from '@slack/webhook'
 import {EventPayloads} from '@octokit/webhooks'
 import Handlebars from './handlebars'
 
+const DEFAULT_USERNAME = 'GitHub Actions'
+const DEFAULT_ICON_URL = 'https://octodex.github.com/images/original.png'
+const DEFAULT_FOOTER_ICON = 'https://github.githubassets.com/favicon.ico'
+
 interface ColorOptions {
-  success?: string | undefined
-  failure?: string | undefined
-  cancelled?: string | undefined
-  default?: string | undefined
+  success?: string
+  failure?: string
+  cancelled?: string
+  default?: string
 }
 
-function jobColor(status: string, opts?: ColorOptions): string | undefined {
+function jobColor(status: string, opts?: ColorOptions): string {
   if (status.toLowerCase() === 'success') return opts?.success || 'good'
   if (status.toLowerCase() === 'failure') return opts?.failure || 'danger'
   if (status.toLowerCase() === 'cancelled') return opts?.cancelled || 'warning'
@@ -19,11 +24,11 @@ function jobColor(status: string, opts?: ColorOptions): string | undefined {
 }
 
 interface IconOptions {
-  success?: string | undefined
-  failure?: string | undefined
-  cancelled?: string | undefined
-  skipped?: string | undefined
-  default?: string | undefined
+  success?: string
+  failure?: string
+  cancelled?: string
+  skipped?: string
+  default?: string
 }
 
 function stepIcon(status: string, opts?: IconOptions): string {
@@ -38,23 +43,88 @@ interface Field {
   title: string
   value: string
   short: boolean
-  if?: string | undefined
+  if?: string
+}
+
+interface Actions {
+  type: string
+  elements: object[]
+  block_id?: string
+  if?: string
+}
+
+interface Context {
+  type: string
+  elements: object[]
+  block_id?: string
+  if?: string
+}
+
+interface Divider {
+  type: string
+  block_id?: string
+  if?: string
+}
+
+interface File {
+  type: string
+  external_id: string
+  source: string
+  block_id?: string
+  if?: string
+}
+
+interface Header {
+  type: string
+  text: object
+  block_id?: string
+  if?: string
+}
+
+interface Image {
+  type: string
+  image_url: string
+  alt_text: string
+  title?: object
+  block_id?: string
+  if?: string
+}
+
+interface Input {
+  type: string
+  label: object
+  element: object
+  dispatch_action?: boolean
+  block_id?: string
+  hint?: object
+  optional?: boolean
+  if?: string
+}
+
+interface Section {
+  type: string
+  text?: object
+  block_id?: string
+  fields?: object[]
+  accessory?: object
+  if?: string
 }
 
 export interface ConfigOptions {
-  username?: string | undefined
-  icon_url?: string | undefined
-  pretext?: string | undefined
-  title?: string | undefined
-  title_link?: string | undefined
-  text?: string | undefined
-  fallback?: string | undefined
-  fields?: Field[] | undefined
-  footer?: string | undefined
-  colors?: object | undefined
-  icons?: object | undefined
-  unfurl_links?: boolean | undefined
-  unfurl_media?: boolean | undefined
+  username?: string
+  icon_url?: string
+  pretext?: string
+  title?: string
+  title_link?: string
+  text?: string
+  fallback?: string
+  fields?: Field[]
+  blocks?: (Actions | Context | Divider | File | Header | Image | Input | Section)[]
+  footer?: string
+  colors?: object
+  icons?: object
+  unfurl_links?: boolean
+  unfurl_media?: boolean
 }
 
 export async function send(
@@ -231,30 +301,63 @@ export async function send(
   const fields = JSON.parse(fieldsTemplate(data))
   const footer = footerTemplate(data)
 
-  const postMessage = {
-    username: opts?.username || 'GitHub Actions',
-    icon_url: opts?.icon_url || 'https://octodex.github.com/images/original.png',
-    channel,
-    attachments: [
-      {
-        mrkdwn_in: ['pretext' as const, 'text' as const, 'fields' as const],
-        color: jobColor(jobStatus, opts?.colors),
-        pretext,
-        author_name: sender?.login,
-        author_link: sender?.html_url,
-        author_icon: sender?.avatar_url,
-        title,
-        title_link: opts?.title_link,
-        text,
-        fields,
-        fallback,
-        footer,
-        footer_icon: 'https://github.githubassets.com/favicon.ico',
-        ts: ts.toString()
-      }
-    ]
+  const filteredBlocks: object[] = []
+  for (const block of opts?.blocks || []) {
+    const block_if = block?.if || 'always()'
+    if (block_if === 'always()' || block_if.startsWith(jobStatus.toLowerCase())) {
+      /* eslint-disable @typescript-eslint/no-unused-vars */
+      const {if: string, ...blockWithoutIf} = block
+      filteredBlocks.push(blockWithoutIf as KnownBlock | Block)
+    }
   }
-  core.debug(JSON.stringify(postMessage, null, 2))
+  const blocksTemplate = Handlebars.compile(JSON.stringify(filteredBlocks))
+
+  // allow blocks to reference templated fields
+  const blockContext = {
+    pretext,
+    title,
+    title_link: opts?.title_link,
+    text,
+    fallback,
+    footer,
+    footer_icon: DEFAULT_FOOTER_ICON
+  }
+  const blocks = JSON.parse(blocksTemplate({...data, ...blockContext}))
+
+  const attachments: MessageAttachment[] = [
+    {
+      mrkdwn_in: ['pretext' as const, 'text' as const, 'fields' as const],
+      color: jobColor(jobStatus, opts?.colors),
+      pretext,
+      author_name: sender?.login,
+      author_link: sender?.html_url,
+      author_icon: sender?.avatar_url,
+      title,
+      title_link: opts?.title_link,
+      text,
+      fields,
+      fallback,
+      footer,
+      footer_icon: DEFAULT_FOOTER_ICON,
+      ts: ts.toString()
+    }
+  ]
+
+  if (opts?.blocks) {
+    attachments.push({
+      color: jobColor(jobStatus, opts?.colors),
+      fallback,
+      blocks
+    })
+  }
+
+  const postMessage = {
+    username: opts?.username || DEFAULT_USERNAME,
+    icon_url: opts?.icon_url || DEFAULT_ICON_URL,
+    channel,
+    attachments
+  }
+  core.debug(JSON.stringify(postMessage))
 
   const webhook = new IncomingWebhook(url)
   return await webhook.send(postMessage)
