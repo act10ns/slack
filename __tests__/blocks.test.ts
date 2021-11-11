@@ -147,7 +147,12 @@ test('custom config of slack action using legacy and blocks', async () => {
               {
                 type: 'mrkdwn',
                 text: '*Job Steps*\n:white_check_mark: install-deps\n:x: hooks\n:grimacing: lint\n:grimacing: integration-test\n'
-              },
+              }
+            ]
+          },
+          {
+            type: 'section',
+            fields: [
               {
                 type: 'mrkdwn',
                 text: '*Workflow*\n<https://github.com/act10ns/slack/actions?query=build-test|build-test>'

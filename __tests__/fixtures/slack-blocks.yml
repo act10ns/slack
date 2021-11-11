@@ -56,6 +56,8 @@ blocks:
         *Job Steps*
         {{#each jobSteps}}{{#ifneq this.outcome 'skipped'}}{{icon this.outcome}} {{@key}}
         {{/ifneq}}{{/each}}
+  - type: section
+    fields:
     - type: mrkdwn
       text: "*Workflow*\n<{{{workflowUrl}}}|{{workflow}}>"
     - type: mrkdwn
