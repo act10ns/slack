@@ -2,9 +2,11 @@ name: "build-test"
 on: # rebuild any PRs and main branch changes
   pull_request:
   push:
-    # branches:
-    #   - master
-    #   - 'releases/*'
+    branches:
+      - master
+      - 'releases/*'
+    tags:
+      - 'v*'
 
 env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -18,8 +20,19 @@ jobs:
     - id: build
       run: |
         npm install
+    - id: format-check
+      run: |
         npm run format-check
+    - id: lint
+      run: |
         npm run lint
+    - uses: ./
+      with:
+        status: ${{ job.status }}
+        channel: '#actions'
+        message: lint error
+      if: failure()
+
   test:
     runs-on: ubuntu-latest
     steps:
@@ -41,21 +54,30 @@ jobs:
       env:
         JOB_CONTEXT: ${{ toJson(job) }}
       run: echo "$JOB_CONTEXT"
-    - uses: ./
-      with:
-        status: in progress
-        channel: '#actions'
     - id: dump_steps
       name: Dump steps context
       env:
         STEPS_CONTEXT: ${{ toJson(steps) }}
       run: echo "$STEPS_CONTEXT"
+    - id: test
+      run: |
+        npm install
+        npm run test
     - uses: ./
       with:
         status: ${{ job.status }}
         steps: ${{ toJson(steps) }}
         channel: '#actions'
+        config: __tests__/fixtures/slack-legacy.yml
       if: always()
+    - uses: ./
+      with:
+        status: ${{ job.status }}
+        steps: ${{ toJson(steps) }}
+        channel: '#actions'
+        config: __tests__/fixtures/slack-block.yml
+      if: always()
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -72,5 +94,4 @@ jobs:
         status: ${{ job.status }}
         steps: ${{ toJson(steps) }}
         channel: '#actions'
-        # message: '[{{shortSha}}] {{title}} -> {{jobStatus}}'
       if: always()
