@@ -3,6 +3,7 @@ import Handlebars from '../src/handlebars'
 const data = {
   foo: 'bar',
   fu: 'bar',
+  baz: 'quux',
   obj: {
     a: 'b',
     c: 123,
@@ -14,6 +15,7 @@ const data = {
   t: true,
   f: false,
   empty: [],
+  empty_str: '',
   commits: ['088fcd5a5bc73a6733edcc58d0d30869ddbe2e2f'],
   numbers: [1, 2, 3, 4],
   letters: ['abc', 'def', 'ghi'],
@@ -23,7 +25,12 @@ const data = {
     {foo: true, bar: 3}
   ],
   attendees: ['dave', 'mike', 'jane', 'betty'],
-  items: [1, 2, 3]
+  items: [1, 2, 3],
+  payload: {
+    workflow_run: {
+      run_attempt: 7
+    }
+  }
 }
 
 // utilities
@@ -39,14 +46,38 @@ test('truncate uuid', () => {
   expect(text).toStrictEqual('CFE20509')
 })
 
-test('default is not needed', () => {
+test('want when exists', () => {
+  const template = Handlebars.compile('{{default foo "fallback"}}')
+  const text = template(data)
+  expect(text).toStrictEqual('bar')
+})
+
+test('want when false', () => {
+  const template = Handlebars.compile('{{default f "fallback"}}')
+  const text = template(data)
+  expect(text).toStrictEqual('false')
+})
+
+test('want when 0', () => {
   const template = Handlebars.compile('{{default want "fallback"}}')
   const text = template(data)
   expect(text).toStrictEqual('0')
 })
 
-test('default is needed', () => {
+test('default value when not exists', () => {
+  const template = Handlebars.compile('{{default fallback baz}}')
+  const text = template(data)
+  expect(text).toStrictEqual('quux')
+})
+
+test('default string when not exists', () => {
   const template = Handlebars.compile('{{default fallback "fallback"}}')
+  const text = template(data)
+  expect(text).toStrictEqual('fallback')
+})
+
+test('default when empty string', () => {
+  const template = Handlebars.compile('{{default empty_str "fallback"}}')
   const text = template(data)
   expect(text).toStrictEqual('fallback')
 })
@@ -55,6 +86,12 @@ test('pluralize empty list', () => {
   const template = Handlebars.compile('{{pluralize empty}}')
   const text = template(data)
   expect(text).toStrictEqual('no items')
+})
+
+test('pluralize numeric value', () => {
+  const template = Handlebars.compile('{{pluralize payload.workflow_run.run_attempt "attempt"}}')
+  const text = template(data)
+  expect(text).toStrictEqual('7 attempts')
 })
 
 test('pluralize commits', () => {

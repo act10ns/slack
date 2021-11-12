@@ -22,9 +22,9 @@ const handlebars_1 = __importDefault(__nccwpck_require__(7492));
 // utilities
 handlebars_1.default.registerHelper('json', value => new handlebars_1.default.SafeString(JSON.stringify(value)));
 handlebars_1.default.registerHelper('truncate', (text, size) => text.substring(0, size));
-handlebars_1.default.registerHelper('default', (want, fallback) => want !== null && want !== void 0 ? want : fallback);
+handlebars_1.default.registerHelper('default', (want, fallback) => (want || want === 0 || want === false ? want : fallback));
 handlebars_1.default.registerHelper('pluralize', (items, ...args) => {
-    const count = items.length;
+    const count = (typeof items === 'number') ? items : items.length;
     const singular = args.length === 1 ? 'item' : args[0];
     const plural = args.length === 3 ? args[1] : `${singular}s`;
     if (count === 0)
@@ -293,11 +293,13 @@ function send(url, jobName, jobStatus, jobSteps, channel, message, opts) {
                 payload = github.context.payload;
                 action = ((_b = process.env.GITHUB_ACTION) === null || _b === void 0 ? void 0 : _b.startsWith('self')) ? '' : process.env.GITHUB_ACTION;
                 ref = process.env.GITHUB_REF.replace('refs/heads/', '');
-                sender = {
-                    login: actor,
-                    html_url: `https://github.com/${actor}`,
-                    avatar_url: ''
-                };
+                sender = (payload === null || payload === void 0 ? void 0 : payload.sender)
+                    ? payload.sender
+                    : {
+                        login: actor,
+                        html_url: `https://github.com/${actor}`,
+                        avatar_url: ''
+                    };
             }
         }
         handlebars_1.default.registerHelper('icon', status => stepIcon(status, opts === null || opts === void 0 ? void 0 : opts.icons));

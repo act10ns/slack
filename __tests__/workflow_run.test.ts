@@ -80,7 +80,7 @@ test('workflow_run event to slack', async () => {
         pretext: 'Triggered via workflow_run by satterly __act10ns_slack master `0d05b90e`',
         author_name: 'satterly',
         author_link: 'https://github.com/satterly',
-        author_icon: '',
+        author_icon: 'https://avatars.githubusercontent.com/u/615057?v=4',
         title: 'GitHub Actions',
         title_link: 'https://support.github.com',
         text: '*<https://github.com/act10ns/slack/actions?query=workflow-run|Workflow _workflow-run_ job _on-success_ triggered by _workflow_run_ is _SUCCESS_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n',
@@ -97,13 +97,13 @@ test('workflow_run event to slack', async () => {
           {
             type: 'context',
             elements: [
-              {type: 'image', image_url: '', alt_text: 'satterly'},
+              {type: 'image', image_url: 'https://avatars.githubusercontent.com/u/615057?v=4', alt_text: 'satterly'},
               {type: 'mrkdwn', text: '*<https://github.com/satterly|satterly>*'}
             ]
           },
           {
             type: 'section',
-            text: {type: 'mrkdwn', text: 'Workflow completed with success'},
+            text: {type: 'mrkdwn', text: 'Workflow build-test completed with success after 1 attempt'},
             accessory: {
               type: 'button',
               text: {type: 'plain_text', text: 'View'},
@@ -122,7 +122,7 @@ test('workflow_run event to slack', async () => {
           {
             type: 'context',
             elements: [
-              {type: 'image', image_url: 'https://github.githubassets.com/favicon.ico', alt_text: 'satterly'},
+              {type: 'image', image_url: 'https://github.githubassets.com/favicon.ico', alt_text: 'github'},
               {
                 type: 'mrkdwn',
                 text: expect.stringMatching(

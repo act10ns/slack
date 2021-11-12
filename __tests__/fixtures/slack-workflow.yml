@@ -22,8 +22,10 @@ blocks:
   - type: section
     text:
       type: mrkdwn
-      text: |-
-        Workflow {{payload.workflow_run.status}} with {{payload.workflow_run.conclusion}}
+      text: >-
+        Workflow {{payload.workflow.name}} {{payload.workflow_run.status}}
+        with {{payload.workflow_run.conclusion}} after
+        {{pluralize payload.workflow_run.run_attempt 'attempt'}}
     accessory:
       type: button
       text:
@@ -46,7 +48,7 @@ blocks:
     elements:
     - type: image
       image_url: '{{footer_icon}}'
-      alt_text: satterly
+      alt_text: github
     - type: mrkdwn
       text: '{{{footer}}} | <!date^{{ts}}^{date_short_pretty} at {time}|{{ts}}>'
 

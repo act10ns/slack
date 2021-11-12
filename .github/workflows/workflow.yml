@@ -16,7 +16,7 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
     - uses: actions/checkout@v2
-    - uses: act10ns/slack@v1
+    - uses: ./
       with:
         status: ${{ github.event.workflow_run.conclusion }}
         channel: '#actions'
@@ -28,7 +28,7 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
     - uses: actions/checkout@v2
-    - uses: act10ns/slack@v1
+    - uses: ./
       with:
         status: ${{ github.event.workflow_run.conclusion }}
         channel: '#actions'

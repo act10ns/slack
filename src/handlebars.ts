@@ -5,10 +5,10 @@ Handlebars.registerHelper('json', value => new Handlebars.SafeString(JSON.string
 
 Handlebars.registerHelper('truncate', (text, size) => text.substring(0, size))
 
-Handlebars.registerHelper('default', (want, fallback) => want ?? fallback)
+Handlebars.registerHelper('default', (want, fallback) => (want || want === 0 || want === false ? want : fallback))
 
 Handlebars.registerHelper('pluralize', (items, ...args) => {
-  const count = items.length
+  const count = typeof items === 'number' ? items : items.length
   const singular = args.length === 1 ? 'item' : args[0]
   const plural = args.length === 3 ? args[1] : `${singular}s`
 

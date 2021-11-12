@@ -214,11 +214,13 @@ export async function send(
       payload = github.context.payload
       action = process.env.GITHUB_ACTION?.startsWith('self') ? '' : process.env.GITHUB_ACTION
       ref = (process.env.GITHUB_REF as string).replace('refs/heads/', '')
-      sender = {
-        login: actor,
-        html_url: `https://github.com/${actor}`,
-        avatar_url: ''
-      }
+      sender = payload?.sender
+        ? payload.sender
+        : {
+            login: actor,
+            html_url: `https://github.com/${actor}`,
+            avatar_url: ''
+          }
     }
   }
 
