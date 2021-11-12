@@ -211,6 +211,7 @@ export async function send(
       break
     default: {
       core.info('Unsupported webhook event type. Using environment variables.')
+      payload = github.context.payload
       action = process.env.GITHUB_ACTION?.startsWith('self') ? '' : process.env.GITHUB_ACTION
       ref = (process.env.GITHUB_REF as string).replace('refs/heads/', '')
       sender = {
