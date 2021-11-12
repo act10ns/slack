@@ -290,6 +290,7 @@ function send(url, jobName, jobStatus, jobSteps, channel, message, opts) {
                 break;
             default: {
                 core.info('Unsupported webhook event type. Using environment variables.');
+                payload = github.context.payload;
                 action = ((_b = process.env.GITHUB_ACTION) === null || _b === void 0 ? void 0 : _b.startsWith('self')) ? '' : process.env.GITHUB_ACTION;
                 ref = process.env.GITHUB_REF.replace('refs/heads/', '');
                 sender = {
