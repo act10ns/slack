@@ -24,7 +24,7 @@ handlebars_1.default.registerHelper('json', value => new handlebars_1.default.Sa
 handlebars_1.default.registerHelper('truncate', (text, size) => text.substring(0, size));
 handlebars_1.default.registerHelper('default', (want, fallback) => (want || want === 0 || want === false ? want : fallback));
 handlebars_1.default.registerHelper('pluralize', (items, ...args) => {
-    const count = (typeof items === 'number') ? items : items.length;
+    const count = typeof items === 'number' ? items : items.length;
     const singular = args.length === 1 ? 'item' : args[0];
     const plural = args.length === 3 ? args[1] : `${singular}s`;
     if (count === 0)
