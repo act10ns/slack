@@ -18,6 +18,7 @@ github.context.actor = dump.actor
 
 process.env.CI = 'true'
 process.env.GITHUB_WORKFLOW = 'workflow-run'
+process.env.GITHUB_JOB = 'on-success'
 process.env.GITHUB_RUN_ID = '1452345894'
 process.env.GITHUB_RUN_NUMBER = '4'
 process.env.GITHUB_ACTION = '__act10ns_slack'
@@ -82,7 +83,7 @@ test('workflow_run event to slack', async () => {
         author_icon: '',
         title: 'GitHub Actions',
         title_link: 'https://support.github.com',
-        text: '*<https://github.com/act10ns/slack/actions?query=workflow-run|Workflow _workflow-run_ job __ triggered by _workflow_run_ is _SUCCESS_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n',
+        text: '*<https://github.com/act10ns/slack/actions?query=workflow-run|Workflow _workflow-run_ job _on-success_ triggered by _workflow_run_ is _SUCCESS_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n',
         fields: [],
         fallback: '[GitHub] workflow-run #4 is SUCCESS',
         footer: '<https://github.com/act10ns/slack|act10ns/slack> workflow-run #4',
