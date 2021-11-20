@@ -148,7 +148,7 @@ text: |
   {{#if payload.commits}}
   *Commits*
   {{#each payload.commits}}
-  <{{this.url}}|`{{limitTo this.id 8}}`> - {{this.message}}
+  <{{this.url}}|`{{truncate this.id 8}}`> - {{this.message}}
   {{/each}}
   {{/if}}
 
