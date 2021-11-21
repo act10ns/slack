@@ -301,6 +301,8 @@ export async function send(
   const title = titleTemplate(data)
   const text = textTemplate(data)
   const fallback = fallbackTemplate(data)
+  const fieldsJson = fieldsTemplate(data)
+  core.debug(fieldsJson.toString())
   const fields = JSON.parse(fieldsTemplate(data))
   const footer = footerTemplate(data)
 
@@ -325,6 +327,8 @@ export async function send(
     footer,
     footer_icon: DEFAULT_FOOTER_ICON
   }
+  const blocksJson = blocksTemplate({...data, ...blockContext})
+  core.debug(blocksJson.toString())
   const blocks = JSON.parse(blocksTemplate({...data, ...blockContext}))
 
   const attachments: MessageAttachment[] = [
