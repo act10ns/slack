@@ -29,6 +29,10 @@ when using a Slack App):
 
 ### Input Parameters (`with`)
 
+#### `webhook-url` (optional)
+
+Only required if the `SLACK_WEBHOOK_URL` environment variable is not set.
+
 #### `status` (required)
 
 The `status` must be defined. It can either be the current job status

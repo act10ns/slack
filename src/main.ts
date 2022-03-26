@@ -25,7 +25,7 @@ async function run(): Promise<void> {
     }
     core.debug(yaml.dump(config))
 
-    const url = process.env.SLACK_WEBHOOK_URL as string
+    const url = core.getInput('webhook-url', {required: false}) || (process.env.SLACK_WEBHOOK_URL as string)
     const jobName = process.env.GITHUB_JOB as string
     const jobStatus = core.getInput('status', {required: true}).toUpperCase()
     const jobSteps = JSON.parse(core.getInput('steps', {required: false}) || '{}')
@@ -36,9 +36,9 @@ async function run(): Promise<void> {
 
     if (url) {
       await send(url, jobName, jobStatus, jobSteps, channel, message, config)
-      core.debug('Sent to Slack.')
+      core.info(`Sent ${jobName} status of ${jobStatus} to Slack!`)
     } else {
-      core.info('No "SLACK_WEBHOOK_URL" secret configured. Skip.')
+      core.warning('No "SLACK_WEBHOOK_URL"s secret or "webhook-url" input configured. Skip.')
     }
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
