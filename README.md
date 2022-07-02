@@ -33,17 +33,20 @@ when using a Slack App):
 
 Only required if the `SLACK_WEBHOOK_URL` environment variable is not set.
 
+      with:
+        webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+
 #### `status` (required)
 
 The `status` must be defined. It can either be the current job status
 using:
 
-      with: 
+      with:
         status: ${{ job.status }}
 
 or a hardcoded custom status such as "starting" or "in progress":
 
-      with: 
+      with:
         status: in progress
 
 #### `steps` (optional)
@@ -51,7 +54,7 @@ or a hardcoded custom status such as "starting" or "in progress":
 The individual status of job steps can be included in the Slack
 message using:
 
-      with: 
+      with:
         status: ${{ job.status }}
         steps: ${{ toJson(steps) }}
 
@@ -62,7 +65,7 @@ message using:
 To override the channel or to send the Slack message to an individual
 use:
 
-      with: 
+      with:
         status: ${{ job.status }}
         channel: '#workflows'
 
@@ -73,7 +76,7 @@ Incoming Webhook URL. See https://api.slack.com/faq#incoming_webhooks**
 
 To override the slack message use:
 
-      with: 
+      with:
         status: ${{ job.status }}
         channel: '#workflows'
         message: Deploying {{ env.GITHUB_REF_NAME }} branch
@@ -96,7 +99,7 @@ A configuration file can be used to customise the following Slack message fields
 
 Default: `.github/slack.yml`
 
-      with: 
+      with:
         status: ${{ job.status }}
         config: .github/config/slack.yml
 
