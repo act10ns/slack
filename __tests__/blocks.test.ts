@@ -155,7 +155,7 @@ test('custom config of slack action using legacy and blocks', async () => {
             fields: [
               {
                 type: 'mrkdwn',
-                text: '*Workflow*\n<https://github.com/act10ns/slack/actions?query=build-test|build-test>'
+                text: '*Workflow*\n<https://github.com/act10ns/slack/actions?query=workflow:build-test|build-test>'
               },
               {type: 'mrkdwn', text: '*Git Ref*\nmaster (branch)'},
               {type: 'mrkdwn', text: '*Run ID*\n<https://github.com/act10ns/slack/actions/runs/100143423|100143423>'},

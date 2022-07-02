@@ -120,7 +120,7 @@ test('custom config of slack action using inputs for channel and message', async
           {
             short: true,
             title: 'Workflow',
-            value: '<https://github.com/act10ns/slack/actions?query=build-test|build-test>'
+            value: '<https://github.com/act10ns/slack/actions?query=workflow:build-test|build-test>'
           },
           {
             short: true,
