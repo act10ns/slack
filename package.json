@@ -27,7 +27,7 @@
   "author": "satterly",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.6.0",
+    "@actions/core": "^1.9.1",
     "@actions/github": "^4.0.0",
     "@octokit/webhooks": "^7.15.1",
     "@slack/webhook": "^6.0.0",
