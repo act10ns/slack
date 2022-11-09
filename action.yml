@@ -22,7 +22,7 @@ inputs:
     description: Override message format for step
     required: false
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
 branding:
   icon: alert-circle
