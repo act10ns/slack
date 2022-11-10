@@ -1,5 +1,22 @@
 # Release
 
+## Setup
+
+```bash
+$ brew install node@16
+$ make install
+```
+
+## Develop
+
+```bash
+$ make format
+$ make lint
+$ make test
+```
+
+## Publish
+
 ```bash
 $ vi package.json
 $ vi package-lock.json
@@ -13,6 +30,8 @@ $ git push origin v1 --force
 ```
 
 Go to [GitHub Releases](https://github.com/act10ns/slack/releases) and create a new release
+
+## References 
 
 See [Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to understand version strategy.
 
