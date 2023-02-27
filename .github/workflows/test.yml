@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - id: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - id: build
       run: |
         npm install
@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - id: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         ref: ${{ github.event.pull_request.head.sha }}
     - uses: ./
@@ -82,9 +82,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - id: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         ref: ${{ github.event.pull_request.head.sha }}
+    - id: install-nodejs
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.16.0'
     - id: build
       run: |
         npm install

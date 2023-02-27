@@ -289,7 +289,7 @@ or
               message: Starting Docker Build and Push...
             if: always()
           - name: Checkout
-            uses: actions/checkout@v2
+            uses: actions/checkout@v3
           - name: Variables
             id: vars
             run: echo "::set-output name=SHORT_COMMIT_ID::$(git rev-parse --short HEAD)"
