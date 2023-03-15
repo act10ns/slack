@@ -38,7 +38,7 @@ async function run(): Promise<void> {
       await send(url, jobName, jobStatus, jobSteps, channel, message, config)
       core.info(`Sent ${jobName} status of ${jobStatus} to Slack!`)
     } else {
-      core.warning('No "SLACK_WEBHOOK_URL"s secret or "webhook-url" input configured. Skip.')
+      core.warning('No "SLACK_WEBHOOK_URL"s env or "webhook-url" input configured. Skip.')
     }
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
