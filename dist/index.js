@@ -134,11 +134,11 @@ function run() {
             core.debug(`channel: ${channel}, message: ${message}`);
             if (url) {
                 yield (0, slack_1.send)(jobName, jobStatus, jobSteps, url, token, channel, channel_id, message, config);
-                core.info(`Sent ${jobName} status of ${jobStatus} to Slack!`);
+                core.info(`Sent with webhook-url ${jobName} status of ${jobStatus} to Slack!`);
             }
             else if (token) {
                 yield (0, slack_1.send)(jobName, jobStatus, jobSteps, url, token, channel, channel_id, message, config);
-                core.info(`Sent ${jobName} status of ${jobStatus} to Slack!`);
+                core.info(`Sent with slack token ${jobName} status of ${jobStatus} to Slack!`);
             }
             else {
                 core.warning('No "SLACK_WEBHOOK_URL"s env or "webhook-url" input configured. Skip.');
