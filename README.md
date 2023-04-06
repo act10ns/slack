@@ -36,6 +36,21 @@ Only required if the `SLACK_WEBHOOK_URL` environment variable is not set.
       with:
         webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
 
+#### `token` (optional)
+
+Only required if the `TOKEN` environment variable is not set.
+
+      with:
+        token: ${{ secrets.SLACK_TOKEN }}
+
+#### `channel_id` (optional)
+
+Only required if the `TOKEN` is not null & `CHANNEL_ID` environment variable is not set.
+
+      with:
+        token: ${{ secrets.SLACK_TOKEN }}
+        channel_id: ${{ env.CHANNEL_ID }}
+
 #### `status` (required)
 
 The `status` must be defined. It can either be the current job status

@@ -26,16 +26,21 @@ async function run(): Promise<void> {
     core.debug(yaml.dump(config))
 
     const url = core.getInput('webhook-url', {required: false}) || (process.env.SLACK_WEBHOOK_URL as string)
+    const token = core.getInput('token', {required: false}) || (process.env.SLACK_TOKEN as string)
     const jobName = process.env.GITHUB_JOB as string
     const jobStatus = core.getInput('status', {required: true}).toUpperCase()
     const jobSteps = JSON.parse(core.getInput('steps', {required: false}) || '{}')
     const channel = core.getInput('channel', {required: false})
+    const channel_id = core.getInput('channel_id', {required: false})
     const message = core.getInput('message', {required: false})
     core.debug(`jobName: ${jobName}, jobStatus: ${jobStatus}`)
     core.debug(`channel: ${channel}, message: ${message}`)
 
     if (url) {
-      await send(url, jobName, jobStatus, jobSteps, channel, message, config)
+      await send(jobName, jobStatus, jobSteps, url, token, channel, channel_id, message, config)
+      core.info(`Sent ${jobName} status of ${jobStatus} to Slack!`)
+    } else if (token) {
+      await send(jobName, jobStatus, jobSteps, url, token, channel, channel_id, message, config)
       core.info(`Sent ${jobName} status of ${jobStatus} to Slack!`)
     } else {
       core.warning('No "SLACK_WEBHOOK_URL"s env or "webhook-url" input configured. Skip.')

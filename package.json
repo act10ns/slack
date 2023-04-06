@@ -31,6 +31,8 @@
     "@actions/github": "^4.0.0",
     "@octokit/webhooks": "^7.15.1",
     "@slack/webhook": "^6.0.0",
+    "@slack/events-api": "^3.0.1",
+    "@slack/web-api": "^6.8.0",
     "@types/js-yaml": "^4.0.4",
     "flow-bin": "^0.138.0",
     "graphql": "^15.4.0",
