@@ -1,11 +1,9 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {Block, KnownBlock, MessageAttachment} from '@slack/types'
-import {IncomingWebhook} from '@slack/webhook'
-// eslint-disable-next-line sort-imports
+import {ChatPostMessageResponse, WebClient} from '@slack/web-api'
 import {EventPayloads} from '@octokit/webhooks'
 import Handlebars from './handlebars'
-import {WebClient} from '@slack/web-api'
 
 const DEFAULT_USERNAME = 'GitHub Actions'
 const DEFAULT_ICON_URL = 'https://octodex.github.com/images/original.png'
@@ -133,13 +131,11 @@ export async function send(
   jobName: string,
   jobStatus: string,
   jobSteps: object,
-  url?: string,
   token?: string,
   channel?: string,
-  channel_id?: string,
   message?: string,
   opts?: ConfigOptions
-): Promise<Object> {
+): Promise<ChatPostMessageResponse> {
   const eventName = process.env.GITHUB_EVENT_NAME
   const workflow = process.env.GITHUB_WORKFLOW
   const repositoryName = process.env.GITHUB_REPOSITORY
@@ -365,19 +361,11 @@ export async function send(
   const postMessage = {
     username: opts?.username || DEFAULT_USERNAME,
     icon_url: opts?.icon_url || DEFAULT_ICON_URL,
-    channel,
+    channel: channel || '',
     attachments
   }
   core.debug(JSON.stringify(postMessage))
-  if (url) {
-    const webhook = new IncomingWebhook(url)
-    return await webhook.send(postMessage)
-  }
+
   const client = new WebClient(token)
-  return await client.chat.postMessage({
-    channel: channel_id || '',
-    username: opts?.username || DEFAULT_USERNAME,
-    icon_url: opts?.icon_url || DEFAULT_ICON_URL,
-    attachments
-  })
+  return await client.chat.postMessage(postMessage)
 }

@@ -16,40 +16,21 @@ A simple and flexible Slack integration with GitHub Actions.
 
 ### Environment Variables (`env`)
 
-#### `SLACK_WEBHOOK_URL` (required)
+#### `SLACK_TOKEN` (required)
 
-Create a Slack Webhook URL using either the
-[Incoming Webhooks App](https://slack.com/apps/A0F7XDUAZ-incoming-webhooks?next_id=0)
-(preferred) or by attaching an incoming webhook to an existing
-[Slack App](https://api.slack.com/apps) (beware, channel override not possible
-when using a Slack App):
+Create a Slack token at https://api.slack.com/tutorials/tracks/getting-a-token
 
-    env:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      env:
+        SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
 
 ### Input Parameters (`with`)
 
-#### `webhook-url` (optional)
-
-Only required if the `SLACK_WEBHOOK_URL` environment variable is not set.
-
-      with:
-        webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
-
 #### `token` (optional)
 
-Only required if the `TOKEN` environment variable is not set.
+Only required if the `SLACK_TOKEN` environment variable is not set.
 
       with:
         token: ${{ secrets.SLACK_TOKEN }}
-
-#### `channel_id` (optional)
-
-Only required if the `TOKEN` is not null & `CHANNEL_ID` environment variable is not set.
-
-      with:
-        token: ${{ secrets.SLACK_TOKEN }}
-        channel_id: ${{ env.CHANNEL_ID }}
 
 #### `status` (required)
 
@@ -82,10 +63,7 @@ use:
 
       with:
         status: ${{ job.status }}
-        channel: '#workflows'
-
-**Note: To override the channel the Slack webhook URL must be an
-Incoming Webhook URL. See https://api.slack.com/faq#incoming_webhooks**
+        channel: 'C123ABC456'
 
 ### `message` (optional)
 
@@ -93,7 +71,7 @@ To override the slack message use:
 
       with:
         status: ${{ job.status }}
-        channel: '#workflows'
+        channel: 'C123ABC456'
         message: Deploying {{ env.GITHUB_REF_NAME }} branch
 
 ### `config` (optional)
@@ -266,20 +244,19 @@ Only steps that have a "step id" assigned to them will be reported on:
         npm install
         npm run build
 
-The default Slack channel for the configured webhook can be overridden
-using either another channel name `#channel` or a username `@username`.
+the channel can be a channel ID or user ID:
 
     - uses: act10ns/slack@v1
       with: 
         status: ${{ job.status }}
-        channel: '#workflows'
+        channel: 'C123ABC456' # channel ID
 
 or
 
     - uses: act10ns/slack@v1
       with: 
         status: ${{ job.status }}
-        channel: '@nick'
+        channel: 'U123456' # user ID
 
 ### Complete example
 
@@ -295,12 +272,12 @@ or
         env:
           REPOSITORY_URL: docker.pkg.github.com
           IMAGE_NAME: ${{ github.repository }}/alerta-cli
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TOKEN: ${{ secrets.SLACK_TOKEN }}
         steps:
           - uses: act10ns/slack@v1
             with:
               status: starting
-              channel: '#workflows'
+              channel: 'C123ABC456'
               message: Starting Docker Build and Push...
             if: always()
           - name: Checkout
@@ -328,7 +305,7 @@ or
             with:
               status: ${{ job.status }}
               steps: ${{ toJson(steps) }}
-              channel: '#workflows'
+              channel: 'C123ABC456'
             if: always()
 
 The above "Docker Build and Push" workflow will appear in Slack as:
@@ -347,7 +324,7 @@ See https://docs.github.com/en/free-pro-team@latest/actions/managing-workflow-ru
 
 * GitHub Actions Toolkit https://github.com/actions/toolkit/tree/main/packages/github
 * GitHub Actions Starter Workflows https://github.com/actions/starter-workflows
-* Slack Incoming Webhooks https://slack.com/apps/A0F7XDUAZ-incoming-webhooks?next_id=0
+* Slack API https://api.slack.com/methods/chat.postMessage 
 * Env vars https://docs.github.com/en/free-pro-team@latest/actions/reference/environment-variables
 * Webhook Payloads https://docs.github.com/en/free-pro-team@latest/developers/webhooks-and-events/webhook-events-and-payloads#webhook-payload-object-common-properties
 * GitHub Actions Cheat Sheet https://github.github.io/actions-cheat-sheet/actions-cheat-sheet.html

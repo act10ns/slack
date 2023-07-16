@@ -2,11 +2,8 @@ name: slack - GitHub Actions Slack integration
 description: Notify Slack of GitHub Actions workflows, jobs and step status.
 author: satterly
 inputs:
-  webhook-url:
-    description: Specify Slack Incoming Webhook URL
-    required: false
   token:
-    description: Specify Slack Incoming Webhook URL
+    description: Slack API token
     required: false
   config:
     description: Configuration file
@@ -19,9 +16,6 @@ inputs:
     description: Report on the status of individual steps
     required: false
   channel:
-    description: Override default channel with different channel or username
-    required: false
-  channel_id:
     description: Override default channel with different channel or username
     required: false
   message:
