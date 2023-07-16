@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {Block, KnownBlock, MessageAttachment} from '@slack/types'
-import {IncomingWebhook, IncomingWebhookResult} from '@slack/webhook'
+import {ChatPostMessageResponse, WebClient} from '@slack/web-api'
 import {EventPayloads} from '@octokit/webhooks'
 import Handlebars from './handlebars'
 
@@ -128,14 +128,14 @@ export interface ConfigOptions {
 }
 
 export async function send(
-  url: string,
   jobName: string,
   jobStatus: string,
   jobSteps: object,
+  token?: string,
   channel?: string,
   message?: string,
   opts?: ConfigOptions
-): Promise<IncomingWebhookResult> {
+): Promise<ChatPostMessageResponse> {
   const eventName = process.env.GITHUB_EVENT_NAME
   const workflow = process.env.GITHUB_WORKFLOW
   const repositoryName = process.env.GITHUB_REPOSITORY
@@ -361,11 +361,11 @@ export async function send(
   const postMessage = {
     username: opts?.username || DEFAULT_USERNAME,
     icon_url: opts?.icon_url || DEFAULT_ICON_URL,
-    channel,
+    channel: channel || '',
     attachments
   }
   core.debug(JSON.stringify(postMessage))
 
-  const webhook = new IncomingWebhook(url)
-  return await webhook.send(postMessage)
+  const client = new WebClient(token)
+  return await client.chat.postMessage(postMessage)
 }

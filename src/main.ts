@@ -25,7 +25,7 @@ async function run(): Promise<void> {
     }
     core.debug(yaml.dump(config))
 
-    const url = core.getInput('webhook-url', {required: false}) || (process.env.SLACK_WEBHOOK_URL as string)
+    const token = core.getInput('token', {required: false}) || (process.env.SLACK_TOKEN as string)
     const jobName = process.env.GITHUB_JOB as string
     const jobStatus = core.getInput('status', {required: true}).toUpperCase()
     const jobSteps = JSON.parse(core.getInput('steps', {required: false}) || '{}')
@@ -34,11 +34,11 @@ async function run(): Promise<void> {
     core.debug(`jobName: ${jobName}, jobStatus: ${jobStatus}`)
     core.debug(`channel: ${channel}, message: ${message}`)
 
-    if (url) {
-      await send(url, jobName, jobStatus, jobSteps, channel, message, config)
-      core.info(`Sent ${jobName} status of ${jobStatus} to Slack!`)
+    if (token) {
+      await send(jobName, jobStatus, jobSteps, token, channel, message, config)
+      core.info(`Sent with slack token ${jobName} status of ${jobStatus} to Slack!`)
     } else {
-      core.warning('No "SLACK_WEBHOOK_URL"s env or "webhook-url" input configured. Skip.')
+      core.warning('No "SLACK_TOKEN"s env or "token" input configured. Skip.')
     }
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
