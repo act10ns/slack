@@ -132,6 +132,7 @@ export async function send(
   jobName: string,
   jobStatus: string,
   jobSteps: object,
+  jobMatrix?: object,
   channel?: string,
   message?: string,
   opts?: ConfigOptions

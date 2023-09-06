@@ -15,6 +15,9 @@ inputs:
   steps:
     description: Report on the status of individual steps
     required: false
+  matrix:
+    description: matrix properties
+    required: false
   channel:
     description: Override default channel with different channel or username
     required: false
