@@ -175,6 +175,9 @@ fields:
   - title: Job Steps
     value: "{{#each jobSteps}}{{icon this.outcome}} {{@key}}\n{{/each}}"
     short: false
+  - title: Job Matrix
+    value: "{{#each jobMatrix}}{{@key}}: {{this}}\n{{/each}}"
+    short: false
   - title: Workflow
     value: "<{{workflowUrl}}|{{workflow}}>"
     short: true
