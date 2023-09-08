@@ -60,6 +60,15 @@ message using:
 
 **Note: Only steps that have a "step id" will be reported on. See example below.**
 
+#### `matrix` (optional)
+Parameters for [matrix jobs](https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs) can be included in Slack messages:
+
+      with:
+        status: ${{ job.status }}
+        matrix: ${{ toJson(matrix) }}
+
+<img src="./docs/images/example4.png" width="505" title="Slack Example #4">
+
 #### `channel` (optional)
 
 To override the channel or to send the Slack message to an individual
@@ -116,7 +125,7 @@ The following Slack [message fields](https://api.slack.com/reference/messaging/a
 
 **Supported Template variables**
 
-`env.*`, `payload.*`, `jobName`, `jobStatus`, `jobSteps`,
+`env.*`, `payload.*`, `jobName`, `jobStatus`, `jobSteps`, `jobMatrix`,
 `eventName`, `workflow`, `workflowUrl`, `workflowRunUrl`, `repositoryName`, `repositoryUrl`, `runId`, `runNumber`, `sha`, `shortSha`, `branch`, `actor`, `action`, `ref`, `refType`, `refUrl`, `diffRef`, `diffUrl`, `description`, `sender`
 
 **Helper Functions**
