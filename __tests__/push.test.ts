@@ -8,7 +8,7 @@ const url = 'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXX
 const jobName = 'Build and Test'
 const jobStatus = 'Success'
 const jobSteps = {}
-const jobMatrix = undefined
+const jobMatrix = {}
 const channel = '@override'
 const message = undefined
 

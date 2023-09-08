@@ -47,7 +47,7 @@ const url = process.env.SLACK_WEBHOOK_URL as string
 const jobName = process.env.GITHUB_JOB as string
 const jobStatus = (process.env.INPUT_STATUS as string).toUpperCase()
 const jobSteps = process.env.INPUT_STEPS || {}
-const jobMatrix = undefined
+const jobMatrix = {}
 const channel = process.env.INPUT_CHANNEL as string
 const message = process.env.INPUT_MESSAGE as string
 

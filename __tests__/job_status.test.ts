@@ -39,7 +39,7 @@ const jobSteps = {
     conclusion: 'skipped'
   }
 }
-const jobMatrix = undefined
+const jobMatrix = {}
 const channel = '#github-ci'
 const message = undefined
 

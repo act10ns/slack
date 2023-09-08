@@ -40,7 +40,7 @@ const jobSteps = {
     conclusion: 'cancelled'
   }
 }
-const jobMatrix = undefined
+const jobMatrix = {}
 const channel = '#deploy'
 let message = 'Successfully deployed to {{ env.ENVIRONMENT }}!'
 

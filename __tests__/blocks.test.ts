@@ -40,7 +40,7 @@ const jobSteps = {
     conclusion: 'failure'
   }
 }
-const jobMatrix = undefined
+const jobMatrix = {}
 const channel = '#github-ci'
 
 // mock github context

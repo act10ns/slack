@@ -29,7 +29,7 @@ async function run(): Promise<void> {
     const jobName = process.env.GITHUB_JOB as string
     const jobStatus = core.getInput('status', {required: true}).toUpperCase()
     const jobSteps = JSON.parse(core.getInput('steps', {required: false}) || '{}')
-    const jobMatrix = JSON.parse(core.getInput('matrix', {required: false}) || 'null')
+    const jobMatrix = JSON.parse(core.getInput('matrix', {required: false}) || '{}')
     const channel = core.getInput('channel', {required: false})
     const message = core.getInput('message', {required: false})
     core.debug(`jobName: ${jobName}, jobStatus: ${jobStatus}`)
