@@ -229,7 +229,7 @@ matches. All possible status check functions are:
 To send a Slack message when a workflow job has completed add the
 following as the last step of the job:
 
-    - uses: act10ns/slack@v1
+    - uses: act10ns/slack@v2
       with: 
         status: ${{ job.status }}
       if: always()
@@ -237,7 +237,7 @@ following as the last step of the job:
 To include statuses for each Job Step in the message include the
 `steps` input (making sure to use the `toJSON` function):
 
-    - uses: act10ns/slack@v1
+    - uses: act10ns/slack@v2
       with: 
         status: ${{ job.status }}
         steps: ${{ toJson(steps) }}
@@ -254,14 +254,14 @@ Only steps that have a "step id" assigned to them will be reported on:
 The default Slack channel for the configured webhook can be overridden
 using either another channel name `#channel` or a username `@username`.
 
-    - uses: act10ns/slack@v1
+    - uses: act10ns/slack@v2
       with: 
         status: ${{ job.status }}
         channel: '#workflows'
 
 or
 
-    - uses: act10ns/slack@v1
+    - uses: act10ns/slack@v2
       with: 
         status: ${{ job.status }}
         channel: '@nick'
@@ -282,7 +282,7 @@ or
           IMAGE_NAME: ${{ github.repository }}/alerta-cli
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         steps:
-          - uses: act10ns/slack@v1
+          - uses: act10ns/slack@v2
             with:
               status: starting
               channel: '#workflows'
@@ -309,7 +309,7 @@ or
             id: docker-push
             run: docker push $REPOSITORY_URL/$IMAGE_NAME
 
-          - uses: act10ns/slack@v1
+          - uses: act10ns/slack@v2
             with:
               status: ${{ job.status }}
               steps: ${{ toJson(steps) }}
