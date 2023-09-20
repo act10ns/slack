@@ -132,6 +132,7 @@ export async function send(
   jobName: string,
   jobStatus: string,
   jobSteps: object,
+  jobMatrix: object,
   channel?: string,
   message?: string,
   opts?: ConfigOptions
@@ -241,16 +242,23 @@ export async function send(
   }{{jobStatus}}`
   const fallbackTemplate = Handlebars.compile(opts?.fallback || defaultFallback)
 
-  const defaultFields = Object.entries(jobSteps).length
-    ? [
-        {
-          title: 'Job Steps',
-          value: '{{#each jobSteps}}{{icon this.outcome}} {{@key}}\n{{~/each}}',
-          short: false,
-          if: 'always()'
-        }
-      ]
-    : []
+  const defaultFields = []
+  if (Object.entries(jobSteps).length) {
+    defaultFields.push({
+      title: 'Job Steps',
+      value: '{{#each jobSteps}}{{icon this.outcome}} {{@key}}\n{{~/each}}',
+      short: false,
+      if: 'always()'
+    })
+  }
+  if (Object.entries(jobMatrix).length) {
+    defaultFields.push({
+      title: 'Job Matrix',
+      value: '{{#each jobMatrix}}{{@key}}: {{this}}\n{{~/each}}',
+      short: false,
+      if: 'always()'
+    })
+  }
 
   const filteredFields: object[] = []
   for (const field of opts?.fields || defaultFields) {
@@ -274,6 +282,7 @@ export async function send(
     jobName,
     jobStatus,
     jobSteps,
+    jobMatrix,
     eventName,
     workflow,
     workflowUrl,
