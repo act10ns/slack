@@ -144,7 +144,7 @@ export async function send(
 
   const runId = process.env.GITHUB_RUN_ID
   const runNumber = process.env.GITHUB_RUN_NUMBER
-  const workflowUrl = `${repositoryUrl}/actions?query=workflow:${workflow}`
+  const workflowUrl = `${repositoryUrl}/actions?query=workflow:"${workflow}"`
   const workflowRunUrl = `${repositoryUrl}/actions/runs/${runId}`
 
   const sha = process.env.GITHUB_SHA as string
