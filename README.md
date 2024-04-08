@@ -355,4 +355,4 @@ See https://docs.github.com/en/free-pro-team@latest/actions/managing-workflow-ru
 
 ## License
 
-Copyright (c) 2020-2021 Nick Satterly. Available under the MIT License.
+Copyright (c) 2020-2024 Nick Satterly. Available under the MIT License.
