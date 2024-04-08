@@ -1,4 +1,4 @@
-![build-test](https://github.com/act10ns/slack/workflows/build-test/badge.svg)
+[![build-test](https://github.com/act10ns/slack/actions/workflows/test.yml/badge.svg)](https://github.com/act10ns/slack/actions/workflows/test.yml)
 
 # Slack messages for GitHub Actions workflows, jobs and steps
 
