@@ -1,6 +1,6 @@
 {
   "name": "slack",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "description": "Notify Slack of GitHub Actions job and step status.",
   "main": "lib/main.js",
@@ -10,7 +10,7 @@
     "format-check": "prettier --check --loglevel debug '**/*.ts'",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint --fix src/**/*.ts",
-    "package": "ncc build --source-map --license licenses.txt",
+    "package": "NODE_OPTIONS=--openssl-legacy-provider ncc build --source-map --license licenses.txt",
     "package:test": "ncc run dist/index.js",
     "test": "jest",
     "all": "npm run build && npm run format && npm run lint && npm run package && npm test"
