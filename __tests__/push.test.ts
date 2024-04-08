@@ -61,6 +61,7 @@ test('push event to slack', async () => {
     username: 'GitHub Actions',
     icon_url: 'https://octodex.github.com/images/original.png',
     channel: '@override',
+    timeout: 0,
     attachments: [
       {
         fallback: '[GitHub]: [act10ns/slack] build-test push Success',
@@ -70,7 +71,7 @@ test('push event to slack', async () => {
         author_icon: 'https://avatars0.githubusercontent.com/u/615057?v=4',
         mrkdwn_in: ['pretext', 'text', 'fields'],
         pretext: '',
-        text: '*<https://github.com/act10ns/slack/actions?query=workflow:build-test|Workflow _build-test_ job _Build and Test_ triggered by _push_ is _Success_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n<https://github.com/act10ns/slack/compare/db9fe60430a6...68d48876e079|`68d48876`> - 4 commits',
+        text: '*<https://github.com/act10ns/slack/actions?query=workflow:%22build-test%22|Workflow _build-test_ job _Build and Test_ triggered by _push_ is _Success_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n<https://github.com/act10ns/slack/compare/db9fe60430a6...68d48876e079|`68d48876`> - 4 commits',
         title: '',
         fields: [],
         footer: '<https://github.com/act10ns/slack|act10ns/slack> #8',

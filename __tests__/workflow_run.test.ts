@@ -74,6 +74,7 @@ test('workflow_run event to slack', async () => {
     username: 'GitHub-CI',
     icon_url: 'https://octodex.github.com/images/femalecodertocat.png',
     channel: '#actions',
+    timeout: 0,
     attachments: [
       {
         mrkdwn_in: ['pretext', 'text', 'fields'],
@@ -84,7 +85,7 @@ test('workflow_run event to slack', async () => {
         author_icon: 'https://avatars.githubusercontent.com/u/615057?v=4',
         title: 'GitHub Actions',
         title_link: 'https://support.github.com',
-        text: '*<https://github.com/act10ns/slack/actions?query=workflow:workflow-run|Workflow _workflow-run_ job _on-success_ triggered by _workflow_run_ is _SUCCESS_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n',
+        text: '*<https://github.com/act10ns/slack/actions?query=workflow:%22workflow-run%22|Workflow _workflow-run_ job _on-success_ triggered by _workflow_run_ is _SUCCESS_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n',
         fields: [],
         fallback: '[GitHub] workflow-run #4 is SUCCESS',
         footer: '<https://github.com/act10ns/slack|act10ns/slack> workflow-run #4',

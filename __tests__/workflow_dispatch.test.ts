@@ -62,6 +62,7 @@ test('workflow_dispatch event to slack', async () => {
     username: 'GitHub Actions',
     icon_url: 'https://octodex.github.com/images/original.png',
     channel: '@override',
+    timeout: 0,
     attachments: [
       {
         fallback: '[GitHub]: [act10ns/slack] manual-test workflow_dispatch Success',
@@ -71,7 +72,7 @@ test('workflow_dispatch event to slack', async () => {
         author_icon: '',
         mrkdwn_in: ['pretext', 'text', 'fields'],
         pretext: '',
-        text: '*<https://github.com/act10ns/slack/actions?query=workflow:manual-test|Workflow _manual-test_ job _Build and Test_ triggered by _workflow_dispatch_ is _Success_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n',
+        text: '*<https://github.com/act10ns/slack/actions?query=workflow:%22manual-test%22|Workflow _manual-test_ job _Build and Test_ triggered by _workflow_dispatch_ is _Success_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n',
         title: '',
         fields: [],
         footer: '<https://github.com/act10ns/slack|act10ns/slack> #6',

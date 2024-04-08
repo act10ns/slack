@@ -100,6 +100,7 @@ test('custom config of slack action using legacy and blocks', async () => {
     username: 'GitHub-CI',
     icon_url: 'https://octodex.github.com/images/mona-the-rivetertocat.png',
     channel: '#github-ci',
+    timeout: 0,
     attachments: [
       {
         mrkdwn_in: ['pretext', 'text', 'fields'],
@@ -156,7 +157,7 @@ test('custom config of slack action using legacy and blocks', async () => {
             fields: [
               {
                 type: 'mrkdwn',
-                text: '*Workflow*\n<https://github.com/act10ns/slack/actions?query=workflow:build-test|build-test>'
+                text: '*Workflow*\n<https://github.com/act10ns/slack/actions?query=workflow:%22build-test%22|build-test>'
               },
               {type: 'mrkdwn', text: '*Git Ref*\nmaster (branch)'},
               {type: 'mrkdwn', text: '*Run ID*\n<https://github.com/act10ns/slack/actions/runs/100143423|100143423>'},
