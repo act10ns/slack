@@ -57,6 +57,7 @@ test('schedule event to slack', async () => {
     username: 'GitHub Actions',
     icon_url: 'https://octodex.github.com/images/original.png',
     channel: '@override',
+    timeout: 0,
     attachments: [
       {
         fallback: '[GitHub]: [act10ns/slack] schedule-test schedule Success',
@@ -66,7 +67,7 @@ test('schedule event to slack', async () => {
         author_icon: 'https://avatars1.githubusercontent.com/u/9919?s=200&v=4',
         mrkdwn_in: ['pretext', 'text', 'fields'],
         pretext: '',
-        text: '*<https://github.com/act10ns/slack/actions?query=workflow:schedule-test|Workflow _schedule-test_ job _Build and Test_ triggered by _schedule_ is _Success_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n<https://github.com/act10ns/slack/commit/09a6b2c9|`09a6b2c9`> - Schedule `*/15 * * * *`',
+        text: '*<https://github.com/act10ns/slack/actions?query=workflow:%22schedule-test%22|Workflow _schedule-test_ job _Build and Test_ triggered by _schedule_ is _Success_>* for <https://github.com/act10ns/slack/commits/master|`master`>\n<https://github.com/act10ns/slack/commit/09a6b2c9|`09a6b2c9`> - Schedule `*/15 * * * *`',
         title: '',
         fields: [],
         footer: '<https://github.com/act10ns/slack|act10ns/slack> #179',

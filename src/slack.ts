@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {Block, KnownBlock, MessageAttachment} from '@slack/types'
 import {IncomingWebhook, IncomingWebhookResult} from '@slack/webhook'
-import {EventPayloads} from '@octokit/webhooks'
+import {IssueCommentEvent, IssuesEvent, PullRequestEvent, PushEvent} from '@octokit/webhooks-definitions/schema' // eslint-disable-line import/no-unresolved
 import Handlebars from './handlebars'
 
 const DEFAULT_USERNAME = 'GitHub Actions'
@@ -144,7 +144,7 @@ export async function send(
 
   const runId = process.env.GITHUB_RUN_ID
   const runNumber = process.env.GITHUB_RUN_NUMBER
-  const workflowUrl = `${repositoryUrl}/actions?query=workflow:"${workflow}"`
+  const workflowUrl = `${repositoryUrl}/actions?query=workflow:%22${workflow}%22`
   const workflowRunUrl = `${repositoryUrl}/actions/runs/${runId}`
 
   const sha = process.env.GITHUB_SHA as string
@@ -165,10 +165,10 @@ export async function send(
 
   switch (eventName) {
     case 'issues':
-      payload = github.context.payload as EventPayloads.WebhookPayloadIssues
+      payload = github.context.payload as IssuesEvent
     // falls through
     case 'issue_comment': {
-      payload = github.context.payload as EventPayloads.WebhookPayloadIssueComment
+      payload = github.context.payload as IssueCommentEvent
       action = payload.action
       ref = `#${payload.issue.number}`
       refUrl = payload.issue.html_url
@@ -179,7 +179,7 @@ export async function send(
       break
     }
     case 'pull_request': {
-      payload = github.context.payload as EventPayloads.WebhookPayloadPullRequest
+      payload = github.context.payload as PullRequestEvent
       action = payload.action
       ref = `#${payload.number}`
       refUrl = payload.pull_request.html_url
@@ -191,7 +191,7 @@ export async function send(
       break
     }
     case 'push': {
-      payload = github.context.payload as EventPayloads.WebhookPayloadPush
+      payload = github.context.payload as PushEvent
       action = null
       ref = payload.ref.replace('refs/heads/', '')
       diffUrl = payload.compare

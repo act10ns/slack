@@ -100,6 +100,7 @@ test('custom config of slack action using inputs for channel and message', async
     username: 'GitHub-CI',
     icon_url: 'https://octodex.github.com/images/mona-the-rivetertocat.png',
     channel: '#deploy',
+    timeout: 0,
     attachments: [
       {
         fallback: '[GitHub] build-test #8 CI Tests is in progress',
@@ -121,7 +122,7 @@ test('custom config of slack action using inputs for channel and message', async
           {
             short: true,
             title: 'Workflow',
-            value: '<https://github.com/act10ns/slack/actions?query=workflow:build-test|build-test>'
+            value: '<https://github.com/act10ns/slack/actions?query=workflow:%22build-test%22|build-test>'
           },
           {
             short: true,

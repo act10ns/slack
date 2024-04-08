@@ -25,7 +25,7 @@ inputs:
     description: Override message format for step
     required: false
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
 branding:
   icon: alert-circle
