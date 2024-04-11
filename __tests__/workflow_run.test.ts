@@ -48,6 +48,7 @@ const jobName = process.env.GITHUB_JOB as string
 const jobStatus = (process.env.INPUT_STATUS as string).toUpperCase()
 const jobSteps = process.env.INPUT_STEPS || {}
 const jobMatrix = {}
+const jobInputs = {}
 const channel = process.env.INPUT_CHANNEL as string
 const message = process.env.INPUT_MESSAGE as string
 
@@ -67,7 +68,7 @@ test('workflow_run event to slack', async () => {
     schema: yaml.FAILSAFE_SCHEMA
   }) as ConfigOptions
 
-  const res = await send(url, jobName, jobStatus, jobSteps, jobMatrix, channel, message, config)
+  const res = await send(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, channel, message, config)
   await expect(res).toStrictEqual({text: {status: 'ok'}})
 
   expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({
