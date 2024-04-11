@@ -25,6 +25,9 @@ fields:
   - title: Job Matrix
     value: "{{#each jobMatrix}}{{@key}}: {{this}}\n{{/each}}"
     short: false
+  - title: Job Inputs
+    value: "{{#each jobInputs}}{{@key}}: {{this}}\n{{/each}}"
+    short: false
   - title: Workflow
     value: "<{{{workflowUrl}}}|{{workflow}}>"
     short: true

@@ -260,6 +260,14 @@ export async function send(
       if: 'always()'
     })
   }
+  if (Object.entries(jobInputs).length) {
+    defaultFields.push({
+      title: 'Job Inputs',
+      value: '{{#each jobInputs}}{{@key}}: {{this}}\n{{~/each}}',
+      short: false,
+      if: 'always()'
+    })
+  }
 
   const filteredFields: object[] = []
   for (const field of opts?.fields || defaultFields) {
@@ -284,6 +292,7 @@ export async function send(
     jobStatus,
     jobSteps,
     jobMatrix,
+    jobInputs,
     eventName,
     workflow,
     workflowUrl,
