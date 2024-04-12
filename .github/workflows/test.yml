@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - id: checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - id: build
       run: |
         npm install
@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - id: checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: ${{ github.event.pull_request.head.sha }}
     - uses: ./
