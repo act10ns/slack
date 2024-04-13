@@ -41,6 +41,7 @@ const jobSteps = {
   }
 }
 const jobMatrix = {}
+const jobInputs = {}
 const channel = '#github-ci'
 
 // mock github context
@@ -93,7 +94,7 @@ test('custom config of slack action using legacy attachments', async () => {
     schema: yaml.FAILSAFE_SCHEMA
   }) as ConfigOptions
 
-  let res = await send(url, jobName, jobStatus, jobSteps, jobMatrix, channel, message, config)
+  let res = await send(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, channel, message, config)
   await expect(res).toStrictEqual({text: {status: 'ok'}})
 
   expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({

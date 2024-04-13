@@ -12,6 +12,7 @@ const jobMatrix = {
   name1: 'value1',
   name2: 'value2'
 }
+const jobInputs = {}
 const channel = '@override'
 const message = undefined
 
@@ -57,7 +58,7 @@ test('push event to slack', async () => {
     .onAny()
     .reply(500)
 
-  const res = await send(url, jobName, jobStatus, jobSteps, jobMatrix, channel, message)
+  const res = await send(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, channel, message)
   await expect(res).toStrictEqual({text: {status: 'ok'}})
 
   expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({

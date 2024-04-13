@@ -18,6 +18,9 @@ inputs:
   matrix:
     description: matrix properties
     required: false
+  inputs:
+    description: Report input values passed by workflow_call or workflow_dispatch events
+    required: false
   channel:
     description: Override default channel with different channel or username
     required: false
