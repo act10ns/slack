@@ -69,6 +69,17 @@ Parameters for [matrix jobs](https://docs.github.com/en/actions/using-jobs/using
 
 <img src="./docs/images/example4.png" width="505" title="Slack Example #4">
 
+#### `inputs` (optional)
+Parameters for [`workflow_call`](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_call) or [`workflow_dispatch`](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch) events can be included in Slack messages:
+
+      with:
+        status: ${{ job.status }}
+        inputs: ${{ toJson(inputs) }}
+
+<img src="docs/images/example5.png" width="358" title="Slack Example #5">
+
+<img src="docs/images/example6.png" width="571" title="Slack Example #6">
+
 #### `channel` (optional)
 
 To override the channel or to send the Slack message to an individual
