@@ -47456,7 +47456,7 @@ var handlebars_default = import_handlebars.default;
 // src/slack.ts
 function escapeHandlebars(obj) {
   if (typeof obj === "string") {
-    return obj.replace(/\{\{/g, "\\{{");
+    return JSON.stringify(obj.replace(/\{\{/g, "\\{{")).slice(1, -1);
   }
   if (Array.isArray(obj)) {
     return obj.map(escapeHandlebars);
@@ -47609,7 +47609,7 @@ async function send(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, cha
       });
     }
   }
-  const fieldsTemplate = handlebars_default.compile(JSON.stringify(filteredFields));
+  const fieldsTemplate = handlebars_default.compile(JSON.stringify(filteredFields), { noEscape: true });
   const defaultFooter = "<{{repositoryUrl}}|{{repositoryName}}> #{{runNumber}}";
   const footerTemplate = handlebars_default.compile(opts?.footer || defaultFooter);
   const data = {
@@ -47646,9 +47646,10 @@ async function send(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, cha
   const title = titleTemplate(data);
   const text = textTemplate(data);
   const fallback = fallbackTemplate(data);
+  const sanitizeJsonString = (s) => s.replace(/[\x00-\x1f\x7f]/g, (c) => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0"));
   const fieldsJson = fieldsTemplate(data);
   debug(fieldsJson.toString());
-  const fields = JSON.parse(fieldsTemplate(data));
+  const fields = JSON.parse(sanitizeJsonString(fieldsTemplate(data)));
   const footer = footerTemplate(data);
   const filteredBlocks = [];
   for (const block of opts?.blocks || []) {
@@ -47658,7 +47659,7 @@ async function send(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, cha
       filteredBlocks.push(blockWithoutIf);
     }
   }
-  const blocksTemplate = handlebars_default.compile(JSON.stringify(filteredBlocks));
+  const blocksTemplate = handlebars_default.compile(JSON.stringify(filteredBlocks), { noEscape: true });
   const jsonSafe = (s) => JSON.stringify(s).slice(1, -1);
   const blockContext = {
     pretext: jsonSafe(pretext),
@@ -47671,7 +47672,7 @@ async function send(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, cha
   };
   const blocksJson = blocksTemplate({ ...data, ...blockContext });
   debug(blocksJson.toString());
-  const blocks = JSON.parse(blocksTemplate({ ...data, ...blockContext }));
+  const blocks = JSON.parse(sanitizeJsonString(blocksTemplate({ ...data, ...blockContext })));
   const attachments = [];
   if (!opts?.blocks_only) {
     attachments.push({
