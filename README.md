@@ -94,14 +94,14 @@ use:
 **Note: To override the channel the Slack webhook URL must be an
 Incoming Webhook URL. See https://api.slack.com/faq#incoming_webhooks**
 
-### `message` (optional)
+#### `message` (optional)
 
 To override the slack message use:
 
       with:
         status: ${{ job.status }}
         channel: '#workflows'
-        message: Deploying {{ env.GITHUB_REF_NAME }} branch
+        message: Deploying {{env.GITHUB_REF_NAME}} branch
 
 ### `config` (optional)
 
@@ -370,7 +370,7 @@ Multiple channels can be specified, separated by spaces or commas:
             uses: actions/checkout@v4
           - name: Variables
             id: vars
-            run: echo "::set-output name=SHORT_COMMIT_ID::$(git rev-parse --short HEAD)"
+            run: echo "SHORT_COMMIT_ID=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
           - name: Build image
             id: docker-build
             run: >-
@@ -450,15 +450,15 @@ To enable runner diagnostic logging set the `ACTIONS_RUNNER_DEBUG` secret to `tr
 
 To enable step debug logging set the `ACTIONS_STEP_DEBUG` secret to `true`.
 
-See https://docs.github.com/en/free-pro-team@latest/actions/managing-workflow-runs/enabling-debug-logging
+See https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/troubleshooting-workflows/enabling-debug-logging
 
 ## References
 
 * GitHub Actions Toolkit https://github.com/actions/toolkit/tree/main/packages/github
 * GitHub Actions Starter Workflows https://github.com/actions/starter-workflows
 * Slack Incoming Webhooks https://slack.com/apps/A0F7XDUAZ-incoming-webhooks?next_id=0
-* Env vars https://docs.github.com/en/free-pro-team@latest/actions/reference/environment-variables
-* Webhook Payloads https://docs.github.com/en/free-pro-team@latest/developers/webhooks-and-events/webhook-events-and-payloads#webhook-payload-object-common-properties
+* Env vars https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables
+* Webhook Payloads https://docs.github.com/en/webhooks/webhook-events-and-payloads
 * GitHub Actions Cheat Sheet https://github.github.io/actions-cheat-sheet/actions-cheat-sheet.html
 * Slack Secondary message attachments https://api.slack.com/reference/messaging/attachments
 * Handlebars Language Guide https://handlebarsjs.com/guide/
@@ -467,4 +467,4 @@ See https://docs.github.com/en/free-pro-team@latest/actions/managing-workflow-ru
 
 ## License
 
-Copyright (c) 2020-2024 Nick Satterly. Available under the MIT License.
+Copyright (c) 2020-2026 Nick Satterly. Available under the MIT License.
