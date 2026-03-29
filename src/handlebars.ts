@@ -32,11 +32,11 @@ Handlebars.registerHelper('or', (a, b) => a || b)
 
 // conditionals
 Handlebars.registerHelper('ifeq', function (this: Handlebars.HelperDelegate, a, b, options) {
-  return a === b ? options.fn(this) : options.inverse(this) // eslint-disable-line no-invalid-this
+  return a === b ? options.fn(this) : options.inverse(this)
 })
 
 Handlebars.registerHelper('ifneq', function (this: Handlebars.HelperDelegate, a, b, options) {
-  return a !== b ? options.fn(this) : options.inverse(this) // eslint-disable-line no-invalid-this
+  return a !== b ? options.fn(this) : options.inverse(this)
 })
 
 export default Handlebars
