@@ -58,7 +58,9 @@ message using:
         status: ${{ job.status }}
         steps: ${{ toJson(steps) }}
 
-**Note: Only steps that have a "step id" will be reported on. See example below.**
+**Note: Only steps that have an explicit "step id" will be reported on. Steps without
+an `id` are assigned auto-generated hex hash identifiers by GitHub Actions (e.g.
+`58764083063d40139891dda6fb4654d2`) and are automatically filtered out. See example below.**
 
 #### `matrix` (optional)
 Parameters for [matrix jobs](https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs) can be included in Slack messages:
@@ -266,7 +268,9 @@ To include statuses for each Job Step in the message include the
         steps: ${{ toJson(steps) }}
       if: always()
 
-Only steps that have a "step id" assigned to them will be reported on:
+Only steps that have an explicit "step id" assigned to them will be reported on.
+Steps without an `id` are automatically filtered out because GitHub Actions assigns
+them auto-generated 32-character hex identifiers that are not meaningful:
 
     - name: Build
       id: build
