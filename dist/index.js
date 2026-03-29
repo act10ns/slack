@@ -47659,13 +47659,14 @@ async function send(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, cha
     }
   }
   const blocksTemplate = handlebars_default.compile(JSON.stringify(filteredBlocks));
+  const jsonSafe = (s) => JSON.stringify(s).slice(1, -1);
   const blockContext = {
-    pretext,
-    title,
+    pretext: jsonSafe(pretext),
+    title: jsonSafe(title),
     title_link: opts?.title_link,
-    text,
-    fallback,
-    footer,
+    text: jsonSafe(text),
+    fallback: jsonSafe(fallback),
+    footer: jsonSafe(footer),
     footer_icon: DEFAULT_FOOTER_ICON
   };
   const blocksJson = blocksTemplate({ ...data, ...blockContext });
