@@ -136,10 +136,38 @@ The following Slack [message fields](https://api.slack.com/reference/messaging/a
 - `fields` `title` and `value`
 - `blocks`
 
-**Supported Template variables**
+**Supported Template Variables**
 
-`env.*`, `payload.*`, `jobName`, `jobStatus`, `jobSteps`, `jobMatrix`,
-`eventName`, `workflow`, `workflowUrl`, `workflowRunUrl`, `repositoryName`, `repositoryUrl`, `runId`, `runNumber`, `sha`, `shortSha`, `branch`, `actor`, `action`, `ref`, `refType`, `refUrl`, `diffRef`, `diffUrl`, `description`, `sender`
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `env.*` | All environment variables | `{{env.MY_VAR}}` |
+| `payload.*` | Full GitHub event payload (`github.event`) | `{{payload.repository.name}}`, `{{payload.commits}}` |
+| `jobName` | Current job name | `{{jobName}}` |
+| `jobStatus` | Current job status | `{{jobStatus}}` |
+| `jobSteps.*` | Step outcomes keyed by step id | `{{jobSteps.build.outcome}}` |
+| `jobMatrix.*` | Matrix properties | `{{jobMatrix.os}}` |
+| `jobInputs.*` | Workflow dispatch/call inputs | `{{jobInputs.environment}}` |
+| `eventName` | GitHub event name | `{{eventName}}` |
+| `workflow` | Workflow name | `{{workflow}}` |
+| `workflowUrl` | Workflow runs URL | `{{workflowUrl}}` |
+| `workflowRunUrl` | Current workflow run URL | `{{workflowRunUrl}}` |
+| `repositoryName` | Repository (owner/repo) | `{{repositoryName}}` |
+| `repositoryUrl` | Repository URL | `{{repositoryUrl}}` |
+| `runId` | Workflow run ID | `{{runId}}` |
+| `runNumber` | Workflow run number | `{{runNumber}}` |
+| `sha` | Full commit SHA | `{{sha}}` |
+| `shortSha` | Short commit SHA (8 chars) | `{{shortSha}}` |
+| `branch` | Branch name | `{{branch}}` |
+| `actor` | User who triggered the workflow | `{{actor}}` |
+| `action` | Event action (e.g. opened, closed) | `{{action}}` |
+| `ref` | Branch or tag ref | `{{ref}}` |
+| `refType` | Ref type (branch or tag) | `{{refType}}` |
+| `refUrl` | URL to the ref | `{{refUrl}}` |
+| `diffRef` | Diff reference (commit or branch) | `{{diffRef}}` |
+| `diffUrl` | URL to the diff/compare view | `{{diffUrl}}` |
+| `description` | Event-specific description | `{{description}}` |
+| `sender.*` | User who triggered the event | `{{sender.login}}`, `{{sender.avatar_url}}` |
+| `ts` | Current Unix timestamp | `{{ts}}` |
 
 **Helper Functions**
 
