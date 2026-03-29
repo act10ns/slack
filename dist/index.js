@@ -119,13 +119,15 @@ function run() {
             const jobStatus = core.getInput('status', { required: true }).toUpperCase();
             const jobSteps = JSON.parse(core.getInput('steps', { required: false }) || '{}');
             const jobMatrix = JSON.parse(core.getInput('matrix', { required: false }) || '{}');
+            const jobInputs = JSON.parse(core.getInput('inputs', { required: false }) || '{}');
             const channel = core.getInput('channel', { required: false });
             const message = core.getInput('message', { required: false });
             core.debug(`jobName: ${jobName}, jobStatus: ${jobStatus}`);
             core.debug(`channel: ${channel}, message: ${message}`);
             core.debug(`jobMatrix: ${JSON.stringify(jobMatrix)}`);
+            core.debug(`jobInputs: ${JSON.stringify(jobInputs)}`);
             if (url) {
-                yield (0, slack_1.send)(url, jobName, jobStatus, jobSteps, jobMatrix, channel, message, config);
+                yield (0, slack_1.send)(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, channel, message, config);
                 core.info(`Sent ${jobName} status of ${jobStatus} to Slack!`);
             }
             else {
@@ -219,7 +221,7 @@ function stepIcon(status, opts) {
         return (opts === null || opts === void 0 ? void 0 : opts.skipped) || ':no_entry_sign:';
     return `:grey_question: ${status}`;
 }
-function send(url, jobName, jobStatus, jobSteps, jobMatrix, channel, message, opts) {
+function send(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, channel, message, opts) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         const eventName = process.env.GITHUB_EVENT_NAME;
@@ -331,6 +333,14 @@ function send(url, jobName, jobStatus, jobSteps, jobMatrix, channel, message, op
                 if: 'always()'
             });
         }
+        if (Object.entries(jobInputs).length) {
+            defaultFields.push({
+                title: 'Job Inputs',
+                value: '{{#each jobInputs}}{{@key}}: {{this}}\n{{~/each}}',
+                short: false,
+                if: 'always()'
+            });
+        }
         const filteredFields = [];
         for (const field of (opts === null || opts === void 0 ? void 0 : opts.fields) || defaultFields) {
             const field_if = (field === null || field === void 0 ? void 0 : field.if) || 'always()';
@@ -352,6 +362,7 @@ function send(url, jobName, jobStatus, jobSteps, jobMatrix, channel, message, op
             jobStatus,
             jobSteps,
             jobMatrix,
+            jobInputs,
             eventName,
             workflow,
             workflowUrl,
