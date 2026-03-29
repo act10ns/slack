@@ -5,7 +5,6 @@ import {IncomingWebhook, IncomingWebhookResult} from '@slack/webhook'
 import type {IssueCommentEvent, IssuesEvent, PullRequestEvent, PushEvent} from '@octokit/webhooks-types'
 import Handlebars from './handlebars'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function escapeHandlebars(obj: any): any {
   if (typeof obj === 'string') {
     return obj.replace(/\{\{/g, '\\{{')
