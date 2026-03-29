@@ -19,6 +19,8 @@ async function run(): Promise<void> {
       core.info(`Reading config file ${configFile}...`)
       if (existsSync(configFile)) {
         config = yaml.load(readFileSync(configFile, 'utf-8'), {schema: yaml.FAILSAFE_SCHEMA}) as ConfigOptions
+      } else if (configFile !== '.github/slack.yml') {
+        core.warning(`Config file '${configFile}' not found. Make sure the repository is checked out before this step.`)
       }
     } catch (error) {
       if (error instanceof Error) core.info(error.message)
