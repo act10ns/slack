@@ -10,8 +10,8 @@
     "format-check": "prettier --check --loglevel debug '**/*.ts'",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint --fix src/**/*.ts",
-    "package": "NODE_OPTIONS=--openssl-legacy-provider ncc build --source-map --license licenses.txt",
-    "package:test": "ncc run dist/index.js",
+    "package": "esbuild src/main.ts --bundle --platform=node --target=node24 --format=cjs --outfile=dist/index.js --sourcemap --legal-comments=linked",
+    "package:test": "node dist/index.js",
     "test": "jest",
     "all": "npm run build && npm run format && npm run lint && npm run package && npm test"
   },
@@ -27,23 +27,21 @@
   "author": "satterly",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.9.1",
-    "@actions/github": "^4.0.0",
-    "@octokit/webhooks-definitions": "^3.0.0",
+    "@actions/core": "^3.0.0",
+    "@actions/github": "^9.0.0",
+    "@octokit/webhooks-types": "^7.6.0",
     "@slack/webhook": "^7.0.2",
     "@types/js-yaml": "^4.0.4",
-    "flow-bin": "^0.138.0",
-    "graphql": "^15.4.0",
     "handlebars": "^4.7.9",
     "js-yaml": "^4.1.1"
   },
   "devDependencies": {
     "@types/istanbul-lib-report": "^3.0.0",
     "@types/jest": "^29.5.12",
-    "@types/node": "^16.10.5",
+    "@types/node": "^24.0.0",
     "@typescript-eslint/eslint-plugin": "^5.3.0",
     "@typescript-eslint/parser": "^5.0.0",
-    "@vercel/ncc": "^0.31.1",
+    "esbuild": "^0.27.0",
     "axios-mock-adapter": "^1.22.0",
     "eslint": "^7.32.0",
     "eslint-plugin-github": "^4.3.2",
@@ -53,6 +51,6 @@
     "js-yaml": "^4.1.1",
     "prettier": "^2.4.1",
     "ts-jest": "^29.1.2",
-    "typescript": "^4.4.4"
+    "typescript": "^5.8.3"
   }
 }

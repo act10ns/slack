@@ -10,14 +10,15 @@ GitHub Action that sends Slack notifications for GitHub Actions workflows, jobs,
 - `src/slack.ts` — Core logic. Builds Slack message from GitHub context using Handlebars templates, sends via `@slack/webhook`
 - `src/handlebars.ts` — Registers custom Handlebars helpers (json, truncate, default, pluralize, eq, neq, etc.)
 - `action.yml` — GitHub Action metadata (inputs, runtime)
-- `dist/index.js` — Bundled output via `@vercel/ncc` (committed to repo, required for GitHub Actions)
+- `dist/index.js` — Bundled output via esbuild (committed to repo, required for GitHub Actions)
+- `__mocks__/@actions/` — Jest mocks for ESM-only `@actions/core` and `@actions/github`
 
 ## Build and test
 
 ```bash
 npm install          # Install dependencies
-npm run build        # Compile TypeScript (tsc)
-npm run package      # Bundle with ncc into dist/
+npm run build        # Type-check with tsc (no emit)
+npm run package      # Bundle with esbuild into dist/
 npm run format       # Run prettier
 npm run format-check # Check prettier (CI uses this)
 npm run lint         # Run eslint
@@ -28,11 +29,11 @@ npm run all          # build + format + lint + package + test
 ## Key conventions
 
 - **Node.js 24** runtime (set in `action.yml`)
-- **TypeScript** compiled to `lib/`, bundled to `dist/` via ncc
+- **TypeScript** type-checked by tsc, bundled to `dist/` via esbuild
 - **Prettier** config: 120 char width, 2-space indent, no semicolons, single quotes, no trailing commas
 - **Jest** for testing with `axios-mock-adapter` for HTTP mocking
 - Tests are in `__tests__/` with fixtures in `__tests__/fixtures/`
-- `dist/` is committed — must be rebuilt (`npm run package`) before pushing changes to source
+- `dist/` is committed — auto-rebuilt by CI on merge to master (rebuild-dist.yml)
 
 ## Important patterns
 
@@ -48,5 +49,4 @@ npm run all          # build + format + lint + package + test
 - Branch from `master`
 - Run `npm run format-check` before pushing (CI lint step checks this)
 - Run `npm test` to verify all tests pass
-- Rebuild `dist/` if source changed: `npm run build && npm run package`
-- dist files should be included in PRs that change source code
+- Do NOT include `dist/` in PRs — it is auto-rebuilt by CI on merge to master

@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {Block, KnownBlock, MessageAttachment} from '@slack/types'
 import {IncomingWebhook, IncomingWebhookResult} from '@slack/webhook'
-import {IssueCommentEvent, IssuesEvent, PullRequestEvent, PushEvent} from '@octokit/webhooks-definitions/schema' // eslint-disable-line import/no-unresolved
+import type {IssueCommentEvent, IssuesEvent, PullRequestEvent, PushEvent} from '@octokit/webhooks-types'
 import Handlebars from './handlebars'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

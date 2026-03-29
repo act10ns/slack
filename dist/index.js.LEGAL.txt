@@ -1,0 +1,36 @@
+Bundled license information:
+
+undici/lib/web/fetch/body.js:
+  /*! formdata-polyfill. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
+
+undici/lib/web/websocket/frame.js:
+  /*! ws. MIT License. Einar Otto Stangvik <einaros@gmail.com> */
+
+mime-db/index.js:
+  /*!
+   * mime-db
+   * Copyright(c) 2014 Jonathan Ong
+   * Copyright(c) 2015-2022 Douglas Christopher Wilson
+   * MIT Licensed
+   */
+
+mime-types/index.js:
+  /*!
+   * mime-types
+   * Copyright(c) 2014 Jonathan Ong
+   * Copyright(c) 2015 Douglas Christopher Wilson
+   * MIT Licensed
+   */
+
+axios/dist/node/axios.cjs:
+  /*! Axios v1.14.0 Copyright (c) 2026 Matt Zabriskie and contributors */
+
+js-yaml/dist/js-yaml.mjs:
+  /*! js-yaml 4.1.1 https://github.com/nodeca/js-yaml @license MIT */
+
+@octokit/request-error/dist-src/index.js:
+  /* v8 ignore else -- @preserve -- Bug with vitest coverage where it sees an else branch that doesn't exist */
+
+@octokit/request/dist-bundle/index.js:
+  /* v8 ignore next -- @preserve */
+  /* v8 ignore else -- @preserve */
