@@ -138,6 +138,11 @@ export async function send(
   message?: string,
   opts?: ConfigOptions
 ): Promise<IncomingWebhookResult> {
+  // Filter out steps with auto-generated hex hash IDs (steps without an explicit "id")
+  const namedSteps = Object.fromEntries(
+    Object.entries(jobSteps).filter(([key]) => !/^[0-9a-f]{32}$/.test(key))
+  )
+
   const eventName = process.env.GITHUB_EVENT_NAME
   const workflow = process.env.GITHUB_WORKFLOW
   const repositoryName = process.env.GITHUB_REPOSITORY
@@ -244,7 +249,7 @@ export async function send(
   const fallbackTemplate = Handlebars.compile(opts?.fallback || defaultFallback)
 
   const defaultFields = []
-  if (Object.entries(jobSteps).length) {
+  if (Object.entries(namedSteps).length) {
     defaultFields.push({
       title: 'Job Steps',
       value: '{{#each jobSteps}}{{icon this.outcome}} {{@key}}\n{{~/each}}',
@@ -290,7 +295,7 @@ export async function send(
     payload: payload || {},
     jobName,
     jobStatus,
-    jobSteps,
+    jobSteps: namedSteps,
     jobMatrix,
     jobInputs,
     eventName,

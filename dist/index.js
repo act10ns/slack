@@ -224,6 +224,8 @@ function stepIcon(status, opts) {
 function send(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, channel, message, opts) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
+        // Filter out steps with auto-generated hex hash IDs (steps without an explicit "id")
+        const namedSteps = Object.fromEntries(Object.entries(jobSteps).filter(([key]) => !/^[0-9a-f]{32}$/.test(key)));
         const eventName = process.env.GITHUB_EVENT_NAME;
         const workflow = process.env.GITHUB_WORKFLOW;
         const repositoryName = process.env.GITHUB_REPOSITORY;
@@ -317,7 +319,7 @@ function send(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, channel, 
         const defaultFallback = `[GitHub]: [{{repositoryName}}] {{workflow}} {{eventName}} ${action ? '{{action}} ' : ''}{{jobStatus}}`;
         const fallbackTemplate = handlebars_1.default.compile((opts === null || opts === void 0 ? void 0 : opts.fallback) || defaultFallback);
         const defaultFields = [];
-        if (Object.entries(jobSteps).length) {
+        if (Object.entries(namedSteps).length) {
             defaultFields.push({
                 title: 'Job Steps',
                 value: '{{#each jobSteps}}{{icon this.outcome}} {{@key}}\n{{~/each}}',
@@ -360,7 +362,7 @@ function send(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, channel, 
             payload: payload || {},
             jobName,
             jobStatus,
-            jobSteps,
+            jobSteps: namedSteps,
             jobMatrix,
             jobInputs,
             eventName,
