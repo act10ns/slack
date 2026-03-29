@@ -7,7 +7,7 @@ import Handlebars from './handlebars'
 
 function escapeHandlebars(obj: any): any {
   if (typeof obj === 'string') {
-    return obj.replace(/\{\{/g, '\\{{')
+    return JSON.stringify(obj.replace(/\{\{/g, '\\{{')).slice(1, -1)
   }
   if (Array.isArray(obj)) {
     return obj.map(escapeHandlebars)
@@ -301,7 +301,7 @@ export async function send(
       })
     }
   }
-  const fieldsTemplate = Handlebars.compile(JSON.stringify(filteredFields))
+  const fieldsTemplate = Handlebars.compile(JSON.stringify(filteredFields), {noEscape: true})
 
   const defaultFooter = '<{{repositoryUrl}}|{{repositoryName}}> #{{runNumber}}'
   const footerTemplate = Handlebars.compile(opts?.footer || defaultFooter)
@@ -341,9 +341,13 @@ export async function send(
   const title = titleTemplate(data)
   const text = textTemplate(data)
   const fallback = fallbackTemplate(data)
+  // Handlebars may interpolate strings containing JSON-unsafe characters (newlines, quotes, etc.)
+  // into JSON templates. Sanitize the rendered output before parsing.
+  const sanitizeJsonString = (s: string): string =>
+    s.replace(/[\x00-\x1f\x7f]/g, c => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0'))
   const fieldsJson = fieldsTemplate(data)
   core.debug(fieldsJson.toString())
-  const fields = JSON.parse(fieldsTemplate(data))
+  const fields = JSON.parse(sanitizeJsonString(fieldsTemplate(data)))
   const footer = footerTemplate(data)
 
   const filteredBlocks: object[] = []
@@ -355,10 +359,9 @@ export async function send(
       filteredBlocks.push(blockWithoutIf as KnownBlock | Block)
     }
   }
-  const blocksTemplate = Handlebars.compile(JSON.stringify(filteredBlocks))
+  const blocksTemplate = Handlebars.compile(JSON.stringify(filteredBlocks), {noEscape: true})
 
   // allow blocks to reference templated fields
-  // Values are JSON-escaped since they are interpolated into a JSON string template
   const jsonSafe = (s: string): string => JSON.stringify(s).slice(1, -1)
   const blockContext = {
     pretext: jsonSafe(pretext),
@@ -371,7 +374,7 @@ export async function send(
   }
   const blocksJson = blocksTemplate({...data, ...blockContext})
   core.debug(blocksJson.toString())
-  const blocks = JSON.parse(blocksTemplate({...data, ...blockContext}))
+  const blocks = JSON.parse(sanitizeJsonString(blocksTemplate({...data, ...blockContext})))
 
   const attachments: MessageAttachment[] = []
 
