@@ -358,13 +358,16 @@ export async function send(
   const blocksTemplate = Handlebars.compile(JSON.stringify(filteredBlocks))
 
   // allow blocks to reference templated fields
+  // Values must be JSON-safe since they are interpolated into a JSON string template
+  const escapeJsonString = (s: string): string =>
+    s.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
   const blockContext = {
-    pretext,
-    title,
+    pretext: escapeJsonString(pretext),
+    title: escapeJsonString(title),
     title_link: opts?.title_link,
-    text,
-    fallback,
-    footer,
+    text: escapeJsonString(text),
+    fallback: escapeJsonString(fallback),
+    footer: escapeJsonString(footer),
     footer_icon: DEFAULT_FOOTER_ICON
   }
   const blocksJson = blocksTemplate({...data, ...blockContext})
