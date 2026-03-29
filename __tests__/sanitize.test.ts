@@ -1,8 +1,9 @@
 import * as github from '@actions/github'
 import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
-import {send} from '../src/slack'
+import {send, ConfigOptions} from '../src/slack'
 import {readFileSync} from 'fs'
+import * as yaml from 'js-yaml'
 
 const url = 'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX'
 const jobName = 'Build and Test'
@@ -123,4 +124,38 @@ test('commit message with backticks and braces', async () => {
 test('empty commit message', async () => {
   setupContext('')
   await sendAndExpectSuccess(mockAxios)
+})
+
+// Tests with blocks config — these exercise JSON template interpolation
+// which is where newlines in commit messages cause JSON.parse failures
+
+const blocksConfig = yaml.load(readFileSync('./__tests__/fixtures/slack-blocks.yml', 'utf-8'), {
+  schema: yaml.FAILSAFE_SCHEMA
+}) as ConfigOptions
+
+async function sendWithBlocksAndExpectSuccess(mockAxios: MockAdapter): Promise<void> {
+  const res = await send(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, channel, message, blocksConfig)
+  await expect(res).toStrictEqual({text: {status: 'ok'}})
+  mockAxios.resetHistory()
+  mockAxios.reset()
+}
+
+test('multi-line commit message with blocks config', async () => {
+  setupContext('fix: some bug\n\nThis is a detailed description\nwith multiple lines.')
+  await sendWithBlocksAndExpectSuccess(mockAxios)
+})
+
+test('commit message with tabs and carriage returns with blocks config', async () => {
+  setupContext('feat: add feature\r\n\r\n\tindented detail')
+  await sendWithBlocksAndExpectSuccess(mockAxios)
+})
+
+test('commit message with quotes and backslashes with blocks config', async () => {
+  setupContext('fix: handle "quoted" strings')
+  await sendWithBlocksAndExpectSuccess(mockAxios)
+})
+
+test('commit message with handlebars syntax and newlines with blocks config', async () => {
+  setupContext('fix: handle {{user}} placeholder\n\nCo-Authored-By: bot <bot@example.com>')
+  await sendWithBlocksAndExpectSuccess(mockAxios)
 })
