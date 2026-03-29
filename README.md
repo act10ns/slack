@@ -278,16 +278,23 @@ The default Slack channel for the configured webhook can be overridden
 using either another channel name `#channel` or a username `@username`.
 
     - uses: act10ns/slack@v2
-      with: 
+      with:
         status: ${{ job.status }}
         channel: '#workflows'
 
 or
 
     - uses: act10ns/slack@v2
-      with: 
+      with:
         status: ${{ job.status }}
         channel: '@nick'
+
+Multiple channels can be specified, separated by spaces or commas:
+
+    - uses: act10ns/slack@v2
+      with:
+        status: ${{ job.status }}
+        channel: '#channel1, #channel2, @nick'
 
 ### Complete example
 

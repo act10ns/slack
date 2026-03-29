@@ -39,8 +39,11 @@ async function run(): Promise<void> {
     core.debug(`jobInputs: ${JSON.stringify(jobInputs)}`)
 
     if (url) {
-      await send(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, channel, message, config)
-      core.info(`Sent ${jobName} status of ${jobStatus} to Slack!`)
+      const channels = channel ? channel.split(/[\s,]+/).filter(Boolean) : ['']
+      for (const ch of channels) {
+        await send(url, jobName, jobStatus, jobSteps, jobMatrix, jobInputs, ch || undefined, message, config)
+        core.info(`Sent ${jobName} status of ${jobStatus} to Slack${ch ? ` (${ch})` : ''}!`)
+      }
     } else {
       core.warning('No "SLACK_WEBHOOK_URL"s env or "webhook-url" input configured. Skip.')
     }

@@ -22,7 +22,7 @@ inputs:
     description: Report input values passed by workflow_call or workflow_dispatch events
     required: false
   channel:
-    description: Override default channel with different channel or username
+    description: Override default channel with different channel(s) or username(s), space or comma separated
     required: false
   message:
     description: Override message format for step
