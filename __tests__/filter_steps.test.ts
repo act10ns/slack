@@ -18,7 +18,7 @@ const jobSteps = {
     outcome: 'success',
     conclusion: 'success'
   },
-  'd386e8b4af8246d4837dcb403a0fbf05': {
+  d386e8b4af8246d4837dcb403a0fbf05: {
     outputs: {},
     outcome: 'success',
     conclusion: 'success'

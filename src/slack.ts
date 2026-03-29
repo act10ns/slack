@@ -139,9 +139,7 @@ export async function send(
   opts?: ConfigOptions
 ): Promise<IncomingWebhookResult> {
   // Filter out steps with auto-generated hex hash IDs (steps without an explicit "id")
-  const namedSteps = Object.fromEntries(
-    Object.entries(jobSteps).filter(([key]) => !/^[0-9a-f]{32}$/.test(key))
-  )
+  const namedSteps = Object.fromEntries(Object.entries(jobSteps).filter(([key]) => !/^[0-9a-f]{32}$/.test(key)))
 
   const eventName = process.env.GITHUB_EVENT_NAME
   const workflow = process.env.GITHUB_WORKFLOW
