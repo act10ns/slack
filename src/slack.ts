@@ -5,6 +5,24 @@ import {IncomingWebhook, IncomingWebhookResult} from '@slack/webhook'
 import {IssueCommentEvent, IssuesEvent, PullRequestEvent, PushEvent} from '@octokit/webhooks-definitions/schema' // eslint-disable-line import/no-unresolved
 import Handlebars from './handlebars'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function escapeHandlebars(obj: any): any {
+  if (typeof obj === 'string') {
+    return obj.replace(/\{\{/g, '\\{{')
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(escapeHandlebars)
+  }
+  if (obj !== null && typeof obj === 'object') {
+    const result: Record<string, unknown> = {}
+    for (const [key, value] of Object.entries(obj)) {
+      result[key] = escapeHandlebars(value)
+    }
+    return result
+  }
+  return obj
+}
+
 const DEFAULT_USERNAME = 'GitHub Actions'
 const DEFAULT_ICON_URL = 'https://octodex.github.com/images/original.png'
 const DEFAULT_FOOTER_ICON = 'https://github.githubassets.com/favicon.ico'
@@ -291,7 +309,7 @@ export async function send(
 
   const data = {
     env: process.env,
-    payload: payload || {},
+    payload: escapeHandlebars(payload || {}),
     jobName,
     jobStatus,
     jobSteps: namedSteps,
@@ -315,7 +333,7 @@ export async function send(
     refUrl,
     diffRef,
     diffUrl,
-    description,
+    description: escapeHandlebars(description),
     sender,
     ts
   }
