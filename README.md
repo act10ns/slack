@@ -347,6 +347,52 @@ The above "Docker Build and Push" workflow will appear in Slack as:
 
 <img src="./docs/images/example2.png" width="700" title="Slack Example #2">
 
+### Workflow-level status
+
+To report on the overall status of a workflow with multiple jobs, add a
+final job that depends on all other jobs using `needs` and `if: always()`.
+Use the `needs` context to summarise the result of each job:
+
+    name: Release
+
+    on:
+      push:
+        branches: [ master ]
+
+    jobs:
+      build:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+          - run: npm run build
+
+      test:
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+          - uses: actions/checkout@v4
+          - run: npm test
+
+      deploy:
+        runs-on: ubuntu-latest
+        needs: test
+        steps:
+          - run: echo "Deploying..."
+
+      notify:
+        runs-on: ubuntu-latest
+        needs: [build, test, deploy]
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        steps:
+          - uses: act10ns/slack@v2
+            with:
+              status: ${{ (contains(needs.*.result, 'failure') && 'failure') || 'success' }}
+              channel: '#workflows'
+              message: |
+                Release workflow: build=${{ needs.build.result }} test=${{ needs.test.result }} deploy=${{ needs.deploy.result }}
+
 ## Troubleshooting
 
 To enable runner diagnostic logging set the `ACTIONS_RUNNER_DEBUG` secret to `true`.
