@@ -17,7 +17,7 @@ jobs:
     steps:
     - id: checkout
       uses: actions/checkout@v6
-    - id: build
+    - id: install
       run: |
         npm install
     - id: format-check
@@ -26,6 +26,7 @@ jobs:
     - id: lint
       run: |
         npm run lint
+    - run: npm run build && npm run package
     - uses: ./
       with:
         status: ${{ job.status }}
@@ -40,6 +41,11 @@ jobs:
       uses: actions/checkout@v6
       with:
         ref: ${{ github.event.pull_request.head.sha }}
+    - id: install-and-build
+      run: |
+        npm install
+        npm run build
+        npm run package
     - uses: ./
       with:
         status: starting
@@ -61,7 +67,6 @@ jobs:
       run: echo "$STEPS_CONTEXT"
     - id: test
       run: |
-        npm install
         npm run test
     - uses: ./
       with:
