@@ -37,12 +37,21 @@ npm run all          # build + format + lint + package + test
 
 ## Important patterns
 
-- User-controlled data (`payload`, `description`) is sanitized via `escapeHandlebars()` before passing to templates
+- User-controlled data (`payload`, `description`) is sanitized via `escapeHandlebars()` before passing to templates — JSON-escapes strings (newlines, quotes, backslashes) and escapes Handlebars `{{` syntax
+- Fields and blocks Handlebars templates use `noEscape: true` to prevent HTML entity encoding which breaks JSON parsing
+- `sanitizeJsonString()` is a safety net that escapes control characters before `JSON.parse` on template output
 - Steps with auto-generated hex hash IDs (32-char hex) are filtered out
 - Webhook send has retry logic (3 attempts with linear backoff)
 - Multi-channel support: `channel` input is split on whitespace/commas
 - `blocks_only` config option omits the legacy attachment
 - Config file is parsed with `FAILSAFE_SCHEMA` (all values as strings)
+- Warns when a custom (non-default) config file path is specified but not found
+
+## CI workflows
+
+- **build-test** (`test.yml`) — Lint, test, and build on every PR and push to master. All jobs build fresh dist before using `./` to avoid stale dist issues.
+- **rebuild-dist** (`rebuild-dist.yml`) — Automatically rebuilds `dist/` when source files change on master. Commits the result which triggers a second build-test run with the updated dist.
+- **codeql-analysis** — CodeQL security scanning
 
 ## PR workflow
 
