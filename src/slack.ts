@@ -389,5 +389,20 @@ export async function send(
   core.debug(JSON.stringify(postMessage))
 
   const webhook = new IncomingWebhook(url)
-  return await webhook.send(postMessage)
+
+  const maxRetries = 3
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await webhook.send(postMessage)
+    } catch (error) {
+      if (attempt === maxRetries) {
+        throw error
+      }
+      const delay = attempt * 1000
+      core.warning(`Slack webhook attempt ${attempt}/${maxRetries} failed, retrying in ${delay}ms...`)
+      await new Promise(resolve => setTimeout(resolve, delay))
+    }
+  }
+
+  throw new Error('Slack webhook failed after all retries')
 }
