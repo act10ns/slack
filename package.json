@@ -34,7 +34,7 @@
     "@types/js-yaml": "^4.0.4",
     "flow-bin": "^0.138.0",
     "graphql": "^15.4.0",
-    "handlebars": "^4.7.7",
+    "handlebars": "^4.7.9",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
