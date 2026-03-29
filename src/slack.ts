@@ -120,6 +120,7 @@ export interface ConfigOptions {
   fallback?: string
   fields?: Field[]
   blocks?: (Actions | Context | Divider | File | Header | Image | Input | Section)[]
+  blocks_only?: boolean
   footer?: string
   colors?: object
   icons?: object
@@ -350,8 +351,10 @@ export async function send(
   core.debug(blocksJson.toString())
   const blocks = JSON.parse(blocksTemplate({...data, ...blockContext}))
 
-  const attachments: MessageAttachment[] = [
-    {
+  const attachments: MessageAttachment[] = []
+
+  if (!opts?.blocks_only) {
+    attachments.push({
       mrkdwn_in: ['pretext' as const, 'text' as const, 'fields' as const],
       color: jobColor(jobStatus, opts?.colors),
       pretext,
@@ -366,8 +369,8 @@ export async function send(
       footer,
       footer_icon: DEFAULT_FOOTER_ICON,
       ts: ts.toString()
-    }
-  ]
+    })
+  }
 
   if (opts?.blocks) {
     attachments.push({

@@ -113,6 +113,7 @@ A configuration file can be used to customise the following Slack message fields
   - `fallback` plain text summary used for dumb clients and notifications
   - `fields` title, value and short/long
   - `blocks` including `actions`, `context`, `divider`, `file`,  `header`, `image`, `input` and `section` blocks
+  - `blocks_only` set to `true` to send only blocks without the default legacy attachment
   - message `footer`
   - border `colors` based job status `success`, `failure`, `cancelled`. valid colors are `good` (green), `warning` (yellow), `danger` (red) or any hex color code eg. `#439FE0`
   - `icons` for step status `success`, `failure`, `cancelled`, `skipped`, and a default
@@ -224,6 +225,21 @@ icons:
   cancelled: ':x:'
   skipped: ':heavy_minus_sign:'
   default: ':interrobang:'
+```
+
+*Blocks-only mode:*
+
+To send only blocks without the default legacy attachment, set `blocks_only: true`
+in the config file:
+
+```
+blocks_only: true
+
+blocks:
+  - type: section
+    text:
+      type: mrkdwn
+      text: "*{{jobName}}* is *{{jobStatus}}*"
 ```
 
 *Notes:*
